@@ -1,11 +1,12 @@
 package com.harbor.projectharborapi.cliente;
 
 import com.harbor.projectharborapi.agendamento.IAgendamento;
+import com.harbor.projectharborapi.pedido.Pedido;
 import com.harbor.projectharborapi.prestadores.abstrato.PrestadorDeServico;
 import com.harbor.projectharborapi.servicos.Servico;
 
-import java.util.Date;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class Cliente implements IAgendamento {
     private String nome;
@@ -14,12 +15,7 @@ public class Cliente implements IAgendamento {
     private String cpf;
 
     @Override
-    public Servico agendarServico(PrestadorDeServico p, Date data, Servico servico) {
-        return null;
-    }
-
-    @Override
-    public Servico agendarServico(Cliente c, Date data, Servico servico) {
+    public Pedido agendarServico(PrestadorDeServico p, Cliente c, LocalDateTime horario, List<Servico> servico) {
         return null;
     }
 

@@ -1,6 +1,10 @@
 package com.harbor.projectharborapi.barbearia;
 
+import com.harbor.projectharborapi.prestadores.abstrato.PrestadorDeServico;
+
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Barbearia {
     private int id;
@@ -9,9 +13,18 @@ public class Barbearia {
     private LocalTime horarioAbertura;
     private LocalTime horarioFechamento;
     private double lucroTotal;
+    private List<PrestadorDeServico> prestadoresDeServico = new ArrayList<>();
+
+    public void adicionarPrestadorDeServico(PrestadorDeServico p) {
+        prestadoresDeServico.add(p);
+    }
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getCnpj() {
@@ -48,5 +61,9 @@ public class Barbearia {
 
     public double getLucroTotal() {
         return lucroTotal;
+    }
+
+    public List<PrestadorDeServico> getPrestadoresDeServico() {
+        return prestadoresDeServico;
     }
 }

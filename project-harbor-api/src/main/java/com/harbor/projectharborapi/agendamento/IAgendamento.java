@@ -1,13 +1,13 @@
 package com.harbor.projectharborapi.agendamento;
 
 import com.harbor.projectharborapi.cliente.Cliente;
+import com.harbor.projectharborapi.pedido.Pedido;
 import com.harbor.projectharborapi.prestadores.abstrato.PrestadorDeServico;
 import com.harbor.projectharborapi.servicos.Servico;
 
-import java.util.Date;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.List;
 
 public interface IAgendamento {
-    Servico agendarServico(Cliente c, Date data, Servico servico);
-    Servico agendarServico(PrestadorDeServico p, Date data, Servico servico);
+    Pedido agendarServico(PrestadorDeServico p, Cliente c, LocalDateTime horario, List<Servico> servico);
 }

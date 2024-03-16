@@ -2,9 +2,12 @@ package com.harbor.projectharborapi.prestadores.abstrato;
 
 import com.harbor.projectharborapi.agendamento.IAgendamento;
 import com.harbor.projectharborapi.cliente.Cliente;
+import com.harbor.projectharborapi.pedido.Pedido;
 import com.harbor.projectharborapi.servicos.Servico;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,22 +16,22 @@ public abstract class PrestadorDeServico implements IAgendamento {
     protected String nome;
     protected String sobrenome;
     protected String cpf;
-    protected List<LocalTime> horariosDisponiveis;
+    protected List<LocalTime> horariosDisponiveis = new ArrayList<>();
     protected int qtdServicosRealizados;
     protected boolean disponivel;
+    protected List<Pedido> servicosAgendados = new ArrayList<>();
 
     @Override
-    public Servico agendarServico(Cliente c, Date data, Servico servico) {
+    public Pedido agendarServico(PrestadorDeServico p, Cliente c, LocalDateTime horario, List<Servico> servico) {
         return null;
     }
 
-    @Override
-    public Servico agendarServico(PrestadorDeServico p, Date data, Servico servico) {
-        return null;
+    public void adicionarServico(Servico s) {
+
     }
 
     public void checkInServico(Servico servico) {
-        servico.setIniciado(true);
+
     }
 
     public void cancelarServico(Servico servico) {
@@ -36,7 +39,6 @@ public abstract class PrestadorDeServico implements IAgendamento {
     }
 
     public void marcarServicoComoConcluido(Servico servico) {
-        servico.setFinalizado(true);
     }
 
     public int getId() {
@@ -85,5 +87,9 @@ public abstract class PrestadorDeServico implements IAgendamento {
 
     public void setDisponivel(boolean disponivel) {
         this.disponivel = disponivel;
+    }
+
+    public List<Pedido> getServicosAgendados() {
+        return servicosAgendados;
     }
 }

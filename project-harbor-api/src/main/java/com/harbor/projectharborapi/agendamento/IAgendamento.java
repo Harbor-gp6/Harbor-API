@@ -9,5 +9,5 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IAgendamento {
-    Pedido agendarServico(PrestadorDeServico p, Cliente c, LocalDateTime horario, List<Servico> servico);
+    Pedido agendarPedido(PrestadorDeServico p, Cliente c, LocalDateTime horario, List<Servico> servicos);
 }

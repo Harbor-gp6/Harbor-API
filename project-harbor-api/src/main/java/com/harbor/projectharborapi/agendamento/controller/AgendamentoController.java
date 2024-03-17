@@ -5,7 +5,6 @@ import com.harbor.projectharborapi.barbearia.controller.BarbeariaController;
 import com.harbor.projectharborapi.cliente.Cliente;
 import com.harbor.projectharborapi.pedido.Pedido;
 import com.harbor.projectharborapi.prestadores.abstrato.PrestadorDeServico;
-import com.harbor.projectharborapi.servicos.Servico;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +34,7 @@ public class AgendamentoController {
     }
 
     @PostMapping
-    public ResponseEntity<Pedido> agendarServico(@RequestParam PrestadorDeServico p, @RequestBody Cliente c, @RequestBody Pedido pedido) {
-        
+    public ResponseEntity<Pedido> agendarPedido(@RequestParam String nome, @RequestBody Cliente c, @RequestBody Pedido pedido) {
+
     }
 }

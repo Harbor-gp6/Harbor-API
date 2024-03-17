@@ -15,8 +15,16 @@ public class Cliente implements IAgendamento {
     private String cpf;
 
     @Override
-    public Pedido agendarServico(PrestadorDeServico p, Cliente c, LocalDateTime horario, List<Servico> servico) {
-        return null;
+    public Pedido agendarPedido(PrestadorDeServico p, Cliente c, LocalDateTime horario, List<Servico> servicos) {
+        if (c.nome == null || c.sobrenome == null || c.cpf == null || c.telefone == null) {
+            return null;
+        }
+
+        Pedido pedido = new Pedido(horario, servicos, c, p);
+
+        p.adicionarPedido(pedido);
+
+        return pedido;
     }
 
     public String getNome() {

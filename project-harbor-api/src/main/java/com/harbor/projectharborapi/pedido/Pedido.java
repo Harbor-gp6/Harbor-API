@@ -5,13 +5,28 @@ import com.harbor.projectharborapi.prestadores.abstrato.PrestadorDeServico;
 import com.harbor.projectharborapi.servicos.Servico;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Pedido {
-    private int id;
+    private int id = 0;
     private LocalDateTime dataHora;
-    private Servico servico;
+    private List<Servico> servicos = new ArrayList<>();
+    private String status;
     private Cliente cliente;
     private PrestadorDeServico prestadorDeServico;
+
+    public Pedido() {
+    }
+
+    public Pedido(LocalDateTime dataHora, List<Servico> servico, Cliente cliente, PrestadorDeServico prestadorDeServico) {
+        ++this.id;
+        this.dataHora = dataHora;
+        this.servicos = servico;
+        this.cliente = cliente;
+        this.status = "Não iniciado";
+        this.prestadorDeServico = prestadorDeServico;
+    }
 
     public int getId() {
         return id;
@@ -29,12 +44,16 @@ public class Pedido {
         this.dataHora = dataHora;
     }
 
-    public Servico getServico() {
-        return servico;
+    public List<Servico> getServico() {
+        return servicos;
     }
 
-    public void setServico(Servico servico) {
-        this.servico = servico;
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Cliente getCliente() {

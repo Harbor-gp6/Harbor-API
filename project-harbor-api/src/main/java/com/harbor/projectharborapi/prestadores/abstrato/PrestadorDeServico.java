@@ -8,7 +8,6 @@ import com.harbor.projectharborapi.servicos.Servico;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public abstract class PrestadorDeServico implements IAgendamento {
@@ -16,29 +15,53 @@ public abstract class PrestadorDeServico implements IAgendamento {
     protected String nome;
     protected String sobrenome;
     protected String cpf;
-    protected List<LocalTime> horariosDisponiveis = new ArrayList<>();
+    protected List<LocalTime> horarios = new ArrayList<>();
+    protected List<LocalDateTime> horariosDisponiveis = new ArrayList<>();
     protected int qtdServicosRealizados;
     protected boolean disponivel;
     protected List<Pedido> servicosAgendados = new ArrayList<>();
 
     @Override
-    public Pedido agendarServico(PrestadorDeServico p, Cliente c, LocalDateTime horario, List<Servico> servico) {
-        return null;
+    public Pedido agendarPedido(PrestadorDeServico p, Cliente c, LocalDateTime horario, List<Servico> servicos) {
+        if (c.getNome() == null || c.getSobrenome() == null) {
+            return null;
+        }
+
+        Pedido pedido = new Pedido(horario, servicos, c, p);
+
+        p.adicionarPedido(pedido);
+
+        return pedido;
     }
 
-    public void adicionarServico(Servico s) {
+    public Pedido adicionarPedido(Pedido p) {
+        if (horariosDisponiveis.stream().anyMatch(h -> h.equals(p.getDataHora()))) {
+            return null;
+        }
 
+        horariosDisponiveis.remove(p.getDataHora());
+        servicosAgendados.add(p);
+        return p;
     }
 
-    public void checkInServico(Servico servico) {
-
+    public void checkInPedido(Pedido pedido) {
+        pedido.setStatus("Iniciado");
     }
 
-    public void cancelarServico(Servico servico) {
-
+    public void cancelarPedido(Pedido pedido) {
+        pedido.setStatus("Cancelado");
+        horariosDisponiveis.add(pedido.getDataHora());
     }
 
-    public void marcarServicoComoConcluido(Servico servico) {
+    public void marcarServicoComoConcluido(Pedido pedido) {
+    }
+
+    public void adicionarHorario(LocalTime horario) {
+        horarios.add(horario);
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getId() {
@@ -69,7 +92,7 @@ public abstract class PrestadorDeServico implements IAgendamento {
         this.cpf = cpf;
     }
 
-    public List<LocalTime> getHorariosDisponiveis() {
+    public List<LocalDateTime> getHorariosDisponiveis() {
         return horariosDisponiveis;
     }
 

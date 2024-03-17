@@ -39,6 +39,6 @@ public class BarbeariaController {
     }
 
     private boolean validaCnpj(String cnpj) {
-        return cnpj.matches("^([0-9]{2}[.]?[0-9]{3}[.]?[0-9]{3}/?[0-9]{4}-?[0-9]{2})|([0-9]{3}[.]?[0-9]{3}[.]?[0-9]{3}-?[0-9]{2})$");
+        return cnpj.matches("^[0-9]{2}[.]?[0-9]{3}[.]?[0-9]{3}/?[0-9]{4}-?[0-9]{2}$");
     }
 }

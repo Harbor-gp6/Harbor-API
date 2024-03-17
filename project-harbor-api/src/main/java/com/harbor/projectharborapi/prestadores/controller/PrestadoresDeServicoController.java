@@ -1,12 +1,10 @@
 package com.harbor.projectharborapi.prestadores.controller;
 
 import com.harbor.projectharborapi.barbearia.Barbearia;
+import com.harbor.projectharborapi.barbearia.controller.BarbeariaController;
 import com.harbor.projectharborapi.prestadores.abstrato.PrestadorDeServico;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -40,6 +38,25 @@ public class PrestadoresDeServicoController {
         }
 
         return ResponseEntity.status(200).body(b.getPrestadoresDeServico());
+    }
+
+    @GetMapping("{barbeariaId}/buscar/{prestadorId}")
+    public ResponseEntity<PrestadorDeServico> getPrestadorPorId(@PathVariable int barbeariaId, @PathVariable int prestadorId) {
+        List<Barbearia> barbearia = BarbeariaController.getBarbearias().stream().filter(b -> b.getId() == id).toList();
+
+        if (barbearia.isEmpty() || barbearia.get(0).getPrestadoresDeServico().stream().noneMatch(p -> p.getId() == prestadorId)) {
+            return ResponseEntity.status(404).build();
+        }
+
+        PrestadorDeServico prestadorDeServico = null;
+
+        for (PrestadorDeServico p : barbearia.get(0).getPrestadoresDeServico()) {
+            if (p.getId() == prestadorId) {
+                prestadorDeServico = p;
+            }
+        }
+
+        return ResponseEntity.status(200).body(prestadorDeServico);
     }
 
     private boolean validaCpf(String cpf) {

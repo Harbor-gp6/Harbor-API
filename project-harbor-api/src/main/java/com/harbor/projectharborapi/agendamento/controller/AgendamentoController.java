@@ -8,6 +8,7 @@ import com.harbor.projectharborapi.prestadores.abstrato.PrestadorDeServico;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -47,7 +48,13 @@ public class AgendamentoController {
     }
 
     @PostMapping
-    public ResponseEntity<Pedido> agendarPedido(@RequestParam String nome, @RequestBody Cliente c, @RequestBody Pedido pedido) {
-
+    public ResponseEntity<Pedido> agendarPedido(@RequestBody PrestadorDeServico prestador, @RequestBody Cliente cliente, @RequestBody Pedido novoPedido) {
+        if (prestador != null && cliente != null && novoPedido != null){
+            novoPedido.setPrestadorDeServico(prestador);
+            novoPedido.setCliente(cliente);
+            prestador.adicionarPedido(novoPedido);
+            return ResponseEntity.status(200).body(novoPedido);
+        }
+        return ResponseEntity.status(400).build();
     }
 }

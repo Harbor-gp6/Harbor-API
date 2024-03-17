@@ -30,6 +30,19 @@ public class AgendamentoController {
         } else {
             return ResponseEntity.status(404).build();
         }
+
+        for (int i = 0; i < prestadorDeServico.getServicosAgendados().size(); i++) {
+            int indMenor = i;
+            for (int j = i + 1; j < prestadorDeServico.getServicosAgendados().size() - 1; j++) {
+                if (prestadorDeServico.getServicosAgendados().get(j).getDataHora().isBefore(prestadorDeServico.getServicosAgendados().get(i).getDataHora())) {
+                    indMenor = j;
+                }
+            }
+            Pedido aux = prestadorDeServico.getServicosAgendados().get(i);
+            prestadorDeServico.getServicosAgendados().set(i, prestadorDeServico.getServicosAgendados().get(indMenor));
+            prestadorDeServico.getServicosAgendados().set(indMenor, aux);
+        }
+
         return ResponseEntity.status(200).body(prestadorDeServico.getServicosAgendados());
     }
 

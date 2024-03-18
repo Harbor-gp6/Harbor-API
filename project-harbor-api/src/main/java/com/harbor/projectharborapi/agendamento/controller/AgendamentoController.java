@@ -57,4 +57,20 @@ public class AgendamentoController {
         }
         return ResponseEntity.status(400).build();
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarPedido(@RequestParam PrestadorDeServico prestador, @PathVariable int id){
+        if (prestador != null) {
+            List<Pedido> pedidos = prestador.getServicosAgendados();
+            Pedido pedidoSelecionado;
+            for (Pedido pedido : pedidos) {
+                if (pedido.getId() == id) {
+                    pedidoSelecionado = pedido;
+                    pedidos.remove(pedidoSelecionado);
+                    return ResponseEntity.status(204).build();
+                }
+            }
+        }
+        return ResponseEntity.status(404).build();
+    }
 }

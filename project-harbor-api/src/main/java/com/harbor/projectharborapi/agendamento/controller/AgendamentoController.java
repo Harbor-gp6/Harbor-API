@@ -58,19 +58,35 @@ public class AgendamentoController {
         return ResponseEntity.status(400).build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarPedido(@RequestParam PrestadorDeServico prestador, @PathVariable int id){
-        if (prestador != null) {
-            List<Pedido> pedidos = prestador.getServicosAgendados();
-            Pedido pedidoSelecionado;
-            for (Pedido pedido : pedidos) {
-                if (pedido.getId() == id) {
-                    pedidoSelecionado = pedido;
-                    pedidos.remove(pedidoSelecionado);
-                    return ResponseEntity.status(204).build();
-                }
+    @DeleteMapping("/{id}/{prestadorId}")
+    public ResponseEntity<Void> deletarPedido(@PathVariable int id, @PathVariable int prestadorId){
+
+        Barbearia barbearia = null;
+        PrestadorDeServico prestadorDeServico;
+        for (Barbearia b : BarbeariaController.getBarbearias()) {
+            if (b.getPrestadoresDeServico().stream().anyMatch(p -> p.getId() == prestadorId)) {
+                barbearia = b;
+            }
+        }
+        if (barbearia != null) {
+            prestadorDeServico = (PrestadorDeServico) barbearia.getPrestadoresDeServico().stream().filter(p -> p.getId() == prestadorId);
+            Pedido pedidoEncontrado = getPedidoPorId(id, prestadorDeServico.getServicosAgendados());
+            if (pedidoEncontrado != null){
+                prestadorDeServico.cancelarPedido(pedidoEncontrado);
+                prestadorDeServico.getServicosAgendados().remove(pedidoEncontrado);
+                return ResponseEntity.status(204).build();
             }
         }
         return ResponseEntity.status(404).build();
+
+    }
+
+    public Pedido getPedidoPorId (int id, List<Pedido> pedidos) {
+        for (Pedido pedido : pedidos) {
+            if (pedido.getId() == id) {
+                return pedido;
+            }
+        }
+        return null;
     }
 }

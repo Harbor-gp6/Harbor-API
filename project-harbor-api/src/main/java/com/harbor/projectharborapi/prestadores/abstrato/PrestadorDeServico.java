@@ -3,7 +3,6 @@ package com.harbor.projectharborapi.prestadores.abstrato;
 import com.harbor.projectharborapi.agendamento.IAgendamento;
 import com.harbor.projectharborapi.cliente.Cliente;
 import com.harbor.projectharborapi.pedido.Pedido;
-import com.harbor.projectharborapi.servicos.Servico;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;

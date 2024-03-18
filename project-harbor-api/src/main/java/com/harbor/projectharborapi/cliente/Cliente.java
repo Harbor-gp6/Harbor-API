@@ -3,10 +3,7 @@ package com.harbor.projectharborapi.cliente;
 import com.harbor.projectharborapi.agendamento.IAgendamento;
 import com.harbor.projectharborapi.pedido.Pedido;
 import com.harbor.projectharborapi.prestadores.abstrato.PrestadorDeServico;
-import com.harbor.projectharborapi.servicos.Servico;
 
-import java.time.LocalDateTime;
-import java.util.List;
 
 public class Cliente implements IAgendamento {
     private String nome;

@@ -8,6 +8,7 @@ import com.harbor.projectharborapi.prestadores.abstrato.PrestadorDeServico;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -47,7 +48,45 @@ public class AgendamentoController {
     }
 
     @PostMapping
-    public ResponseEntity<Pedido> agendarPedido(@RequestParam String nome, @RequestBody Cliente c, @RequestBody Pedido pedido) {
+    public ResponseEntity<Pedido> agendarPedido(@RequestBody PrestadorDeServico prestador, @RequestBody Cliente cliente, @RequestBody Pedido novoPedido) {
+        if (prestador != null && cliente != null && novoPedido != null){
+            novoPedido.setPrestadorDeServico(prestador);
+            novoPedido.setCliente(cliente);
+            prestador.adicionarPedido(novoPedido);
+            return ResponseEntity.status(200).body(novoPedido);
+        }
+        return ResponseEntity.status(400).build();
+    }
 
+    @DeleteMapping("/{id}/{prestadorId}")
+    public ResponseEntity<Void> deletarPedido(@PathVariable int id, @PathVariable int prestadorId){
+
+        Barbearia barbearia = null;
+        PrestadorDeServico prestadorDeServico;
+        for (Barbearia b : BarbeariaController.getBarbearias()) {
+            if (b.getPrestadoresDeServico().stream().anyMatch(p -> p.getId() == prestadorId)) {
+                barbearia = b;
+            }
+        }
+        if (barbearia != null) {
+            prestadorDeServico = (PrestadorDeServico) barbearia.getPrestadoresDeServico().stream().filter(p -> p.getId() == prestadorId);
+            Pedido pedidoEncontrado = getPedidoPorId(id, prestadorDeServico.getServicosAgendados());
+            if (pedidoEncontrado != null){
+                prestadorDeServico.cancelarPedido(pedidoEncontrado);
+                prestadorDeServico.getServicosAgendados().remove(pedidoEncontrado);
+                return ResponseEntity.status(204).build();
+            }
+        }
+        return ResponseEntity.status(404).build();
+
+    }
+
+    public Pedido getPedidoPorId (int id, List<Pedido> pedidos) {
+        for (Pedido pedido : pedidos) {
+            if (pedido.getId() == id) {
+                return pedido;
+            }
+        }
+        return null;
     }
 }

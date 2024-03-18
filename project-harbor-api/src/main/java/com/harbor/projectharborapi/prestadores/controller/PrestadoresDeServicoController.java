@@ -59,6 +59,26 @@ public class PrestadoresDeServicoController {
         return ResponseEntity.status(200).body(prestadorDeServico);
     }
 
+    @DeleteMapping("/{barbeariaId}/{id}")
+    public ResponseEntity<Void> deletarPrestador (@PathVariable int barbeariaId, @PathVariable int id) {
+        List<Barbearia> barbearia = BarbeariaController.getBarbearias().stream().filter(b -> b.getId() == barbeariaId).toList();
+
+        if (barbearia.isEmpty() || barbearia.get(0).getPrestadoresDeServico().stream().noneMatch(p -> p.getId() == id)) {
+            return ResponseEntity.status(404).build();
+        }
+
+        PrestadorDeServico prestadorDeServico = null;
+
+        for (PrestadorDeServico p : barbearia.get(0).getPrestadoresDeServico()) {
+            if (p.getId() == id) {
+                prestadorDeServico = p;
+                barbearia.get(0).getPrestadoresDeServico().remove(prestadorDeServico);
+                return ResponseEntity.status(204).build();
+            }
+        }
+        return ResponseEntity.status(404).build();
+    }
+
     private boolean validaCpf(String cpf) {
         return cpf.matches("^([0-9]){3}.([0-9]){3}.([0-9]){3}-([0-9]){2}$");
     }

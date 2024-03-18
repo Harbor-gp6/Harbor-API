@@ -17,8 +17,8 @@ public class BarbeariaController {
     private int id = 0;
 
     @PostMapping
-    public ResponseEntity<Barbearia> cadastrarBarbearia(Barbearia b) {
-        if (validaCnpj(b.getCnpj())) {
+    public ResponseEntity<Barbearia> cadastrarBarbearia(@RequestBody Barbearia b) {
+        if (!validaCnpj(b.getCnpj())) {
             return ResponseEntity.status(400).build();
         }
         b.setId(++id);
@@ -65,7 +65,7 @@ public class BarbeariaController {
     }
 
     private boolean validaCnpj(String cnpj) {
-        return cnpj.matches("^[0-9]{2}[.]?[0-9]{3}[.]?[0-9]{3}/?[0-9]{4}-?[0-9]{2}$");
+        return cnpj.length() == 14;
     }
 
     private Barbearia getBarbeariaPorId (int id) {

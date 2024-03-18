@@ -3,10 +3,7 @@ package com.harbor.projectharborapi.cliente;
 import com.harbor.projectharborapi.agendamento.IAgendamento;
 import com.harbor.projectharborapi.pedido.Pedido;
 import com.harbor.projectharborapi.prestadores.abstrato.PrestadorDeServico;
-import com.harbor.projectharborapi.servicos.Servico;
 
-import java.time.LocalDateTime;
-import java.util.List;
 
 public class Cliente implements IAgendamento {
     private String nome;
@@ -15,16 +12,16 @@ public class Cliente implements IAgendamento {
     private String cpf;
 
     @Override
-    public Pedido agendarPedido(PrestadorDeServico p, Cliente c, LocalDateTime horario, List<Servico> servicos) {
+    public Pedido agendarPedido(PrestadorDeServico p, Cliente c, Pedido novoPedido) {
         if (c.nome == null || c.sobrenome == null || c.cpf == null || c.telefone == null) {
             return null;
         }
 
-        Pedido pedido = new Pedido(horario, servicos, c, p);
+        novoPedido.setCliente(c);
+        novoPedido.setPrestadorDeServico(p);
+        p.adicionarPedido(novoPedido);
 
-        p.adicionarPedido(pedido);
-
-        return pedido;
+        return novoPedido;
     }
 
     public String getNome() {

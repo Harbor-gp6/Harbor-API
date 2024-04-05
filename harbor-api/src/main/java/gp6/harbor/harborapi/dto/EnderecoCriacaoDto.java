@@ -18,6 +18,8 @@ public class EnderecoCriacaoDto {
     @Pattern(regexp = "\\d{8}", message = "O CEP deve conter exatamente 8 dígitos numéricos")
     private String cep;
 
+    private String complemento;
+
     public String getBairro() {
         return bairro;
     }
@@ -64,5 +66,13 @@ public class EnderecoCriacaoDto {
 
     public void setCep(String cep) {
         this.cep = cep;
+    }
+
+    public String getComplemento() {
+        return complemento;
+    }
+
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
     }
 }

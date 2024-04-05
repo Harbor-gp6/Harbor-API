@@ -5,7 +5,10 @@ public class EnderecoListagemDto {
     private String logradouro;
     private String cidade;
     private String estado;
+    private String numero;
     private String cep;
+    private String complemento;
+
 
     public Integer getId() {
         return id;
@@ -45,5 +48,21 @@ public class EnderecoListagemDto {
 
     public void setCep(String cep) {
         this.cep = cep;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public String getComplemento() {
+        return complemento;
+    }
+
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
     }
 }

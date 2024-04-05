@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -26,10 +27,43 @@ public class EnderecoController {
         return ResponseEntity.status(201).body(listagemDto);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<EnderecoListagemDto> buscarPeloId(@PathVariable int id){
-//        Optional<Endereco> enderecoOptional =
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<EnderecoListagemDto> buscarPeloId(@PathVariable int id){
+        Optional<Endereco> enderecoOptional = enderecoRepository.findById(id);
+
+        if (enderecoOptional.isEmpty()){
+            return ResponseEntity.status(404).build();
+        }
+
+        EnderecoListagemDto dto = EnderecoMapper.toDto(enderecoOptional.get());
+        return ResponseEntity.status(200).body(dto);
+    }
+
+    @GetMapping("/cep")
+    public ResponseEntity<List<EnderecoListagemDto>> buscarPeloCep(@RequestParam String cep){
+        List<Endereco> enderecos = enderecoRepository.findByCep(cep);
+
+        if (enderecos.isEmpty()){
+            return ResponseEntity.status(204).build();
+        }
+
+        List<EnderecoListagemDto> listaAuxiliar = EnderecoMapper.toDto(enderecos);
+
+        return ResponseEntity.status(200).body(listaAuxiliar);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<EnderecoListagemDto>> buscar(){
+        List<Endereco> enderecos = enderecoRepository.findAll();
+
+        if (enderecos.isEmpty()){
+            return ResponseEntity.status(204).build();
+        }
+
+        List<EnderecoListagemDto> listaAuxiliar = EnderecoMapper.toDto(enderecos);
+
+        return ResponseEntity.status(200).body(listaAuxiliar);
+    }
 
     //To-Do
     //buscar por nome

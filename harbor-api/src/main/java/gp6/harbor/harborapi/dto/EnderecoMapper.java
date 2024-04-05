@@ -20,6 +20,7 @@ public class EnderecoMapper {
         endereco.setEstado(EnderecoDto.getEstado());
         endereco.setNumero(EnderecoDto.getNumero());
         endereco.setCep(EnderecoDto.getCep());
+        endereco.setComplemento(EnderecoDto.getComplemento());
 
         return endereco;
     }
@@ -32,6 +33,9 @@ public class EnderecoMapper {
         listagemDto.setLogradouro(entity.getLogradouro());
         listagemDto.setCidade(entity.getCidade());
         listagemDto.setEstado(entity.getEstado());
+        listagemDto.setNumero(entity.getNumero());
+        listagemDto.setCep(entity.getCep());
+        listagemDto.setComplemento(entity.getComplemento());
         listagemDto.setCep(entity.getCep());
 
         return listagemDto;

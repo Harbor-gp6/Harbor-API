@@ -1,5 +1,6 @@
 package gp6.harbor.harborapi.controller;
 
+import gp6.harbor.harborapi.dto.EmpresaCriacaoDto;
 import gp6.harbor.harborapi.entity.Cliente;
 import gp6.harbor.harborapi.repository.EmpresaRepository;
 import jakarta.validation.Valid;
@@ -21,8 +22,18 @@ public class EmpresaController {
     private EmpresaRepository empresaRepository;
 
     @PostMapping
-    public ResponseEntity<Cliente> cadastrar(@RequestBody @Valid Empresa novaEmpresa){
+    public ResponseEntity<Empresa> cadastrar(@RequestBody @Valid Empresa novaEmpresa){
+            if (existePorCnpj(novaEmpresa.getCnpj())){
+                return ResponseEntity.status(409).build();
+            }
+
         Empresa empresaSalva = empresaRepository.save(novaEmpresa);
         return ResponseEntity.status(201).body(empresaSalva);
+
+    }
+
+
+    public boolean existePorCnpj(String cnpj){
+        return existePorCnpj(cnpj);
     }
 }

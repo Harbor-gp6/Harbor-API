@@ -1,18 +1,18 @@
 package gp6.harbor.harborapi.controller;
 
+import gp6.harbor.harborapi.dto.ClienteCriacaoDto;
+import gp6.harbor.harborapi.dto.ClienteListagemDto;
+import gp6.harbor.harborapi.dto.ClienteMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import gp6.harbor.harborapi.entity.Cliente;
 import gp6.harbor.harborapi.repository.ClienteRepository;
-
-import javax.swing.*;
 
 @RestController
 @RequestMapping("/clientes")
@@ -22,44 +22,56 @@ public class ClienteController {
     private ClienteRepository clienteRepository;
 
     @PostMapping
-    public ResponseEntity<Cliente> cadastrar(@RequestBody @Valid Cliente novoCliente){
+    public ResponseEntity<ClienteListagemDto> cadastrar(@RequestBody @Valid ClienteCriacaoDto novoCliente){
         if (existePorCpf(novoCliente.getCpf())){
             return ResponseEntity.status(409).build();
         }
-        Cliente clienteSalvo = clienteRepository.save(novoCliente);
-        return ResponseEntity.status(201).body(clienteSalvo);
+
+        Cliente cliente = ClienteMapper.toEntity(novoCliente);
+        Cliente clienteSalvo = clienteRepository.save(cliente);
+        ClienteListagemDto listagemDto = ClienteMapper.toDto(clienteSalvo);
+
+
+        return ResponseEntity.status(201).body(listagemDto);
     }
 
     @GetMapping
-    public ResponseEntity<List<Cliente>> listar(){
+    public ResponseEntity<List<ClienteListagemDto>> listar(){
         List<Cliente> clientes = clienteRepository.findAll();
 
         if (clientes.isEmpty()) {
             return ResponseEntity.status(204).build();
         }
-        return ResponseEntity.status(200).body(clientes);
+
+        List<ClienteListagemDto> listaAuxiliar = ClienteMapper.toDto(clientes);
+        return ResponseEntity.status(200).body(listaAuxiliar);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> buscarPorId(@PathVariable int id){
+    public ResponseEntity<ClienteListagemDto> buscarPorId(@PathVariable int id){
         Optional<Cliente> clienteOpt = clienteRepository.findById(id);
 
-        if (clienteOpt.isPresent()){
-            return ResponseEntity.status(200).body(clienteOpt.get());
+        if (clienteOpt.isEmpty()){
+            return ResponseEntity.status(404).build();
+
         }
 
-        return ResponseEntity.status(404).body(clienteOpt.get());
+        ClienteListagemDto dto = ClienteMapper.toDto(clienteOpt.get());
+        return ResponseEntity.status(200).body(dto);
+
     }
 
     @GetMapping("/nome")
-    public ResponseEntity<List<Cliente>> buscarPorId(@RequestParam String nome){
+    public ResponseEntity<List<ClienteListagemDto>> buscarPorId(@RequestParam String nome){
         List<Cliente> clientes = clienteRepository.findByNomeContainsIgnoreCase(nome);
 
         if (clientes.isEmpty()){
             return ResponseEntity.status(204).build();
         }
 
-        return ResponseEntity.status(200).body(clientes);
+        List<ClienteListagemDto> listaAuxiliar = ClienteMapper.toDto(clientes);
+
+        return ResponseEntity.status(200).body(listaAuxiliar);
     }
 
     @DeleteMapping("/{id}")
@@ -72,19 +84,23 @@ public class ClienteController {
         return ResponseEntity.status(404).build();
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<Cliente> atualizarCliente(
+    @PutMapping("/{id}")
+    public ResponseEntity<ClienteListagemDto> atualizarCliente(
             @PathVariable int id,
-            @RequestBody @Valid Cliente clienteAtualizado){
+            @RequestBody @Valid ClienteCriacaoDto clienteAtualizado){
 
         if (!clienteRepository.existsById(id)){
             return ResponseEntity.status(404).build();
         }
 
-        clienteAtualizado.setId(id);
 
-        Cliente clienteSalvo = clienteRepository.save(clienteAtualizado);
-            return ResponseEntity.status(200).body(clienteSalvo);
+        Cliente cliente = ClienteMapper.toEntity(clienteAtualizado);
+        cliente.setId(id);
+        Cliente clienteSalvo = clienteRepository.save(cliente);
+        ClienteListagemDto listagemDto = ClienteMapper.toDto(clienteSalvo);
+
+
+        return ResponseEntity.status(200).body(listagemDto);
     }
 
     public boolean existePorCpf(String cpf){

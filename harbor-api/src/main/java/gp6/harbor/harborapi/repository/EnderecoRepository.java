@@ -8,4 +8,5 @@ import java.util.List;
 public interface EnderecoRepository extends JpaRepository<Endereco, Integer> {
     Endereco findByCepEquals(String cep);
 
+
 }

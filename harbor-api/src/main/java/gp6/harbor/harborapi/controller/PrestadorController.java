@@ -1,7 +1,6 @@
 package gp6.harbor.harborapi.controller;
 
 import gp6.harbor.harborapi.dto.*;
-import gp6.harbor.harborapi.entity.Cliente;
 import gp6.harbor.harborapi.entity.Prestador;
 
 import jakarta.validation.Valid;

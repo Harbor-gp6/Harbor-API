@@ -13,6 +13,7 @@ public class Empresa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_empresa")
     private Integer id;
     @NotBlank(message = "A razão social não pode estar em branco")
     @Size(min = 2, max = 300, message = "A razão social deve ter entre 2 e 300 caracteres")

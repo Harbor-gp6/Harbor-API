@@ -45,4 +45,5 @@ public class EnderecoMapper {
     public static List<EnderecoListagemDto> toDto(List<Endereco> entities){
         return entities.stream().map(EnderecoMapper::toDto).toList();
     }
+
 }

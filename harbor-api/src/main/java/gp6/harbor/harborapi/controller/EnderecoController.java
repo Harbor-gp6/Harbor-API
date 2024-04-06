@@ -65,6 +65,24 @@ public class EnderecoController {
         return ResponseEntity.status(200).body(listaAuxiliar);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<EnderecoListagemDto> atualizarEndereco(
+            @PathVariable int id,
+            @RequestBody @Valid EnderecoCriacaoDto enderecoAtualizado){
+
+        if (!enderecoRepository.existsById(id)){
+            return ResponseEntity.status(404).build();
+        }
+
+        Endereco endereco = EnderecoMapper.toEntity(enderecoAtualizado);
+        endereco.setId(id);
+        Endereco enderecoSalvo = enderecoRepository.save(endereco);
+        EnderecoListagemDto listagemDto = EnderecoMapper.toDto(enderecoSalvo);
+
+        return ResponseEntity.status(200).body(listagemDto);
+    }
+
+
     //To-Do
     //buscar por nome
     //No cadastro de Endereco, checar de o novo endereço é exatamente igual

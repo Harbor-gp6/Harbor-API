@@ -20,6 +20,16 @@ public class EnderecoController {
 
     @PostMapping
     public ResponseEntity<EnderecoListagemDto> cadastrar (@RequestBody @Valid EnderecoCriacaoDto novoEndereco){
+        if (enderecoRepository.existsByRuaAndNumeroAndCidadeAndEstadoAndCep(
+                novoEndereco.getBairro(),
+                novoEndereco.getLogradouro(),
+                novoEndereco.getCidade(),
+                novoEndereco.getEstado(),
+                novoEndereco.getNumero(),
+                novoEndereco.getCep(),
+                novoEndereco.getComplemento())) {
+            return ResponseEntity.status(404).build();
+        }
         Endereco endereco = EnderecoMapper.toEntity(novoEndereco);
         Endereco enderecoSalvo = enderecoRepository.save(endereco);
         EnderecoListagemDto listagemDto = EnderecoMapper.toDto(enderecoSalvo);
@@ -81,6 +91,19 @@ public class EnderecoController {
 
         return ResponseEntity.status(200).body(listagemDto);
     }
+    @GetMapping("/nome")
+    public ResponseEntity<List<EnderecoListagemDto>> buscarPorNome(@RequestParam String nome) {
+        List<Endereco> enderecos = enderecoRepository.findByNome(nome);
+
+        if (enderecos.isEmpty()) {
+            return ResponseEntity.status(404).build();
+        }
+
+        List<EnderecoListagemDto> listaAuxiliar = EnderecoMapper.toDto(enderecos);
+
+        return ResponseEntity.status(200).body(listaAuxiliar);
+    }
+
 
 
     //To-Do

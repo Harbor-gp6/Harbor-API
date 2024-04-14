@@ -1,6 +1,7 @@
-package gp6.harbor.harborapi.dto;
+package gp6.harbor.harborapi.dto.empresa;
 
-import gp6.harbor.harborapi.entity.Endereco;
+import gp6.harbor.harborapi.dto.endereco.EnderecoCriacaoDto;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.br.CNPJ;
@@ -19,9 +20,9 @@ public class EmpresaCriacaoDto {
     @CNPJ
     private String cnpj;
 
-    @NotBlank
 //    private Endereco endereco;
-    private String endereco;
+    @Valid
+    private EnderecoCriacaoDto endereco;
 
     private LocalDate dataCriacao;
 
@@ -53,11 +54,11 @@ public class EmpresaCriacaoDto {
     }
 
 
-    public String getEndereco() {
+    public EnderecoCriacaoDto getEndereco() {
         return endereco;
     }
 
-    public void setEndereco(String endereco) {
+    public void setEndereco(EnderecoCriacaoDto endereco) {
         this.endereco = endereco;
     }
 

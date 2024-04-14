@@ -1,13 +1,13 @@
-package gp6.harbor.harborapi.dto;
+package gp6.harbor.harborapi.dto.endereco;
 
-import gp6.harbor.harborapi.entity.Cliente;
 import gp6.harbor.harborapi.entity.Endereco;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
 public class EnderecoMapper {
 
-    public static Endereco toEntity(EnderecoCriacaoDto EnderecoDto){
+    public static Endereco toEntity(@Valid EnderecoCriacaoDto EnderecoDto){
         if (EnderecoDto == null){
             return null;
         }

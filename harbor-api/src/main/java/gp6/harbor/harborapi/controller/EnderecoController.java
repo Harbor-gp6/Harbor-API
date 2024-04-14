@@ -1,6 +1,8 @@
 package gp6.harbor.harborapi.controller;
 
-import gp6.harbor.harborapi.dto.*;
+import gp6.harbor.harborapi.dto.endereco.EnderecoCriacaoDto;
+import gp6.harbor.harborapi.dto.endereco.EnderecoListagemDto;
+import gp6.harbor.harborapi.dto.endereco.EnderecoMapper;
 import gp6.harbor.harborapi.entity.Endereco;
 import gp6.harbor.harborapi.repository.EnderecoRepository;
 import jakarta.validation.Valid;

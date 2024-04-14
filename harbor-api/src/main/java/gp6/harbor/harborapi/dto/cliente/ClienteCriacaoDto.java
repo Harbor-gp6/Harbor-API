@@ -1,4 +1,4 @@
-package gp6.harbor.harborapi.dto;
+package gp6.harbor.harborapi.dto.cliente;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

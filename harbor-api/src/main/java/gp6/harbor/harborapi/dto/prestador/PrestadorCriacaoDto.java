@@ -1,7 +1,8 @@
-package gp6.harbor.harborapi.dto;
+package gp6.harbor.harborapi.dto.prestador;
 
-import gp6.harbor.harborapi.entity.Empresa;
+import gp6.harbor.harborapi.dto.empresa.EmpresaCriacaoDto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -29,15 +30,8 @@ public class PrestadorCriacaoDto {
     private String senha;
     @NotBlank
     private String cargo;
-    private Empresa empresa;
-
-    public Empresa getEmpresa() {
-        return empresa;
-    }
-
-    public void setEmpresa(Empresa empresa) {
-        this.empresa = empresa;
-    }
+    @Valid
+    private EmpresaCriacaoDto empresa;
 
     public String getNome() {
         return nome;
@@ -93,5 +87,13 @@ public class PrestadorCriacaoDto {
 
     public void setCargo(String cargo) {
         this.cargo = cargo;
+    }
+
+    public EmpresaCriacaoDto getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(EmpresaCriacaoDto empresa) {
+        this.empresa = empresa;
     }
 }

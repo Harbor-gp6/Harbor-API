@@ -1,20 +1,17 @@
-package gp6.harbor.harborapi.dto;
+package gp6.harbor.harborapi.dto.prestador;
 
-import java.time.LocalDate;
+import gp6.harbor.harborapi.entity.Empresa;
+import jakarta.persistence.*;
 
-public class ClienteListagemDto {
-
+public class PrestadorListagemDto {
     private Integer id;
-
+    private Empresa empresa;
     private String nome;
-
     private String sobrenome;
-
     private String telefone;
-
     private String cpf;
-
-    private LocalDate dataCriacao;
+    private String email;
+    private String cargo;
 
     public Integer getId() {
         return id;
@@ -22,6 +19,14 @@ public class ClienteListagemDto {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Empresa getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(Empresa empresa) {
+        this.empresa = empresa;
     }
 
     public String getNome() {
@@ -56,11 +61,19 @@ public class ClienteListagemDto {
         this.cpf = cpf;
     }
 
-    public LocalDate getDataCriacao() {
-        return dataCriacao;
+    public String getEmail() {
+        return email;
     }
 
-    public void setDataCriacao(LocalDate dataCriacao) {
-        this.dataCriacao = dataCriacao;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getCargo() {
+        return cargo;
+    }
+
+    public void setCargo(String cargo) {
+        this.cargo = cargo;
     }
 }

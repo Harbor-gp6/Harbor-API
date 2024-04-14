@@ -1,4 +1,4 @@
-package gp6.harbor.harborapi.dto;
+package gp6.harbor.harborapi.dto.endereco;
 
 public class EnderecoListagemDto {
     private Integer id;

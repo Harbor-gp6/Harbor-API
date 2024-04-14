@@ -9,6 +9,7 @@ public class Prestador {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_prestador")
     private Integer id;
+
     @OneToOne
     @JoinColumn(name = "id_empresa")
     private Empresa empresa;

@@ -1,5 +1,7 @@
-package gp6.harbor.harborapi.dto;
+package gp6.harbor.harborapi.dto.prestador;
 
+import gp6.harbor.harborapi.dto.empresa.EmpresaMapper;
+import gp6.harbor.harborapi.entity.Empresa;
 import gp6.harbor.harborapi.entity.Prestador;
 
 import java.util.List;
@@ -10,7 +12,10 @@ public class PrestadorMapper {
             return null;
         }
         Prestador prestador = new Prestador();
-        prestador.setEmpresa(dto.getEmpresa());
+
+        Empresa empresa = EmpresaMapper.toEntity(dto.getEmpresa());
+        prestador.setEmpresa(empresa);
+
         prestador.setNome(dto.getNome());
         prestador.setSobrenome(dto.getSobrenome());
         prestador.setTelefone(dto.getTelefone());

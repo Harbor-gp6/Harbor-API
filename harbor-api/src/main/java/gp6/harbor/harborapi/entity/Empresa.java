@@ -24,7 +24,9 @@ public class Empresa {
 //    @OneToOne
 //    @JoinColumn(name = "id_endereco")
 //    private Endereco endereco;
-    private String endereco;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_endereco")
+    private Endereco endereco;
 
     @CreationTimestamp
     private LocalDate dataCriacao;
@@ -64,11 +66,11 @@ public class Empresa {
     }
 
 
-    public String getEndereco() {
+    public Endereco getEndereco() {
         return endereco;
     }
 
-    public void setEndereco(String endereco) {
+    public void setEndereco(Endereco endereco) {
         this.endereco = endereco;
     }
 

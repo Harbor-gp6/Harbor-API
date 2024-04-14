@@ -1,8 +1,8 @@
 package gp6.harbor.harborapi.controller;
 
-import gp6.harbor.harborapi.dto.ClienteCriacaoDto;
-import gp6.harbor.harborapi.dto.ClienteListagemDto;
-import gp6.harbor.harborapi.dto.ClienteMapper;
+import gp6.harbor.harborapi.dto.cliente.ClienteCriacaoDto;
+import gp6.harbor.harborapi.dto.cliente.ClienteListagemDto;
+import gp6.harbor.harborapi.dto.cliente.ClienteMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

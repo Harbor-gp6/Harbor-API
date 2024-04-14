@@ -9,6 +9,7 @@ public class PrestadorListagemDto {
     private String nome;
     private String sobrenome;
     private String telefone;
+    private String cpf;
     private String email;
     private String cargo;
 
@@ -50,6 +51,14 @@ public class PrestadorListagemDto {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public String getEmail() {

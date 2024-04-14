@@ -3,18 +3,19 @@ package gp6.harbor.harborapi.entity;
 import jakarta.persistence.*;
 import jdk.jfr.Enabled;
 
-@Enabled
+@Entity
 public class Prestador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_prestador")
     private Integer id;
-    @OneToMany
+    @OneToOne
     @JoinColumn(name = "id_empresa")
     private Empresa empresa;
     private String nome;
     private String sobrenome;
     private String telefone;
+    private String cpf;
     private String email;
     private String senha;
     private String cargo;
@@ -57,6 +58,14 @@ public class Prestador {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public String getEmail() {

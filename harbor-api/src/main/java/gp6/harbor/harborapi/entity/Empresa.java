@@ -3,6 +3,7 @@ package gp6.harbor.harborapi.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.br.CNPJ;
 
 
@@ -15,16 +16,17 @@ public class Empresa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_empresa")
     private Integer id;
-    @NotBlank(message = "A razão social não pode estar em branco")
-    @Size(min = 2, max = 300, message = "A razão social deve ter entre 2 e 300 caracteres")
     private String razaoSocial;
-    @Size(max = 255)
+
     private String nomeFantasia;
-    @CNPJ
+
     private String cnpj;
-    @OneToOne
-    @JoinColumn(name = "id_endereco")
-    private Endereco endereco;
+//    @OneToOne
+//    @JoinColumn(name = "id_endereco")
+//    private Endereco endereco;
+    private String endereco;
+
+    @CreationTimestamp
     private LocalDate dataCriacao;
 
 
@@ -62,11 +64,11 @@ public class Empresa {
     }
 
 
-    public Endereco getEndereco() {
+    public String getEndereco() {
         return endereco;
     }
 
-    public void setEndereco(Endereco endereco) {
+    public void setEndereco(String endereco) {
         this.endereco = endereco;
     }
 

@@ -1,6 +1,5 @@
 package gp6.harbor.harborapi.dto;
 
-import gp6.harbor.harborapi.entity.Cliente;
 import gp6.harbor.harborapi.entity.Prestador;
 
 import java.util.List;
@@ -15,6 +14,7 @@ public class PrestadorMapper {
         prestador.setNome(dto.getNome());
         prestador.setSobrenome(dto.getSobrenome());
         prestador.setTelefone(dto.getTelefone());
+        prestador.setCpf(dto.getCpf());
         prestador.setEmail(dto.getEmail());
         prestador.setSenha(dto.getSenha());
         prestador.setCargo(dto.getCargo());
@@ -31,6 +31,7 @@ public class PrestadorMapper {
         listagemDto.setNome(entity.getNome());
         listagemDto.setSobrenome(entity.getSobrenome());
         listagemDto.setTelefone(entity.getTelefone());
+        listagemDto.setCpf(entity.getCpf());
         listagemDto.setEmail(entity.getEmail());
         listagemDto.setCargo(entity.getCargo());
 

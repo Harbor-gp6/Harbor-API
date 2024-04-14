@@ -18,10 +18,15 @@ public class EmpresaCriacaoDto {
 
     @CNPJ
     private String cnpj;
-    private LocalDate dataCriacao;
 
     @NotBlank
-    private Endereco endereco;
+//    private Endereco endereco;
+    private String endereco;
+
+    private LocalDate dataCriacao;
+
+
+
 
     public String getRazaoSocial() {
         return razaoSocial;
@@ -48,11 +53,11 @@ public class EmpresaCriacaoDto {
     }
 
 
-    public Endereco getEndereco() {
+    public String getEndereco() {
         return endereco;
     }
 
-    public void setEndereco(Endereco endereco) {
+    public void setEndereco(String endereco) {
         this.endereco = endereco;
     }
 

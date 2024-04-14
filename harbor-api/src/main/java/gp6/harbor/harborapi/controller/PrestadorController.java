@@ -7,9 +7,12 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import gp6.harbor.harborapi.repository.PrestadorRepository;
 
 import java.util.List;
+import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/prestadores")

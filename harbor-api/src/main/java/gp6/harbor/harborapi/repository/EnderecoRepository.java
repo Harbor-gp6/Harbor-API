@@ -9,8 +9,5 @@ import java.util.Optional;
 
 public interface EnderecoRepository extends JpaRepository<Endereco, Integer> {
     List<Endereco> findByCep(String cep);
-    List<Endereco> findByNome(String nome);
-    boolean existsByRuaAndNumeroAndCidadeAndEstadoAndCep(String bairro, String logradouro, String cidade, String estado, String numero, String cep, String complemento);
-
 
 }

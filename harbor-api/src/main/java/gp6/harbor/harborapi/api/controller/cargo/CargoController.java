@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,8 +21,9 @@ public class CargoController {
     
     @Autowired
     private CargoRepository cargoRepository;
-    
+
     @PostMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<CargoListagemDto> cadastro (@RequestBody @Valid CargoCriacaoDto novoCargo){
         Cargo cargo = CargoMapper.toEntity(novoCargo);
         Cargo cargoSalvo = cargoRepository.save(cargo);

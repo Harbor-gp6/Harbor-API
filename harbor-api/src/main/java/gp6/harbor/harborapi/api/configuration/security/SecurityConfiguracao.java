@@ -58,7 +58,8 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/error/**"),
             new AntPathRequestMatcher("/enderecos/{id}"),
             new AntPathRequestMatcher("/enderecos/cep"),
-            new AntPathRequestMatcher("/clientes"),
+            new AntPathRequestMatcher("/clientes", HttpMethod.POST.toString()),
+
     };
 
     @Bean
@@ -72,6 +73,7 @@ public class SecurityConfiguracao {
                         .permitAll()
                         .anyRequest()
                         .authenticated()
+
                 )
                 .exceptionHandling(handling -> handling
                         .authenticationEntryPoint(autenticacaoJwtEntryPoint))

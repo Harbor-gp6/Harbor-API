@@ -5,10 +5,14 @@ import gp6.harbor.harborapi.service.endereco.dto.EnderecoCriacaoDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.br.CNPJ;
 
 import java.time.LocalDate;
 
+@Getter
+@Setter
 public class EmpresaCriacaoDto {
 
     @NotBlank(message = "A razão social não pode estar em branco")

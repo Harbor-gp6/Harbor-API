@@ -1,7 +1,11 @@
 package gp6.harbor.harborapi.domain.cargo;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 public class Cargo {
     @Id
@@ -9,20 +13,4 @@ public class Cargo {
     @Column(name = "id_cargo")
     private Integer id;
     private String nomeCargo;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getNomeCargo() {
-        return nomeCargo;
-    }
-
-    public void setNomeCargo(String nomeCargo) {
-        this.nomeCargo = nomeCargo;
-    }
 }

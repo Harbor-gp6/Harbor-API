@@ -3,7 +3,11 @@ package gp6.harbor.harborapi.service.usuario.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class UsuarioCriacaoDto {
 
     @Size(min = 3, max = 10)
@@ -17,28 +21,4 @@ public class UsuarioCriacaoDto {
     @Size(min = 6, max = 20)
     @Schema(description = "Senha do usuário", example = "123456")
     private String senha;
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
 }

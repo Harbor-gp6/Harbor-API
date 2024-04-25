@@ -33,7 +33,7 @@ public class CargoController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ANONYMOUS')")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<CargoListagemDto> buscarPeloId(@PathVariable int id){
         Optional<Cargo> cargoOptional = cargoRepository.findById(id);
 
@@ -46,7 +46,7 @@ public class CargoController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ANONYMOUS')")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<CargoListagemDto>> buscar(){
         List<Cargo> cargos = cargoRepository.findAll();
 

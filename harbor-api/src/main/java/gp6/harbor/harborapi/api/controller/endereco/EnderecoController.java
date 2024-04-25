@@ -29,7 +29,6 @@ EnderecoController {
         Endereco endereco = EnderecoMapper.toEntity(novoEndereco);
         Endereco enderecoSalvo = enderecoRepository.save(endereco);
         EnderecoListagemDto listagemDto = EnderecoMapper.toDto(enderecoSalvo);
-
         return ResponseEntity.status(201).body(listagemDto);
     }
 

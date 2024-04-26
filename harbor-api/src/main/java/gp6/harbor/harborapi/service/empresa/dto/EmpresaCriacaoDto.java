@@ -30,6 +30,8 @@ public class EmpresaCriacaoDto {
     private EnderecoCriacaoDto endereco;
 
     private LocalDate dataCriacao;
+    private LocalDate dataInativacao;
+
 
 
 
@@ -73,5 +75,13 @@ public class EmpresaCriacaoDto {
 
     public void setDataCriacao(LocalDate dataCriacao) {
         this.dataCriacao = dataCriacao;
+    }
+
+    public LocalDate getDataInativacao() {
+        return dataInativacao;
+    }
+
+    public void setDataInativacao(LocalDate dataInativacao) {
+        this.dataInativacao = dataInativacao;
     }
 }

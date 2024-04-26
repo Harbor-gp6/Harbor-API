@@ -33,4 +33,7 @@ public class Empresa {
 
     @CreationTimestamp
     private LocalDate dataCriacao;
+
+    private LocalDate dataInativacao;
+
 }

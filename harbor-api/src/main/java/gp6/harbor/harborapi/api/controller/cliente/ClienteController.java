@@ -24,18 +24,7 @@ public class ClienteController {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    @PostMapping
-    public ResponseEntity<ClienteListagemDto> cadastrar(@RequestBody @Valid ClienteCriacaoDto novoCliente){
-        if (existePorCpf(novoCliente.getCpf())){
-            return ResponseEntity.status(409).build();
-        }
 
-        Cliente cliente = ClienteMapper.toEntity(novoCliente);
-        Cliente clienteSalvo = clienteRepository.save(cliente);
-        ClienteListagemDto listagemDto = ClienteMapper.toDto(clienteSalvo);
-
-        return ResponseEntity.status(201).body(listagemDto);
-    }
 
     @GetMapping
     @SecurityRequirement(name = "Bearer")
@@ -79,16 +68,19 @@ public class ClienteController {
         return ResponseEntity.status(200).body(listaAuxiliar);
     }
 
-    @DeleteMapping("/{id}")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Cliente> buscaPorId(@PathVariable @Valid int id){
-        if (clienteRepository.existsById(id)){
-            clienteRepository.deleteById(id);
-            return ResponseEntity.status(204).build();
+    @PostMapping
+    public ResponseEntity<ClienteListagemDto> cadastrar(@RequestBody @Valid ClienteCriacaoDto novoCliente){
+        if (existePorCpf(novoCliente.getCpf())){
+            return ResponseEntity.status(409).build();
         }
 
-        return ResponseEntity.status(404).build();
+        Cliente cliente = ClienteMapper.toEntity(novoCliente);
+        Cliente clienteSalvo = clienteRepository.save(cliente);
+        ClienteListagemDto listagemDto = ClienteMapper.toDto(clienteSalvo);
+
+        return ResponseEntity.status(201).body(listagemDto);
     }
+
 
     @PutMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
@@ -109,6 +101,19 @@ public class ClienteController {
 
         return ResponseEntity.status(200).body(listagemDto);
     }
+
+    @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Cliente> buscaPorId(@PathVariable @Valid int id){
+        if (clienteRepository.existsById(id)){
+            clienteRepository.deleteById(id);
+            return ResponseEntity.status(204).build();
+        }
+
+        return ResponseEntity.status(404).build();
+    }
+
+
 
     public boolean existePorCpf(String cpf){
         if (clienteRepository.existsByCpf(cpf)){

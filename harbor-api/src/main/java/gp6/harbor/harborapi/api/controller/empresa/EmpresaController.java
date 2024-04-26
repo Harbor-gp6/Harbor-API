@@ -6,7 +6,10 @@ import gp6.harbor.harborapi.domain.endereco.Endereco;
 import gp6.harbor.harborapi.domain.endereco.repository.EnderecoRepository;
 
 import gp6.harbor.harborapi.service.empresa.dto.EmpresaCriacaoDto;
+import gp6.harbor.harborapi.service.empresa.dto.EmpresaListagemDto;
 import gp6.harbor.harborapi.service.empresa.dto.EmpresaMapper;
+import gp6.harbor.harborapi.service.endereco.dto.EnderecoListagemDto;
+import gp6.harbor.harborapi.service.endereco.dto.EnderecoMapper;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +30,7 @@ public class EmpresaController {
 
     @PostMapping
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Empresa> cadastrar(@RequestBody @Valid EmpresaCriacaoDto novaEmpresaDto){
+    public ResponseEntity<EmpresaListagemDto> cadastrar(@RequestBody @Valid EmpresaCriacaoDto novaEmpresaDto){
         // Mapear DTO para entidade
         Empresa novaEmpresa = EmpresaMapper.toEntity(novaEmpresaDto);
 
@@ -45,20 +48,23 @@ public class EmpresaController {
 
         // Salvar empresa
         Empresa empresaSalva = empresaRepository.save(novaEmpresa);
+        EmpresaListagemDto listagemDto = EmpresaMapper.toDto(empresaSalva);
 
-        return ResponseEntity.status(201).body(empresaSalva);
+
+        return ResponseEntity.status(201).body(listagemDto);
     }
 
     @GetMapping
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<Empresa>> listar(){
+    public ResponseEntity<List<EmpresaListagemDto>> listar(){
         List<Empresa> empresas = empresaRepository.findAll();
 
         if (empresas.isEmpty()){
             return ResponseEntity.status(204).build();
         }
 
-        return ResponseEntity.status(200).body(empresas);
+        List<EmpresaListagemDto> listaAuxiliar = EmpresaMapper.toDto(empresas);
+        return ResponseEntity.status(200).body(listaAuxiliar);
     }
 
     // TODO: Criar metodo de listagem por CNPJ

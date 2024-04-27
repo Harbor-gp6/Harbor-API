@@ -66,5 +66,12 @@ public class ServicoController {
         return ResponseEntity.status(200).body(listaAuxiliar);
     }
 
+    //TODO: Criar listagem de servicos
+    //TODO: Criar busca de servicos por id
+    //TODO: Criar alteracao de servicos por id
+    //TODO: Criar delete de servicos por id
+
+
+
 
 }

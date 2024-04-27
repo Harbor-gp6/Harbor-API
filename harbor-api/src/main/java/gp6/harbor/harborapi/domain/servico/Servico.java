@@ -12,6 +12,7 @@ import lombok.Setter;
 public class Servico {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_servico")
     private Integer id;
     private String descricaoServico;
     private Boolean servicoEspecial;

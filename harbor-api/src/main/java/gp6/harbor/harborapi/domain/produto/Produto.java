@@ -12,13 +12,18 @@ import lombok.Setter;
 public class Produto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_produto")
     private Integer id;
+
     private String nome;
+
     @ManyToOne
     @JoinColumn(name = "id_empresa")
     private Empresa empresa;
 
     private String descricao;
+
     private Double precoCompra;
+
     private Double precoVenda;
 }

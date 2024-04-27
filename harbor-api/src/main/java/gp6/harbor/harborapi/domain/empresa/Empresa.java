@@ -32,7 +32,7 @@ public class Empresa {
     private Endereco endereco;
 
     @CreationTimestamp
-    private LocalDate dataCriacao;
+    private LocalDate dataCriacao = LocalDate.now();
 
     private LocalDate dataInativacao;
 

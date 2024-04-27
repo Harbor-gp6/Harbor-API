@@ -9,6 +9,8 @@ import gp6.harbor.harborapi.service.cliente.dto.ClienteMapper;
 import gp6.harbor.harborapi.service.endereco.dto.EnderecoMapper;
 import jakarta.validation.Valid;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class EmpresaMapper {
@@ -22,18 +24,11 @@ public class EmpresaMapper {
         empresa.setRazaoSocial(dto.getRazaoSocial());
         empresa.setNomeFantasia(dto.getNomeFantasia());
         empresa.setCnpj(dto.getCnpj());
-        empresa.setDataInativacao(null);
+        empresa.setDataCriacao(LocalDate.now());
 
-        // Mapear o EnderecoCriacaoDto para Endereco
         Endereco endereco = EnderecoMapper.toEntity(dto.getEndereco());
 
-        // Definir o endereco na empresa
         empresa.setEndereco(endereco);
-
-
-        // Mapear o CargoCriacaoDto para Prestador
-
-
 
         return empresa;
     }
@@ -45,7 +40,6 @@ public class EmpresaMapper {
         listagemDto.setNomeFantasia(entity.getNomeFantasia());
         listagemDto.setEndereco(entity.getEndereco());
         listagemDto.setCnpj(entity.getCnpj());
-
         return listagemDto;
     }
 

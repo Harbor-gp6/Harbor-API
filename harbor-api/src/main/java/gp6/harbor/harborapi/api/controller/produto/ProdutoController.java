@@ -1,6 +1,5 @@
 package gp6.harbor.harborapi.api.controller.produto;
 
-import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.produto.repository.ProdutoRepository;
 import gp6.harbor.harborapi.service.produto.dto.ProdutoCriacaoDto;
@@ -99,7 +98,7 @@ public class ProdutoController {
     }
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Cliente> buscaPorId(@PathVariable @Valid int id){
+    public ResponseEntity<Produto> buscaPorId(@PathVariable @Valid int id){
         if (produtoRepository.existsById(id)){
             produtoRepository.deleteById(id);
             return ResponseEntity.status(204).build();

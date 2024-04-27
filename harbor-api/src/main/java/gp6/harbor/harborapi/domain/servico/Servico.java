@@ -18,6 +18,7 @@ public class Servico {
     private Integer tempoMedioEmMinutos;
     private Double valorServico;
     @ManyToOne
+    @JoinColumn(name = "id_empresa")
     private Empresa empresa;
 
 }

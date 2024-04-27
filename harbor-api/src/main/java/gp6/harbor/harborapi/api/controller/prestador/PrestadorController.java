@@ -76,6 +76,10 @@ public class PrestadorController {
         List<PrestadorListagemDto> listaAuxiliar = PrestadorMapper.toDto(prestadores);
         return ResponseEntity.status(200).body(listaAuxiliar);
     }
+
+    //TODO: Criar busca de Prestador por id
+    //TODO: Criar busca de Prestador por cpf
+    //TODO: Criar atualizacao de Prestador por id
     public boolean existePorCpf(String cpf){
         return prestadorRepository.existsByCpf(cpf);
     }

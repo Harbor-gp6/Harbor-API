@@ -1,5 +1,7 @@
 package gp6.harbor.harborapi.service.servico.dto;
 
+import gp6.harbor.harborapi.service.empresa.dto.EmpresaCriacaoDto;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,5 +23,5 @@ public class ServicoCriacaoDto {
     @NotNull
     private Double valorServico;
     @NotNull
-    private Integer empresaId;
+    private String CNPJempresa;
 }

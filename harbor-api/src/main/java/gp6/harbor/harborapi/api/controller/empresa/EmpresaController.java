@@ -71,9 +71,6 @@ public class EmpresaController {
         return ResponseEntity.status(200).body(listaAuxiliar);
     }
 
-    // TODO: Criar metodo de listagem por CNPJ
-    // TODO: Criar metodo de atualizar por CNPJ
-
 
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
@@ -92,4 +89,10 @@ public class EmpresaController {
     public boolean existePorCnpj(String cnpj){
         return existePorCnpj(cnpj);
     }
+
+
+
+    // TODO: Criar metodo de busca por CNPJ
+    // TODO: Criar metodo de busca por id
+    // TODO: Criar metodo de atualizar por id (tem que poder atualizar o endereco por aqui)
 }

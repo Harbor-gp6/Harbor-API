@@ -22,8 +22,5 @@ public class EmpresaListagemDto {
 
     private Endereco endereco;
 
-    private LocalDate dataCriacao;
-
-    private LocalDate dataInativacao;
 
 }

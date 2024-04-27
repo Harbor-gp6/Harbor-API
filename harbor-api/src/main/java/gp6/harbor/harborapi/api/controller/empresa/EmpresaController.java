@@ -1,5 +1,6 @@
 package gp6.harbor.harborapi.api.controller.empresa;
 
+import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
 import gp6.harbor.harborapi.domain.endereco.Endereco;
@@ -16,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/empresas")
@@ -45,6 +48,7 @@ public class EmpresaController {
 
         // Associar endereço salvo à empresa
         novaEmpresa.setEndereco(enderecoSalvo);
+        novaEmpresa.setDataCriacao(LocalDate.now());
 
         // Salvar empresa
         Empresa empresaSalva = empresaRepository.save(novaEmpresa);
@@ -71,7 +75,19 @@ public class EmpresaController {
     // TODO: Criar metodo de atualizar por CNPJ
 
 
+    @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Empresa> inativarEmpresa(@PathVariable @Valid int id){
+        if (empresaRepository.existsById(id)){
+            Optional<Empresa> empresaOptional = empresaRepository.findById(id);
+            empresaOptional.get().setDataInativacao(LocalDate.now());
+            empresaRepository.save(empresaOptional.get());
 
+            return ResponseEntity.status(204).build();
+        }
+
+        return ResponseEntity.status(404).build();
+    }
 
     public boolean existePorCnpj(String cnpj){
         return existePorCnpj(cnpj);

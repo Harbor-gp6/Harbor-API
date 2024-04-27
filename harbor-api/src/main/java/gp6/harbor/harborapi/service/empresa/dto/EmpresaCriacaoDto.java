@@ -25,11 +25,11 @@ public class EmpresaCriacaoDto {
     @CNPJ
     private String cnpj;
 
-//    private Endereco endereco;
     @Valid
     private EnderecoCriacaoDto endereco;
 
     private LocalDate dataCriacao;
+
     private LocalDate dataInativacao;
 
 
@@ -74,7 +74,7 @@ public class EmpresaCriacaoDto {
     }
 
     public void setDataCriacao(LocalDate dataCriacao) {
-        this.dataCriacao = dataCriacao;
+        this.dataCriacao = LocalDate.now();
     }
 
     public LocalDate getDataInativacao() {

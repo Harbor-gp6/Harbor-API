@@ -1,9 +1,7 @@
 package gp6.harbor.harborapi.domain.produto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import gp6.harbor.harborapi.domain.empresa.Empresa;
+import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +14,11 @@ public class Produto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String nome;
+    @ManyToOne
+    @JoinColumn(name = "id_empresa")
+    private Empresa empresa;
+
     private String descricao;
-    private String precoCompra;
-    private String precoVenda;
+    private Double precoCompra;
+    private Double precoVenda;
 }

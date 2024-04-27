@@ -4,8 +4,9 @@ public class ProdutoListagemDto {
     private Integer id;
     private String nome;
     private String descricao;
-    private String precoCompra;
-    private String precoVenda;
+    private Double precoCompra;
+    private Double precoVenda;
+
     public Integer getId() {
         return id;
     }
@@ -30,19 +31,19 @@ public class ProdutoListagemDto {
         this.descricao = descricao;
     }
 
-    public String getPrecoCompra() {
+    public Double getPrecoCompra() {
         return precoCompra;
     }
 
-    public void setPrecoCompra(String precoCompra) {
+    public void setPrecoCompra(Double precoCompra) {
         this.precoCompra = precoCompra;
     }
 
-    public String getPrecoVenda() {
+    public Double getPrecoVenda() {
         return precoVenda;
     }
 
-    public void setPrecoVenda(String precoVenda) {
+    public void setPrecoVenda(Double precoVenda) {
         this.precoVenda = precoVenda;
     }
 }

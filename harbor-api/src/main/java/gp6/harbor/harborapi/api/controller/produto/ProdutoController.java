@@ -5,6 +5,7 @@ import gp6.harbor.harborapi.domain.produto.repository.ProdutoRepository;
 import gp6.harbor.harborapi.service.produto.dto.ProdutoCriacaoDto;
 import gp6.harbor.harborapi.service.produto.dto.ProdutoListagemDto;
 import gp6.harbor.harborapi.service.produto.dto.ProdutoMapper;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ public class ProdutoController {
     private ProdutoRepository produtoRepository;
 
     @PostMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ProdutoListagemDto> cadastrar(@RequestBody @Valid ProdutoCriacaoDto novoProduto) {
         Produto produto = ProdutoMapper.toEntity(novoProduto);
         Produto produtoSalvo = produtoRepository.save(produto);
@@ -28,6 +30,7 @@ public class ProdutoController {
         return ResponseEntity.status(201).body(listagemDto);
     }
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ProdutoListagemDto> buscarPeloId(@PathVariable int id){
         Optional<Produto> produtoOptional = produtoRepository.findById(id);
 
@@ -39,6 +42,7 @@ public class ProdutoController {
         return ResponseEntity.status(200).body(dto);
     }
     @GetMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ProdutoListagemDto>> buscar(){
         List<Produto> produtos = produtoRepository.findAll();
 
@@ -51,6 +55,7 @@ public class ProdutoController {
         return ResponseEntity.status(200).body(listaAuxiliar);
     }
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ProdutoListagemDto> atualizarEndereco(
             @PathVariable int id,
             @RequestBody @Valid ProdutoCriacaoDto produtoAtualizado){
@@ -67,6 +72,7 @@ public class ProdutoController {
         return ResponseEntity.status(200).body(listagemDto);
     }
     @GetMapping("/maiorMenor")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ProdutoListagemDto>> buscarMaiorParaMenor(){
         List<Produto> produtos = produtoRepository.findAllByOrderByPrecoVendaDesc();
 
@@ -79,6 +85,7 @@ public class ProdutoController {
         return ResponseEntity.status(200).body(listaAuxiliar);
     }
     @GetMapping("/menorMaior")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ProdutoListagemDto>> buscarMenorParaMaior(){
         List<Produto> produtos = produtoRepository.findAllByOrderByPrecoVendaAsc();
         if (produtos.isEmpty()){

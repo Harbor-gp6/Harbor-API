@@ -1,5 +1,7 @@
 package gp6.harbor.harborapi.service.produto.dto;
 
+import gp6.harbor.harborapi.service.empresa.dto.EmpresaCriacaoDto;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -10,9 +12,11 @@ public class ProdutoCriacaoDto {
     private String nome;
     private String descricao;
     @NotNull
-    private String precoCompra;
+    private Double precoCompra;
     @NotNull
-    private String precoVenda;
+    private Double precoVenda;
+    @Valid
+    private EmpresaCriacaoDto empresa;
 
     public String getNome() {
         return nome;
@@ -30,19 +34,27 @@ public class ProdutoCriacaoDto {
         this.descricao = descricao;
     }
 
-    public String getPrecoCompra() {
+    public Double getPrecoCompra() {
         return precoCompra;
     }
 
-    public void setPrecoCompra(String precoCompra) {
+    public void setPrecoCompra(Double precoCompra) {
         this.precoCompra = precoCompra;
     }
 
-    public String getPrecoVenda() {
+    public Double getPrecoVenda() {
         return precoVenda;
     }
 
-    public void setPrecoVenda(String precoVenda) {
+    public void setPrecoVenda(Double precoVenda) {
         this.precoVenda = precoVenda;
+    }
+
+    public EmpresaCriacaoDto getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(EmpresaCriacaoDto empresa) {
+        this.empresa = empresa;
     }
 }

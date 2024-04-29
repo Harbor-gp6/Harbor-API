@@ -4,6 +4,7 @@ import gp6.harbor.harborapi.domain.cargo.Cargo;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
+import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.servico.Servico;
 import gp6.harbor.harborapi.domain.servico.repository.ServicoRepository;
 import gp6.harbor.harborapi.service.cargo.dto.CargoMapper;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +30,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ServicoController {
 
-    private final ServicoRepository servicoRepository;
+    private static ServicoRepository servicoRepository;
     private final EmpresaRepository empresaRepository;
 
     @PostMapping
@@ -72,6 +74,22 @@ public class ServicoController {
     //TODO: Criar delete de servicos por id
 
 
+    public static List<ServicoListagemDto> buscarPorListaDeIds(List<Integer> ids) {
+        List<Servico> servicos = new ArrayList<>();
+        for (int id : ids) {
+            Optional<Servico> servico = servicoRepository.findById(id);
+            servico.ifPresent(servicos::add);
+        }
+        return ServicoMapper.toDto(servicos);
+    }
 
+    public static List<Servico> buscarPorListaDeIdsEntidade(List<Integer> ids) {
+        List<Servico> servicos = new ArrayList<>();
+        for (int id : ids) {
+            Optional<Servico> servico = servicoRepository.findById(id);
+            servico.ifPresent(servicos::add);
+        }
+        return servicos;
+    }
 
 }

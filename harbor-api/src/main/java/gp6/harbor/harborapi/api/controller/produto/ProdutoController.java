@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +19,7 @@ import java.util.Optional;
 @RequestMapping("/produtos")
 public class ProdutoController {
     @Autowired
-    private ProdutoRepository produtoRepository;
+    private static ProdutoRepository produtoRepository;
 
     @PostMapping
     @SecurityRequirement(name = "Bearer")
@@ -54,6 +55,7 @@ public class ProdutoController {
 
         return ResponseEntity.status(200).body(listaAuxiliar);
     }
+
     @PutMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ProdutoListagemDto> atualizarEndereco(
@@ -105,5 +107,23 @@ public class ProdutoController {
         }
 
         return ResponseEntity.status(404).build();
+    }
+
+    public static List<ProdutoListagemDto> buscarPorListaDeIds(List<Integer> ids) {
+        List<Produto> produtos = new ArrayList<>();
+        for (int id : ids) {
+            Optional<Produto> produto = produtoRepository.findById(id);
+            produto.ifPresent(produtos::add);
+        }
+        return ProdutoMapper.toDto(produtos);
+    }
+
+    public static List<Produto> buscarPorListaDeIdsEntidade(List<Integer> ids) {
+        List<Produto> produtos = new ArrayList<>();
+        for (int id : ids) {
+            Optional<Produto> produto = produtoRepository.findById(id);
+            produto.ifPresent(produtos::add);
+        }
+        return produtos;
     }
 }

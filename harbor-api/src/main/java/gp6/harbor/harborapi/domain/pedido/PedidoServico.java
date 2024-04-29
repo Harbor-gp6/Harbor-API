@@ -25,8 +25,4 @@ public class PedidoServico {
     @JoinColumn(name = "id_servico")
     private Servico servico;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_prestador")
-    private Prestador prestador;
-
 }

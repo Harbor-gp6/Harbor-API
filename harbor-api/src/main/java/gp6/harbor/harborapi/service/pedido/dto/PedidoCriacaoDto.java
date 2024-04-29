@@ -25,5 +25,7 @@ public class PedidoCriacaoDto {
 
     private LocalDateTime dataAgendamento;
 
+    private Integer prestadorId;
+
     private String observacao;
 }

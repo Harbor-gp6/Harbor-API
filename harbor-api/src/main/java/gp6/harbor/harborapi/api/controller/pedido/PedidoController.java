@@ -1,12 +1,13 @@
 package gp6.harbor.harborapi.api.controller.pedido;
 
 import gp6.harbor.harborapi.domain.pedido.Pedido;
-import gp6.harbor.harborapi.domain.pedido.PedidoProduto;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
+import gp6.harbor.harborapi.domain.prestador.Prestador;
+import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.produto.repository.ProdutoRepository;
-import gp6.harbor.harborapi.service.empresa.dto.EmpresaListagemDto;
-import gp6.harbor.harborapi.service.empresa.dto.EmpresaMapper;
+import gp6.harbor.harborapi.domain.servico.Servico;
+import gp6.harbor.harborapi.domain.servico.repository.ServicoRepository;
 import gp6.harbor.harborapi.service.pedido.dto.PedidoCriacaoDto;
 import gp6.harbor.harborapi.service.pedido.dto.PedidoListagemDto;
 import gp6.harbor.harborapi.service.pedido.dto.PedidoMapper;
@@ -27,28 +28,24 @@ public class PedidoController {
 
     private final PedidoRepository pedidoRepository;
     private final ProdutoRepository produtoRepository;
+    private final ServicoRepository servicoRepository;
+    private final PrestadorRepository prestadorRepository;
 
     @PostMapping
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<PedidoListagemDto> criarPedido(@RequestBody @Valid PedidoCriacaoDto pedido) {
+    public ResponseEntity<PedidoListagemDto> criarPedido(@RequestBody @Valid PedidoCriacaoDto novoPedido) {
+        Pedido pedido = PedidoMapper.toEntity(novoPedido);
 
-        List<PedidoProduto> listaProdutos = new ArrayList<>();
-        for (Integer produtoId : pedido.getListaProdutoIds()) {
-            Optional<Produto> produto = produtoRepository.findById(produtoId);
+        Optional<Prestador> prestador = prestadorRepository.findById(novoPedido.getPrestadorId());
 
-            if (produto != null) {
-                PedidoProduto pedidoProduto = new PedidoProduto();
-                pedidoProduto.setProduto(produto.get());
-                // Defina a quantidade conforme necessário
-                pedidoProduto.setQuantidade(1); // Ou obtenha do DTO, se aplicável
-                listaProdutos.add(pedidoProduto);
-            }
+        if (prestador.isEmpty()) {
+            return ResponseEntity.badRequest().build();
         }
 
+        pedido.setPrestador(prestador.get());
 
-        Pedido novoPedido = PedidoMapper.toEntity(pedido);
+        Pedido pedidoSalvo = pedidoRepository.save(pedido);
 
-        Pedido pedidoSalvo = pedidoRepository.save(novoPedido);
 
         PedidoListagemDto listagemDto = PedidoMapper.toDto(pedidoSalvo);
         return ResponseEntity.status(201).body(listagemDto);

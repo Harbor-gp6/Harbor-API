@@ -1,13 +1,13 @@
 package gp6.harbor.harborapi.service.usuario.dto;
 
 
-import gp6.harbor.harborapi.domain.usuario.Usuario;
+import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.service.usuario.autenticacao.dto.UsuarioTokenDto;
 
 public class UsuarioMapper {
 
-    public static Usuario of(UsuarioCriacaoDto usuarioCriacaoDto) {
-        Usuario usuario = new Usuario();
+    public static Prestador of(UsuarioCriacaoDto usuarioCriacaoDto) {
+        Prestador usuario = new Prestador();
 
         usuario.setEmail(usuarioCriacaoDto.getEmail());
         usuario.setNome(usuarioCriacaoDto.getNome());
@@ -16,7 +16,7 @@ public class UsuarioMapper {
         return usuario;
     }
 
-    public static UsuarioTokenDto of(Usuario usuario, String token) {
+    public static UsuarioTokenDto of(Prestador usuario, String token) {
         UsuarioTokenDto usuarioTokenDto = new UsuarioTokenDto();
 
         usuarioTokenDto.setUserId(usuario.getId());

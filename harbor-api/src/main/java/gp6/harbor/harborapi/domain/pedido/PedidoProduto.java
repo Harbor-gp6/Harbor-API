@@ -1,8 +1,5 @@
 package gp6.harbor.harborapi.domain.pedido;
 
-import gp6.harbor.harborapi.domain.prestador.Prestador;
-import gp6.harbor.harborapi.domain.produto.Produto;
-import gp6.harbor.harborapi.domain.servico.Servico;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

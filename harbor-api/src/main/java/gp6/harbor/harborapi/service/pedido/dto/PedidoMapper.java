@@ -2,29 +2,11 @@ package gp6.harbor.harborapi.service.pedido.dto;
 
 import gp6.harbor.harborapi.api.controller.produto.ProdutoController;
 import gp6.harbor.harborapi.api.controller.servico.ServicoController;
-import gp6.harbor.harborapi.domain.cliente.Cliente;
-import gp6.harbor.harborapi.domain.empresa.Empresa;
-import gp6.harbor.harborapi.domain.endereco.Endereco;
 import gp6.harbor.harborapi.domain.pedido.Pedido;
-import gp6.harbor.harborapi.domain.prestador.Prestador;
-import gp6.harbor.harborapi.domain.produto.Produto;
-import gp6.harbor.harborapi.domain.produto.repository.ProdutoRepository;
-import gp6.harbor.harborapi.domain.servico.Servico;
-import gp6.harbor.harborapi.domain.servico.repository.ServicoRepository;
-import gp6.harbor.harborapi.service.cliente.dto.ClienteMapper;
-import gp6.harbor.harborapi.service.empresa.dto.EmpresaCriacaoDto;
-import gp6.harbor.harborapi.service.empresa.dto.EmpresaListagemDto;
-import gp6.harbor.harborapi.service.endereco.dto.EnderecoMapper;
-import gp6.harbor.harborapi.service.prestador.dto.PrestadorListagemDto;
 import gp6.harbor.harborapi.service.prestador.dto.PrestadorMapper;
 import gp6.harbor.harborapi.service.produto.dto.ProdutoMapper;
 import gp6.harbor.harborapi.service.servico.dto.ServicoMapper;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -65,6 +47,10 @@ public class PedidoMapper {
         pedidoListagemDto.setObservacao(entity.getObservacao());
 
         return pedidoListagemDto;
+    }
+
+    public static List<PedidoListagemDto> toDto(List<Pedido> entities) {
+        return entities.stream().map(PedidoMapper::toDto).toList();
     }
 }
 

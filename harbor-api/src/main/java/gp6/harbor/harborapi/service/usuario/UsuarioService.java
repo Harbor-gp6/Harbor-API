@@ -1,7 +1,7 @@
 package gp6.harbor.harborapi.service.usuario;
 
-import gp6.harbor.harborapi.domain.usuario.Usuario;
-import gp6.harbor.harborapi.domain.usuario.repository.UsuarioRepository;
+import gp6.harbor.harborapi.domain.prestador.Prestador;
+import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,7 +25,7 @@ public class UsuarioService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private PrestadorRepository usuarioRepository;
 
     @Autowired
     private GerenciadorTokenJwt gerenciadorTokenJwt;
@@ -34,7 +34,7 @@ public class UsuarioService {
     private AuthenticationManager authenticationManager;
 
     public void criar(UsuarioCriacaoDto usuarioCriacaoDto) {
-        final Usuario novoUsuario = UsuarioMapper.of(usuarioCriacaoDto);
+        final Prestador novoUsuario = UsuarioMapper.of(usuarioCriacaoDto);
 
         String senhaCriptografada = passwordEncoder.encode(novoUsuario.getSenha());
         novoUsuario.setSenha(senhaCriptografada);
@@ -49,7 +49,7 @@ public class UsuarioService {
 
         final Authentication authentication = this.authenticationManager.authenticate(credentials);
 
-        Usuario usuarioAutenticado =
+        Prestador usuarioAutenticado =
                 usuarioRepository.findByEmail(usuarioLoginDto.getEmail())
                         .orElseThrow(
                                 () -> new ResponseStatusException(404, "Email do usuário não cadastrado", null)

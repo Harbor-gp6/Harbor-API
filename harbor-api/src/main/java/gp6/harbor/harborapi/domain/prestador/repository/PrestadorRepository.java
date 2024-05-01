@@ -1,9 +1,18 @@
 package gp6.harbor.harborapi.domain.prestador.repository;
 
-import gp6.harbor.harborapi.domain.prestador.Prestador;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import gp6.harbor.harborapi.domain.prestador.Prestador;
 
+import java.util.List;
+import java.util.Optional;
 
-public interface PrestadorRepository extends JpaRepository<Prestador, Integer> {
+@Repository
+public interface PrestadorRepository extends JpaRepository<Prestador, Long> {
+
+    Optional<Prestador> findByEmail(String email);
+
+    List<Prestador> findByNomeContainsIgnoreCase(String nome);
+
     boolean existsByCpf(String cpf);
 }

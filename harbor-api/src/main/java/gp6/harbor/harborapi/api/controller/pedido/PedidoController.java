@@ -2,12 +2,10 @@ package gp6.harbor.harborapi.api.controller.pedido;
 
 import gp6.harbor.harborapi.domain.pedido.Pedido;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
-import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
-import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.produto.repository.ProdutoRepository;
-import gp6.harbor.harborapi.domain.servico.Servico;
 import gp6.harbor.harborapi.domain.servico.repository.ServicoRepository;
+import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.service.pedido.dto.PedidoCriacaoDto;
 import gp6.harbor.harborapi.service.pedido.dto.PedidoListagemDto;
 import gp6.harbor.harborapi.service.pedido.dto.PedidoMapper;
@@ -17,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +33,7 @@ public class PedidoController {
     public ResponseEntity<PedidoListagemDto> criarPedido(@RequestBody @Valid PedidoCriacaoDto novoPedido) {
         Pedido pedido = PedidoMapper.toEntity(novoPedido);
 
-        Optional<Prestador> prestador = prestadorRepository.findById(novoPedido.getPrestadorId());
+        Optional<Prestador> prestador = prestadorRepository.findById(Long.valueOf(novoPedido.getPrestadorId()));
 
         if (prestador.isEmpty()) {
             return ResponseEntity.badRequest().build();
@@ -53,9 +50,22 @@ public class PedidoController {
 
     @GetMapping
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<Pedido>> listarPedidos() {
+    public ResponseEntity<List<PedidoListagemDto>> listarPedidos() {
         List<Pedido> pedidos = pedidoRepository.findAll();
-        return ResponseEntity.status(200).body(pedidos);
+
+        if (pedidos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.status(200).body(PedidoMapper.toDto(pedidos));
     }
+
+//    @GetMapping("/prestador")
+//    @SecurityRequirement(name = "Bearer")
+//    public ResponseEntity<List<PedidoListagemDto>> listarPorNomePrestador(@RequestParam String prestador) {
+//        List<Prestador> prestadoresEncontrados = prestadorRepository.findByNomeContainsIgnoreCase(prestador);
+//
+//
+//    }
 
 }

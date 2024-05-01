@@ -36,7 +36,7 @@ public class PrestadorMapper {
         if (entity == null) return null;
 
         PrestadorListagemDto listagemDto = new PrestadorListagemDto();
-        listagemDto.setId(entity.getId());
+        listagemDto.setId(Math.toIntExact(entity.getId()));
         listagemDto.setEmpresa(entity.getEmpresa());
         listagemDto.setNome(entity.getNome());
         listagemDto.setSobrenome(entity.getSobrenome());

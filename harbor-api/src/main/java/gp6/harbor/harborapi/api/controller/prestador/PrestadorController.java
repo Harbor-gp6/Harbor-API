@@ -40,7 +40,6 @@ public class PrestadorController {
     private CargoRepository cargoRepository;
 
     @PostMapping
-    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<PrestadorListagemDto> cadastrar(@RequestBody @Valid PrestadorCriacaoDto novoPrestador) {
         if (existePorCpf(novoPrestador.getCpf())) {
             return ResponseEntity.status(409).build();

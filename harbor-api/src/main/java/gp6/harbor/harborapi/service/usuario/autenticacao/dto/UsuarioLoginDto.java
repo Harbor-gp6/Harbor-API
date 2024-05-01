@@ -1,7 +1,11 @@
 package gp6.harbor.harborapi.service.usuario.autenticacao.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class UsuarioLoginDto {
 
     @Schema(description = "E-mail do usuário", example = "john@doe.com")
@@ -9,19 +13,4 @@ public class UsuarioLoginDto {
     @Schema(description = "Senha do usuário", example = "123456")
     private String senha;
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
 }

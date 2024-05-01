@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
 
-    @Query("SELECT Pedido FROM Pedido p JOIN Prestador u ON p.id_prestador = u.id WHERE u.nome LIKE '%:prestador%'")
+    @Query("SELECT p FROM Pedido p JOIN p.prestador u WHERE u.nome LIKE CONCAT('%', :prestador, '%') ORDER BY u.nome")
     List<Pedido> listarPorPrestador(String prestador);
 }

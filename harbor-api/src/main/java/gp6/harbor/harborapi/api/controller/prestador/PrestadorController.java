@@ -7,7 +7,6 @@ import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
 import gp6.harbor.harborapi.domain.endereco.repository.EnderecoRepository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
-
 import gp6.harbor.harborapi.service.cargo.dto.CargoMapper;
 import gp6.harbor.harborapi.service.empresa.dto.EmpresaMapper;
 import gp6.harbor.harborapi.service.prestador.dto.PrestadorCriacaoDto;
@@ -18,14 +17,18 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import gp6.harbor.harborapi.service.usuario.UsuarioService;
+import gp6.harbor.harborapi.service.usuario.autenticacao.dto.UsuarioLoginDto;
+import gp6.harbor.harborapi.service.usuario.autenticacao.dto.UsuarioTokenDto;
 
 import java.util.List;
 
-
 @RestController
-@RequestMapping("/prestadores")
+@RequestMapping("/usuarios")
 public class PrestadorController {
+
+    @Autowired
+    private UsuarioService usuarioService;
 
     @Autowired
     private PrestadorRepository prestadorRepository;
@@ -40,29 +43,37 @@ public class PrestadorController {
     private CargoRepository cargoRepository;
 
     @PostMapping
-    public ResponseEntity<PrestadorListagemDto> cadastrar(@RequestBody @Valid PrestadorCriacaoDto novoPrestador) {
-        if (existePorCpf(novoPrestador.getCpf())) {
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> criar(@RequestBody @Valid PrestadorCriacaoDto usuarioCriacaoDto) {
+        if (existePorCpf(usuarioCriacaoDto.getCpf())) {
             return ResponseEntity.status(409).build();
         }
 
         // Convertendo o DTO de empresa para entidade e salvando-a
-        Empresa empresa = EmpresaMapper.toEntity(novoPrestador.getEmpresa());
+        Empresa empresa = EmpresaMapper.toEntity(usuarioCriacaoDto.getEmpresa());
         empresa = empresaRepository.save(empresa);
 
-        Cargo cargo = CargoMapper.toEntity(novoPrestador.getCargo());
+        Cargo cargo = CargoMapper.toEntity(usuarioCriacaoDto.getCargo());
         cargo = cargoRepository.save(cargo);
 
         // Configurando a empresa para o novo prestador
-        Prestador prestador = PrestadorMapper.toEntity(novoPrestador);
+        Prestador prestador = PrestadorMapper.toEntity(usuarioCriacaoDto);
         prestador.setEmpresa(empresa);
 
         // Salvando o prestador
-        Prestador prestadorSalvo = prestadorRepository.save(prestador);
+        prestadorRepository.save(prestador);
 
-        PrestadorListagemDto listagemDto = PrestadorMapper.toDto(prestadorSalvo);
-
-        return ResponseEntity.status(201).body(listagemDto);
+        this.usuarioService.criar(usuarioCriacaoDto);
+        return ResponseEntity.status(201).build();
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<UsuarioTokenDto> login(@RequestBody UsuarioLoginDto usuarioLoginDto) {
+        UsuarioTokenDto usuarioTokenDto = this.usuarioService.autenticar(usuarioLoginDto);
+
+        return ResponseEntity.status(200).body(usuarioTokenDto);
+    }
+
     @GetMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PrestadorListagemDto>> listar(){

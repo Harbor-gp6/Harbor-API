@@ -7,6 +7,7 @@ import gp6.harbor.harborapi.service.produto.dto.ProdutoListagemDto;
 import gp6.harbor.harborapi.service.produto.dto.ProdutoMapper;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/produtos")
+@AllArgsConstructor
 public class ProdutoController {
     @Autowired
     private static ProdutoRepository produtoRepository;

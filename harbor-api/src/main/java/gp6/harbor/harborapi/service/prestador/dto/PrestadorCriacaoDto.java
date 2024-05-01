@@ -8,8 +8,12 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.br.CPF;
 
+@Setter
+@Getter
 public class PrestadorCriacaoDto {
     @NotBlank(message = "O nome não pode estar em branco")
     @Size(min = 2, max = 100, message = "O nome deve ter entre 2 e 100 caracteres")
@@ -34,67 +38,4 @@ public class PrestadorCriacaoDto {
     @Valid
     private EmpresaCriacaoDto empresa;
 
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getSobrenome() {
-        return sobrenome;
-    }
-
-    public void setSobrenome(String sobrenome) {
-        this.sobrenome = sobrenome;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
-
-    public CargoCriacaoDto getCargo() {
-        return cargo;
-    }
-
-    public void setCargo(CargoCriacaoDto cargo) {
-        this.cargo = cargo;
-    }
-
-    public EmpresaCriacaoDto getEmpresa() {
-        return empresa;
-    }
-
-    public void setEmpresa(EmpresaCriacaoDto empresa) {
-        this.empresa = empresa;
-    }
 }

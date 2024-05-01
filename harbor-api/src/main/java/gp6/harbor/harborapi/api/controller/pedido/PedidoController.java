@@ -60,12 +60,16 @@ public class PedidoController {
         return ResponseEntity.status(200).body(PedidoMapper.toDto(pedidos));
     }
 
-//    @GetMapping("/prestador")
-//    @SecurityRequirement(name = "Bearer")
-//    public ResponseEntity<List<PedidoListagemDto>> listarPorNomePrestador(@RequestParam String prestador) {
-//        List<Prestador> prestadoresEncontrados = prestadorRepository.findByNomeContainsIgnoreCase(prestador);
-//
-//
-//    }
+    @GetMapping("/prestador")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<PedidoListagemDto>> listarPorNomePrestador(@RequestParam String prestador) {
+        List<Pedido> pedidos = pedidoRepository.listarPorPrestador(prestador);
+
+        if (pedidos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok().body(PedidoMapper.toDto(pedidos));
+    }
 
 }

@@ -21,7 +21,7 @@ public class PrestadorCriacaoDto {
     @Pattern(regexp = "\\d{10,11}", message = "O telefone deve conter apenas números e deve ter entre 10 ou 11 dígitos")
     private String telefone;
     @CPF
-    @NotBlank(message = "O email não pode estar em branco")
+    @NotBlank(message = "O cpf não pode estar em branco")
     private String cpf;
     @Email
     @NotBlank(message = "O email não pode estar em branco")

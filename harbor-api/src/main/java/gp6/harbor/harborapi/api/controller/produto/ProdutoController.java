@@ -18,7 +18,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/produtos")
-@AllArgsConstructor
 public class ProdutoController {
     @Autowired
     private static ProdutoRepository produtoRepository;

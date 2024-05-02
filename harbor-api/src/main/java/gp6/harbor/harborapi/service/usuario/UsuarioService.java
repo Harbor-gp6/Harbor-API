@@ -35,13 +35,16 @@ public class UsuarioService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private PrestadorRepository prestadorRepository;
+
     public void criar(PrestadorCriacaoDto usuarioCriacaoDto) {
         final Prestador novoUsuario = PrestadorMapper.toEntity(usuarioCriacaoDto);
 
         String senhaCriptografada = passwordEncoder.encode(novoUsuario.getSenha());
         novoUsuario.setSenha(senhaCriptografada);
 
-        this.usuarioRepository.save(novoUsuario);
+        this.prestadorRepository.save(novoUsuario);
     }
 
     public UsuarioTokenDto autenticar(UsuarioLoginDto usuarioLoginDto) {

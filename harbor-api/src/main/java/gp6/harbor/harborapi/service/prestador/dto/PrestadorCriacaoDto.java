@@ -1,6 +1,8 @@
 package gp6.harbor.harborapi.service.prestador.dto;
 
 
+import gp6.harbor.harborapi.domain.cargo.Cargo;
+import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.service.cargo.dto.CargoCriacaoDto;
 import gp6.harbor.harborapi.service.empresa.dto.EmpresaCriacaoDto;
 import jakarta.validation.Valid;
@@ -34,8 +36,8 @@ public class PrestadorCriacaoDto {
     @Size(min = 8, max = 30)
     private String senha;
     @Valid
-    private CargoCriacaoDto cargo;
+    private Cargo cargo;
     @Valid
-    private EmpresaCriacaoDto empresa;
+    private Empresa empresa;
 
 }

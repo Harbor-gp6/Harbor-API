@@ -15,7 +15,7 @@ public class PrestadorMapper {
         }
         Prestador prestador = new Prestador();
 
-        Empresa empresa = EmpresaMapper.toEntity(dto.getEmpresa());
+        Empresa empresa = dto.getEmpresa();
         prestador.setEmpresa(empresa);
 
         prestador.setNome(dto.getNome());
@@ -26,7 +26,7 @@ public class PrestadorMapper {
         prestador.setSenha(dto.getSenha());
 
 
-        Cargo cargo = CargoMapper.toEntity(dto.getCargo());
+        Cargo cargo = dto.getCargo();
         prestador.setCargo(cargo);
 
         return prestador;

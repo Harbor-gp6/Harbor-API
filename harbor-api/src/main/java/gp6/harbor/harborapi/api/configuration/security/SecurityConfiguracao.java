@@ -52,12 +52,14 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/webjars/**"),
             new AntPathRequestMatcher("/v3/api-docs/**"),
             new AntPathRequestMatcher("/actuator/*"),
-            new AntPathRequestMatcher("/usuarios/login/**"),
+            new AntPathRequestMatcher("/usuarios/**"),
             new AntPathRequestMatcher("/h2-console/**"),
             new AntPathRequestMatcher("/h2-console/**/**"),
             new AntPathRequestMatcher("/error/**"),
             new AntPathRequestMatcher("/enderecos/{id}"),
             new AntPathRequestMatcher("/enderecos/cep"),
+            new AntPathRequestMatcher("/cargos/**"),
+            new AntPathRequestMatcher("/empresas/**"),
             new AntPathRequestMatcher("/clientes", HttpMethod.POST.toString()),
 
     };

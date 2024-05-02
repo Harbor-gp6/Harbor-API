@@ -23,7 +23,6 @@ public class CargoController {
     private CargoRepository cargoRepository;
 
     @PostMapping
-    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<CargoListagemDto> cadastro (@RequestBody @Valid CargoCriacaoDto novoCargo){
         Cargo cargo = CargoMapper.toEntity(novoCargo);
         Cargo cargoSalvo = cargoRepository.save(cargo);

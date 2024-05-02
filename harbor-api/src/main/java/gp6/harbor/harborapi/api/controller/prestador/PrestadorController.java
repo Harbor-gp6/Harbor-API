@@ -50,10 +50,8 @@ public class PrestadorController {
 
         // Convertendo o DTO de empresa para entidade e salvando-a
         Empresa empresa = usuarioCriacaoDto.getEmpresa();
-        empresa = empresaRepository.save(empresa);
 
         Cargo cargo = usuarioCriacaoDto.getCargo();
-        cargo = cargoRepository.save(cargo);
 
         // Configurando a empresa para o novo prestador
         Prestador prestador = PrestadorMapper.toEntity(usuarioCriacaoDto);

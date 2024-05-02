@@ -43,7 +43,6 @@ public class PrestadorController {
     private CargoRepository cargoRepository;
 
     @PostMapping
-    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> criar(@RequestBody @Valid PrestadorCriacaoDto usuarioCriacaoDto) {
         if (existePorCpf(usuarioCriacaoDto.getCpf())) {
             return ResponseEntity.status(409).build();

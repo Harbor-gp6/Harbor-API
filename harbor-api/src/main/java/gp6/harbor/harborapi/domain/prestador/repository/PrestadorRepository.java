@@ -13,6 +13,7 @@ public interface PrestadorRepository extends JpaRepository<Prestador, Long> {
     Optional<Prestador> findByEmail(String email);
 
     List<Prestador> findByNomeContainsIgnoreCase(String nome);
+    List<Prestador> findByCpf(String cpf);
 
     boolean existsByCpf(String cpf);
 }

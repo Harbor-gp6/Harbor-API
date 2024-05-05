@@ -108,6 +108,13 @@ EnderecoController {
     @ApiResponse(responseCode = "200", description = "Dados de endereço")
     public ResponseEntity<EnderecoDto> buscarEndereco(@RequestParam String cep) {
 
+
+
+
+
+
+
+
         RestClient client = RestClient.builder()
                 .baseUrl("https://viacep.com.br/ws/")
                 .messageConverters(httpMessageConverters -> httpMessageConverters.add(new MappingJackson2HttpMessageConverter()))

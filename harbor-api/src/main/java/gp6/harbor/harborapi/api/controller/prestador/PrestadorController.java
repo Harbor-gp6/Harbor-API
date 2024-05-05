@@ -58,7 +58,6 @@ public class PrestadorController {
         prestador.setCargo(cargo);
 
         // Salvando o prestador
-        prestadorRepository.save(prestador);
 
         usuarioCriacaoDto.setCargo(cargo);
         usuarioCriacaoDto.setEmpresa(empresa);

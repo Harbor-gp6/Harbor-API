@@ -1,6 +1,5 @@
 package gp6.harbor.harborapi.api.controller.prestador;
 
-import gp6.harbor.harborapi.arquivoCsv.Gravacao;
 import gp6.harbor.harborapi.domain.cargo.Cargo;
 import gp6.harbor.harborapi.domain.cargo.repository.CargoRepository;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
@@ -8,6 +7,8 @@ import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
 import gp6.harbor.harborapi.domain.endereco.repository.EnderecoRepository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
+import gp6.harbor.harborapi.service.cargo.dto.CargoMapper;
+import gp6.harbor.harborapi.service.empresa.dto.EmpresaMapper;
 import gp6.harbor.harborapi.service.prestador.dto.PrestadorCriacaoDto;
 import gp6.harbor.harborapi.service.prestador.dto.PrestadorListagemDto;
 import gp6.harbor.harborapi.service.prestador.dto.PrestadorMapper;
@@ -20,7 +21,7 @@ import gp6.harbor.harborapi.service.usuario.UsuarioService;
 import gp6.harbor.harborapi.service.usuario.autenticacao.dto.UsuarioLoginDto;
 import gp6.harbor.harborapi.service.usuario.autenticacao.dto.UsuarioTokenDto;
 
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -43,7 +44,8 @@ public class PrestadorController {
 
     @PostMapping
     public ResponseEntity<Void> criar(@RequestBody @Valid PrestadorCriacaoDto usuarioCriacaoDto) {
-        if (existePorCpf(usuarioCriacaoDto.getCpf())) {
+        if (existePorCpf(usuarioCriacaoDto.getCpf()) ||
+            existePorEmail(usuarioCriacaoDto.getEmail())) {
             return ResponseEntity.status(409).build();
         }
 
@@ -88,70 +90,14 @@ public class PrestadorController {
         return ResponseEntity.status(200).body(listaAuxiliar);
     }
 
-    @GetMapping("/{id}")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<PrestadorListagemDto> buscarPorId(@PathVariable long id){
-        Optional<Prestador> prestadorOpt = prestadorRepository.findById(id);
-
-        if (prestadorOpt.isEmpty()){
-            return ResponseEntity.status(404).build();
-        }
-        PrestadorListagemDto dto = PrestadorMapper.toDto(prestadorOpt.get());
-        return ResponseEntity.status(200).body(dto);
-    }
-
-    @GetMapping("/cpf")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<PrestadorListagemDto>> buscarPeloCpf(@RequestParam String cpf){
-        List<Prestador> prestadores = prestadorRepository.findByCpf(cpf);
-
-        if (prestadores.isEmpty()){
-            return ResponseEntity.status(204).build();
-        }
-
-        List<PrestadorListagemDto> listaAuxiliar = PrestadorMapper.toDto(prestadores);
-
-        return ResponseEntity.status(200).body(listaAuxiliar);
-    }
-
-    @GetMapping("/nome")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<PrestadorListagemDto>> buscarPeloNome(@RequestParam String nome){
-        List<Prestador> prestadores = prestadorRepository.findByNomeContainsIgnoreCase(nome);
-
-        if (prestadores.isEmpty()){
-            return ResponseEntity.status(204).build();
-        }
-
-        List<PrestadorListagemDto> listaAuxiliar = PrestadorMapper.toDto(prestadores);
-
-        return ResponseEntity.status(200).body(listaAuxiliar);
-    }
-
-    @GetMapping("/gerar-csv")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Void> gerarArquivo() {
-        Gravacao.gravaArquivosCsv(prestadorRepository.findAll(), "lista-prestadores");
-
-        return ResponseEntity.ok().build();
-    }
-
-    @PutMapping("/{id}")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<PrestadorListagemDto> atualizarPrestador(@PathVariable long id, @RequestBody @Valid PrestadorCriacaoDto prestadorAtualizado){
-
-        if (!prestadorRepository.existsById(id)){
-            return ResponseEntity.status(404).build();
-        }
-
-        Prestador prestador = PrestadorMapper.toEntity(prestadorAtualizado);
-        prestador.setId(id);
-        Prestador prestadorSalvo = prestadorRepository.save(prestador);
-        PrestadorListagemDto listagemDto = PrestadorMapper.toDto(prestadorSalvo);
-
-        return ResponseEntity.status(200).body(listagemDto);
-    }
-    public boolean existePorCpf(String cpf){
+    //TODO: Criar busca de Prestador por id
+    //TODO: Criar busca de Prestador por cpf
+    //TODO: Criar atualizacao de Prestador por id
+    private boolean existePorCpf(String cpf){
         return prestadorRepository.existsByCpf(cpf);
+    }
+
+    private boolean existePorEmail(String email) {
+        return prestadorRepository.existsByEmail(email);
     }
 }

@@ -82,6 +82,8 @@ EnderecoController {
 
         List<EnderecoListagemDto> listaAuxiliar = EnderecoMapper.toDto(enderecos);
 
+
+
         return ResponseEntity.status(200).body(listaAuxiliar);
     }
 

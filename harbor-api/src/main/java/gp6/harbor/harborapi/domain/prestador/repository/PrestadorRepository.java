@@ -16,8 +16,4 @@ public interface PrestadorRepository extends JpaRepository<Prestador, Long> {
     List<Prestador> findByCpf(String cpf);
 
     boolean existsByCpf(String cpf);
-
-    boolean existsByEmail(String email);
-
-
 }

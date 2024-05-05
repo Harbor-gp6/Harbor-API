@@ -3,13 +3,12 @@ package gp6.harbor.harborapi.api.controller.endereco;
 
 import gp6.harbor.harborapi.domain.endereco.Endereco;
 import gp6.harbor.harborapi.domain.endereco.repository.EnderecoRepository;
-import gp6.harbor.harborapi.service.endereco.dto.EnderecoCriacaoDto;
-import gp6.harbor.harborapi.service.endereco.dto.EnderecoListagemDto;
-import gp6.harbor.harborapi.service.endereco.dto.EnderecoMapper;
+import gp6.harbor.harborapi.service.endereco.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -18,6 +17,7 @@ import org.springframework.web.client.RestClient;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/enderecos")
@@ -26,6 +26,8 @@ EnderecoController {
 
     @Autowired
     private EnderecoRepository enderecoRepository;
+
+    private static final Logger log = (Logger) LoggerFactory.getLogger(EnderecoController.class);
 
     @PostMapping
     @SecurityRequirement(name = "Bearer")
@@ -102,7 +104,7 @@ EnderecoController {
       Retorna os dados de endereço retornados da API.
       """)
     @ApiResponse(responseCode = "200", description = "Dados de endereço")
-    public ResponseEntity<EnderecoListagemDto> buscarEndereco(@RequestParam String cep) {
+    public ResponseEntity<EnderecoDto> buscarEndereco(@RequestParam String cep) {
 
         RestClient client = RestClient.builder()
                 .baseUrl("https://viacep.com.br/ws/")
@@ -113,6 +115,8 @@ EnderecoController {
                 .uri(cep + "/json")
                 .retrieve()
                 .body(String.class);
+
+        log.info("Resposta da API: " + raw);
 
         EnderecoApiExternaDto endereco = client.get()
                 .uri(cep + "/json")

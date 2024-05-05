@@ -10,6 +10,7 @@ import gp6.harbor.harborapi.service.servico.dto.ServicoMapper;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ServicoController {
 
-    private static ServicoRepository servicoRepository;
+    private final ServicoRepository servicoRepository2;
     private final EmpresaRepository empresaRepository;
 
     @PostMapping
@@ -40,7 +41,7 @@ public class ServicoController {
         Servico servico = ServicoMapper.toEntity(novoServico);
         servico.setEmpresa(empresa);
 
-        Servico servicoSalvo = servicoRepository.save(servico);
+        Servico servicoSalvo = servicoRepository2.save(servico);
 
         ServicoListagemDto listagemDto = ServicoMapper.toDto(servicoSalvo);
 
@@ -50,7 +51,7 @@ public class ServicoController {
     @GetMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ServicoListagemDto>> listar(){
-        List<Servico> servicos = servicoRepository.findAll();
+        List<Servico> servicos = servicoRepository2.findAll();
 
         if (servicos.isEmpty()) {
             return ResponseEntity.status(204).build();
@@ -64,24 +65,5 @@ public class ServicoController {
     //TODO: Criar busca de servicos por id
     //TODO: Criar alteracao de servicos por id
     //TODO: Criar delete de servicos por id
-
-
-    public static List<ServicoListagemDto> buscarPorListaDeIds(List<Integer> ids) {
-        List<Servico> servicos = new ArrayList<>();
-        for (int id : ids) {
-            Optional<Servico> servico = servicoRepository.findById(id);
-            servico.ifPresent(servicos::add);
-        }
-        return ServicoMapper.toDto(servicos);
-    }
-
-    public static List<Servico> buscarPorListaDeIdsEntidade(List<Integer> ids) {
-        List<Servico> servicos = new ArrayList<>();
-        for (int id : ids) {
-            Optional<Servico> servico = servicoRepository.findById(id);
-            servico.ifPresent(servicos::add);
-        }
-        return servicos;
-    }
 
 }

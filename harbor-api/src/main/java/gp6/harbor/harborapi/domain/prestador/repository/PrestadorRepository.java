@@ -15,5 +15,5 @@ public interface PrestadorRepository extends JpaRepository<Prestador, Long> {
     List<Prestador> findByNomeContainsIgnoreCase(String nome);
     List<Prestador> findByCpf(String cpf);
 
-    boolean existsByCpf(String cpf);
+    Boolean existsByCpf(String cpf);
 }

@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequestMapping("/produtos")
 public class ProdutoController {
     @Autowired
-    private static ProdutoRepository produtoRepository;
+    private ProdutoRepository produtoRepository;
 
     @PostMapping
     @SecurityRequirement(name = "Bearer")
@@ -110,21 +110,4 @@ public class ProdutoController {
         return ResponseEntity.status(404).build();
     }
 
-    public static List<ProdutoListagemDto> buscarPorListaDeIds(List<Integer> ids) {
-        List<Produto> produtos = new ArrayList<>();
-        for (int id : ids) {
-            Optional<Produto> produto = produtoRepository.findById(id);
-            produto.ifPresent(produtos::add);
-        }
-        return ProdutoMapper.toDto(produtos);
-    }
-
-    public static List<Produto> buscarPorListaDeIdsEntidade(List<Integer> ids) {
-        List<Produto> produtos = new ArrayList<>();
-        for (int id : ids) {
-            Optional<Produto> produto = produtoRepository.findById(id);
-            produto.ifPresent(produtos::add);
-        }
-        return produtos;
-    }
 }

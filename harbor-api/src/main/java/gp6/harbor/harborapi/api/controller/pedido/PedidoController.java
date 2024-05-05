@@ -31,7 +31,7 @@ public class PedidoController {
     @PostMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<PedidoListagemDto> criarPedido(@RequestBody @Valid PedidoCriacaoDto novoPedido) {
-        Pedido pedido = PedidoMapper.toEntity(novoPedido);
+        Pedido pedido = PedidoMapper.toEntity(novoPedido, servicoRepository, produtoRepository);
 
         Optional<Prestador> prestador = prestadorRepository.findById(Long.valueOf(novoPedido.getPrestadorId()));
 

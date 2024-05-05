@@ -3,25 +3,38 @@ package gp6.harbor.harborapi.service.pedido.dto;
 import gp6.harbor.harborapi.api.controller.produto.ProdutoController;
 import gp6.harbor.harborapi.api.controller.servico.ServicoController;
 import gp6.harbor.harborapi.domain.pedido.Pedido;
+import gp6.harbor.harborapi.domain.produto.Produto;
+import gp6.harbor.harborapi.domain.produto.repository.ProdutoRepository;
+import gp6.harbor.harborapi.domain.servico.Servico;
+import gp6.harbor.harborapi.domain.servico.repository.ServicoRepository;
 import gp6.harbor.harborapi.service.prestador.dto.PrestadorMapper;
 import gp6.harbor.harborapi.service.produto.dto.ProdutoMapper;
 import gp6.harbor.harborapi.service.servico.dto.ServicoMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 
 public class PedidoMapper {
 
-    public static Pedido toEntity(PedidoCriacaoDto dto){
+    @Autowired
+    private ServicoRepository servicoRepository;
+
+    @Autowired
+    private ProdutoRepository produtoRepository;
+
+    public static Pedido toEntity(PedidoCriacaoDto dto, ServicoRepository servicoRepository, ProdutoRepository produtoRepository){
         if (dto == null){
             return null;
         }
         Pedido pedido = new Pedido();
+        Produto produto = new Produto();
+        Servico servico = new Servico();
 
         pedido.setCliente(dto.getCliente());
 
-        pedido.setListaProduto(ProdutoController.buscarPorListaDeIdsEntidade(dto.getListaProdutoIds()));
-        pedido.setListaServico(ServicoController.buscarPorListaDeIdsEntidade(dto.getListaServicoIds()));
+        pedido.setListaProduto(produtoRepository.findAllById(dto.getListaProdutoIds()));
+        pedido.setListaServico(servicoRepository.findAllById(dto.getListaServicoIds()));
 
         pedido.setDataAgendamento(dto.getDataAgendamento());
         pedido.setObservacao(dto.getObservacao());

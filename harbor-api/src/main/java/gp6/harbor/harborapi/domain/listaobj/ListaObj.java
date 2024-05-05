@@ -47,9 +47,6 @@ public class ListaObj <T> {
         return nroElem;
     }
 
-    // 09) Método getElemento
-    // Recebe um índice e retorna o elemento desse índice
-    // Se o índice for inválido, retorna null
     public T getElemento(int indice) {
         if (indice < 0) {
             return null;

@@ -15,9 +15,12 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
+
 
 @RestController
 @RequestMapping("/enderecos")
@@ -27,7 +30,10 @@ EnderecoController {
     @Autowired
     private EnderecoRepository enderecoRepository;
 
-    private static final Logger log = (Logger) LoggerFactory.getLogger(EnderecoController.class);
+
+
+    private static final Logger log = LoggerFactory.getLogger(EnderecoController.class);
+
 
     @PostMapping
     @SecurityRequirement(name = "Bearer")
@@ -97,12 +103,8 @@ EnderecoController {
         return ResponseEntity.status(200).body(listagemDto);
     }
 
-    @GetMapping
-    @Operation(summary = "Buscar dados do endereço", description = """
-      # Busca os dados de um endereço a partir do CEP utilizando uma API externa
-      ---
-      Retorna os dados de endereço retornados da API.
-      """)
+    @GetMapping("/busca")
+    @Operation(summary = "Buscar dados do endereço")
     @ApiResponse(responseCode = "200", description = "Dados de endereço")
     public ResponseEntity<EnderecoDto> buscarEndereco(@RequestParam String cep) {
 

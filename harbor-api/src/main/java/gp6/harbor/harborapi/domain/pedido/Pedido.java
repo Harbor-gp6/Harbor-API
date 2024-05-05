@@ -4,8 +4,10 @@ import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.servico.Servico;
+import gp6.harbor.harborapi.domain.servico.repository.ServicoRepository;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -16,19 +18,20 @@ import java.util.List;
 @Setter
 @Entity
 public class Pedido {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_pedido")
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_cliente")
     private Cliente cliente;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<Produto> listaProduto;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<Servico> listaServico;
 
     @ManyToOne

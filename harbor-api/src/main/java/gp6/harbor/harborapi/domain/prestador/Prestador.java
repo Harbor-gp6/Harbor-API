@@ -22,10 +22,10 @@ public class Prestador {
     private String cpf;
     private String email;
     private String senha;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_empresa")
     private Empresa empresa;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_cargo")
     private Cargo cargo;
 

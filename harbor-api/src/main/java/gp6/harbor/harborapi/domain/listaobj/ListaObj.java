@@ -61,15 +61,10 @@ public class ListaObj <T> {
         nroElem = 0;
     }
 
-    public void exibe() {
-        System.out.print("Lista: ");
-        for (int i = 0; i < nroElem; i++) {
-            System.out.print(vetor[i]);
-            if (i < nroElem - 1) {
-                System.out.print(", ");
-            }
+    public void substitui(T valorAntigo, T valorNovo) {
+        if (busca(valorAntigo) != -1) {
+            vetor[busca(valorAntigo)] = valorNovo;
         }
-        System.out.println("\n");
     }
 }
 

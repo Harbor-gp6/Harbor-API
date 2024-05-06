@@ -3,7 +3,9 @@ package gp6.harbor.harborapi.api.controller.pedido;
 import gp6.harbor.harborapi.domain.pedido.Pedido;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
+import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.produto.repository.ProdutoRepository;
+import gp6.harbor.harborapi.domain.servico.Servico;
 import gp6.harbor.harborapi.domain.servico.repository.ServicoRepository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.service.pedido.dto.PedidoCriacaoDto;
@@ -70,6 +72,41 @@ public class PedidoController {
         }
 
         return ResponseEntity.ok().body(PedidoMapper.toDto(pedidos));
+    }
+
+    @GetMapping("/total-ganho")
+    public ResponseEntity<Double> calcularTotalGanho() {
+        List<Pedido> pedidos = pedidoRepository.findAll();
+
+        if (pedidos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(totalGanho(pedidos, 0));
+    }
+
+    private Double totalGanho(List<Pedido> listaPedidos, int indice) {
+        if (indice == listaPedidos.size()) {
+            return 0.0;
+        }
+
+        Double total = 0.0;
+
+        List<Produto> produtos = listaPedidos.get(indice).getListaProduto();
+        List<Servico> servicos = listaPedidos.get(indice).getListaServico();
+
+        if (!produtos.isEmpty()) {
+            for (Produto p : produtos) {
+                total += p.getPrecoVenda();
+            }
+        }
+
+        if (!servicos.isEmpty()) {
+            for (Servico s : servicos) {
+                total += s.getValorServico();
+            }
+        }
+
+        return total + totalGanho(listaPedidos, indice + 1);
     }
 
 }

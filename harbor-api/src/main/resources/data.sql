@@ -17,4 +17,3 @@ INSERT INTO endereco (bairro, logradouro, cidade, estado, cep, complemento) VALU
 ('Ipanema', 'Rua Visconde de Pirajá', 'Rio de Janeiro', 'RJ', '22410003', 'Apartamento 401'),
 ('Ponta Negra', 'Avenida Engenheiro Roberto Freire', 'Natal', 'RN', '59090000', 'Casa 5'),
 ('Centro', 'Avenida Paulista', 'São Paulo', 'SP', '01310000', 'Andar 15');
-

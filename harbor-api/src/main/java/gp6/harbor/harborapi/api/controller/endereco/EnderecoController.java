@@ -4,7 +4,7 @@ package gp6.harbor.harborapi.api.controller.endereco;
 import gp6.harbor.harborapi.domain.endereco.Endereco;
 import gp6.harbor.harborapi.domain.endereco.repository.EnderecoRepository;
 import gp6.harbor.harborapi.domain.listaobj.ListaObj;
-import gp6.harbor.harborapi.service.endereco.dto.*;
+import gp6.harbor.harborapi.dto.endereco.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;

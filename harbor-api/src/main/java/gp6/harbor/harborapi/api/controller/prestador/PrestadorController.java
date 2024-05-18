@@ -1,30 +1,33 @@
 package gp6.harbor.harborapi.api.controller.prestador;
 
 import gp6.harbor.harborapi.arquivoCsv.Gravacao;
-import gp6.harbor.harborapi.domain.cargo.Cargo;
 import gp6.harbor.harborapi.domain.cargo.repository.CargoRepository;
-import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
 import gp6.harbor.harborapi.domain.endereco.repository.EnderecoRepository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
-import gp6.harbor.harborapi.service.prestador.dto.PrestadorCriacaoDto;
-import gp6.harbor.harborapi.service.prestador.dto.PrestadorListagemDto;
-import gp6.harbor.harborapi.service.prestador.dto.PrestadorMapper;
+import gp6.harbor.harborapi.dto.prestador.dto.PrestadorCriacaoDto;
+import gp6.harbor.harborapi.dto.prestador.dto.PrestadorListagemDto;
+import gp6.harbor.harborapi.dto.prestador.dto.PrestadorMapper;
+import gp6.harbor.harborapi.service.prestador.PrestadorService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import gp6.harbor.harborapi.service.usuario.UsuarioService;
-import gp6.harbor.harborapi.service.usuario.autenticacao.dto.UsuarioLoginDto;
-import gp6.harbor.harborapi.service.usuario.autenticacao.dto.UsuarioTokenDto;
+import gp6.harbor.harborapi.dto.usuario.UsuarioService;
+import gp6.harbor.harborapi.dto.usuario.autenticacao.dto.UsuarioLoginDto;
+import gp6.harbor.harborapi.dto.usuario.autenticacao.dto.UsuarioTokenDto;
 
 import java.util.*;
 
 @RestController
 @RequestMapping("/usuarios")
+@RequiredArgsConstructor
 public class PrestadorController {
+
+    private final PrestadorService service;
 
     @Autowired
     private UsuarioService usuarioService;
@@ -62,60 +65,59 @@ public class PrestadorController {
     @GetMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PrestadorListagemDto>> listar(){
-        List<Prestador> prestadores = prestadorRepository.findAll();
+        List<Prestador> prestadores = service.listar();
 
         if (prestadores.isEmpty()) {
             return ResponseEntity.status(204).build();
         }
 
-        List<PrestadorListagemDto> listaAuxiliar = PrestadorMapper.toDto(prestadores);
-        return ResponseEntity.status(200).body(listaAuxiliar);
+        List<PrestadorListagemDto> dtos = PrestadorMapper.toDto(prestadores);
+
+        return ResponseEntity.status(200).body(dtos);
     }
 
     @GetMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<PrestadorListagemDto> buscarPorId(@PathVariable long id){
-        Optional<Prestador> prestadorOpt = prestadorRepository.findById(id);
+        Prestador prestador = service.buscarPorId(id);
 
-        if (prestadorOpt.isEmpty()){
-            return ResponseEntity.status(404).build();
-        }
-        PrestadorListagemDto dto = PrestadorMapper.toDto(prestadorOpt.get());
+        PrestadorListagemDto dto = PrestadorMapper.toDto(prestador);
+
         return ResponseEntity.status(200).body(dto);
     }
 
     @GetMapping("/cpf")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PrestadorListagemDto>> buscarPeloCpf(@RequestParam String cpf){
-        List<Prestador> prestadores = prestadorRepository.findByCpf(cpf);
+        List<Prestador> prestadores = service.buscarPeloCpf(cpf);
 
         if (prestadores.isEmpty()){
             return ResponseEntity.status(204).build();
         }
 
-        List<PrestadorListagemDto> listaAuxiliar = PrestadorMapper.toDto(prestadores);
+        List<PrestadorListagemDto> dtos = PrestadorMapper.toDto(prestadores);
 
-        return ResponseEntity.status(200).body(listaAuxiliar);
+        return ResponseEntity.status(200).body(dtos);
     }
 
     @GetMapping("/nome")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PrestadorListagemDto>> buscarPeloNome(@RequestParam String nome){
-        List<Prestador> prestadores = prestadorRepository.findByNomeContainsIgnoreCase(nome);
+        List<Prestador> prestadores = service.buscarPeloNome(nome);
 
         if (prestadores.isEmpty()){
             return ResponseEntity.status(204).build();
         }
 
-        List<PrestadorListagemDto> listaAuxiliar = PrestadorMapper.toDto(prestadores);
+        List<PrestadorListagemDto> dtos = PrestadorMapper.toDto(prestadores);
 
-        return ResponseEntity.status(200).body(listaAuxiliar);
+        return ResponseEntity.status(200).body(dtos);
     }
 
     @GetMapping("/gerar-csv")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> gerarArquivo() {
-        Gravacao.gravaArquivosCsv(prestadorRepository.findAll(), "lista-prestadores");
+        Gravacao.gravaArquivosCsv(service.listar(), "lista-prestadores");
 
         return ResponseEntity.ok().build();
     }
@@ -124,7 +126,7 @@ public class PrestadorController {
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<PrestadorListagemDto> atualizarPrestador(@PathVariable long id, @RequestBody @Valid PrestadorCriacaoDto prestadorAtualizado){
 
-        if (!prestadorRepository.existsById(id)){
+        if (!service.existePorId(id)){
             return ResponseEntity.status(404).build();
         }
 

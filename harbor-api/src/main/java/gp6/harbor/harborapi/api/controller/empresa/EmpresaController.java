@@ -1,18 +1,18 @@
 package gp6.harbor.harborapi.api.controller.empresa;
 
-import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
 import gp6.harbor.harborapi.domain.endereco.Endereco;
 import gp6.harbor.harborapi.domain.endereco.repository.EnderecoRepository;
 
-import gp6.harbor.harborapi.service.empresa.dto.EmpresaCriacaoDto;
-import gp6.harbor.harborapi.service.empresa.dto.EmpresaListagemDto;
-import gp6.harbor.harborapi.service.empresa.dto.EmpresaMapper;
-import gp6.harbor.harborapi.service.endereco.dto.EnderecoListagemDto;
-import gp6.harbor.harborapi.service.endereco.dto.EnderecoMapper;
+import gp6.harbor.harborapi.dto.empresa.dto.EmpresaCriacaoDto;
+import gp6.harbor.harborapi.dto.empresa.dto.EmpresaListagemDto;
+import gp6.harbor.harborapi.dto.empresa.dto.EmpresaMapper;
+import gp6.harbor.harborapi.service.empresa.EmpresaService;
+import gp6.harbor.harborapi.service.endereco.EnderecoService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +23,12 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/empresas")
+@RequiredArgsConstructor
 public class EmpresaController {
 
-    @Autowired
-    private EmpresaRepository empresaRepository;
+    private final EmpresaService empresaService;
 
-    @Autowired
-    private EnderecoRepository enderecoRepository;
+    private EnderecoService enderecoService;
 
     @PostMapping
     @SecurityRequirement(name = "Bearer")
@@ -37,21 +36,22 @@ public class EmpresaController {
         // Mapear DTO para entidade
         Empresa novaEmpresa = EmpresaMapper.toEntity(novaEmpresaDto);
 
+
         // Verificar se já existe empresa com o mesmo CNPJ
-        if (empresaRepository.existsByCnpj(novaEmpresa.getCnpj())){
+        if (empresaService.existePorCnpj(novaEmpresa.getCnpj())){
             return ResponseEntity.status(409).build();
         }
 
         // Salvar endereço da empresa
         Endereco novoEndereco = novaEmpresa.getEndereco();
-        Endereco enderecoSalvo = enderecoRepository.save(novoEndereco);
+        Endereco enderecoSalvo = enderecoService.cadastrar(novoEndereco);
 
         // Associar endereço salvo à empresa
         novaEmpresa.setEndereco(enderecoSalvo);
         novaEmpresa.setDataCriacao(LocalDate.now());
 
         // Salvar empresa
-        Empresa empresaSalva = empresaRepository.save(novaEmpresa);
+        Empresa empresaSalva = empresaService.cadastrar(novaEmpresa);
         EmpresaListagemDto listagemDto = EmpresaMapper.toDto(empresaSalva);
 
 
@@ -61,7 +61,7 @@ public class EmpresaController {
     @GetMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<EmpresaListagemDto>> listar(){
-        List<Empresa> empresas = empresaRepository.findAll();
+        List<Empresa> empresas = empresaService.listar();
 
         if (empresas.isEmpty()){
             return ResponseEntity.status(204).build();
@@ -74,12 +74,9 @@ public class EmpresaController {
 
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Empresa> inativarEmpresa(@PathVariable @Valid int id){
-        if (empresaRepository.existsById(id)){
-            Optional<Empresa> empresaOptional = empresaRepository.findById(id);
-            empresaOptional.get().setDataInativacao(LocalDate.now());
-            empresaRepository.save(empresaOptional.get());
-
+    public ResponseEntity<Void> inativarEmpresa(@PathVariable @Valid int id) {
+        if (empresaService.existePorId(id)) {
+            empresaService.inativarEmpresa(id);
             return ResponseEntity.status(204).build();
         }
 

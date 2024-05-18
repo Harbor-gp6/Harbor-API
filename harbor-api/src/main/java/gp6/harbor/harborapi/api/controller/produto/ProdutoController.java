@@ -2,31 +2,33 @@ package gp6.harbor.harborapi.api.controller.produto;
 
 import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.produto.repository.ProdutoRepository;
-import gp6.harbor.harborapi.service.produto.dto.ProdutoCriacaoDto;
-import gp6.harbor.harborapi.service.produto.dto.ProdutoListagemDto;
-import gp6.harbor.harborapi.service.produto.dto.ProdutoMapper;
+import gp6.harbor.harborapi.dto.produto.dto.ProdutoCriacaoDto;
+import gp6.harbor.harborapi.dto.produto.dto.ProdutoListagemDto;
+import gp6.harbor.harborapi.dto.produto.dto.ProdutoMapper;
+import gp6.harbor.harborapi.exception.NaoEncontradoException;
+import gp6.harbor.harborapi.service.produto.ProdutoService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/produtos")
+@RequiredArgsConstructor
 public class ProdutoController {
-    @Autowired
-    private ProdutoRepository produtoRepository;
+
+    private final ProdutoService produtoService;
 
     @PostMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ProdutoListagemDto> cadastrar(@RequestBody @Valid ProdutoCriacaoDto novoProduto) {
         Produto produto = ProdutoMapper.toEntity(novoProduto);
-        Produto produtoSalvo = produtoRepository.save(produto);
+        Produto produtoSalvo = produtoService.cadastrar(produto);
         ProdutoListagemDto listagemDto = ProdutoMapper.toDto(produtoSalvo);
 
         return ResponseEntity.status(201).body(listagemDto);
@@ -34,19 +36,14 @@ public class ProdutoController {
     @GetMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ProdutoListagemDto> buscarPeloId(@PathVariable int id){
-        Optional<Produto> produtoOptional = produtoRepository.findById(id);
-
-        if (produtoOptional.isEmpty()){
-            return ResponseEntity.status(404).build();
-        }
-
-        ProdutoListagemDto dto = ProdutoMapper.toDto(produtoOptional.get());
+        Produto produto = produtoService.buscarPorId(id);
+        ProdutoListagemDto dto = ProdutoMapper.toDto(produto);
         return ResponseEntity.status(200).body(dto);
     }
     @GetMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ProdutoListagemDto>> buscar(){
-        List<Produto> produtos = produtoRepository.findAll();
+        List<Produto> produtos = produtoService.listar();
 
         if (produtos.isEmpty()){
             return ResponseEntity.status(204).build();
@@ -63,13 +60,13 @@ public class ProdutoController {
             @PathVariable int id,
             @RequestBody @Valid ProdutoCriacaoDto produtoAtualizado){
 
-        if (!produtoRepository.existsById(id)){
+        if (!produtoService.existePorId(id)){
             return ResponseEntity.status(404).build();
         }
 
         Produto produto = ProdutoMapper.toEntity(produtoAtualizado);
         produto.setId(id);
-        Produto produtoSalvo = produtoRepository.save(produto);
+        Produto produtoSalvo = produtoService.cadastrar(produto);
         ProdutoListagemDto listagemDto = ProdutoMapper.toDto(produtoSalvo);
 
         return ResponseEntity.status(200).body(listagemDto);
@@ -77,7 +74,7 @@ public class ProdutoController {
     @GetMapping("/maiorMenor")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ProdutoListagemDto>> buscarMaiorParaMenor(){
-        List<Produto> produtos = produtoRepository.findAllByOrderByPrecoVendaDesc();
+        List<Produto> produtos = produtoService.buscarMaiorParaMenor();
 
         if (produtos.isEmpty()){
             return ResponseEntity.status(204).build();
@@ -90,7 +87,7 @@ public class ProdutoController {
     @GetMapping("/menorMaior")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ProdutoListagemDto>> buscarMenorParaMaior(){
-        List<Produto> produtos = produtoRepository.findAllByOrderByPrecoVendaAsc();
+        List<Produto> produtos = produtoService.buscarMenorParaMaior();
         if (produtos.isEmpty()){
             return ResponseEntity.status(204).build();
         }
@@ -101,13 +98,13 @@ public class ProdutoController {
     }
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Produto> buscaPorId(@PathVariable @Valid int id){
-        if (produtoRepository.existsById(id)){
-            produtoRepository.deleteById(id);
+    public ResponseEntity<Void> deletarPorId(@PathVariable @Valid int id) {
+        try {
+            produtoService.deletarPorId(id);
             return ResponseEntity.status(204).build();
+        } catch (NaoEncontradoException exception) {
+            return ResponseEntity.status(404).build();
         }
-
-        return ResponseEntity.status(404).build();
     }
 
 }

@@ -7,7 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import gp6.harbor.harborapi.service.usuario.autenticacao.AutenticacaoService;
+import gp6.harbor.harborapi.dto.usuario.autenticacao.AutenticacaoService;
 
 public class AutenticacaoProvider implements AuthenticationProvider {
 

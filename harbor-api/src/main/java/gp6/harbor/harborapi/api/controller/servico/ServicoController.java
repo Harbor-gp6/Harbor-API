@@ -4,17 +4,15 @@ import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
 import gp6.harbor.harborapi.domain.servico.Servico;
 import gp6.harbor.harborapi.domain.servico.repository.ServicoRepository;
-import gp6.harbor.harborapi.service.servico.dto.ServicoCriacaoDto;
-import gp6.harbor.harborapi.service.servico.dto.ServicoListagemDto;
-import gp6.harbor.harborapi.service.servico.dto.ServicoMapper;
+import gp6.harbor.harborapi.dto.servico.dto.ServicoCriacaoDto;
+import gp6.harbor.harborapi.dto.servico.dto.ServicoListagemDto;
+import gp6.harbor.harborapi.dto.servico.dto.ServicoMapper;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

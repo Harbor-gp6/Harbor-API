@@ -21,7 +21,7 @@ public class PedidoMapper {
     @Autowired
     private ProdutoRepository produtoRepository;
 
-    public static Pedido toEntity(PedidoCriacaoDto dto, ServicoRepository servicoRepository, ProdutoRepository produtoRepository){
+    public static Pedido toEntity(PedidoCriacaoDto dto){
         if (dto == null){
             return null;
         }
@@ -30,9 +30,6 @@ public class PedidoMapper {
         Servico servico = new Servico();
 
         pedido.setCliente(dto.getCliente());
-
-        pedido.setListaProduto(produtoRepository.findAllById(dto.getListaProdutoIds()));
-        pedido.setListaServico(servicoRepository.findAllById(dto.getListaServicoIds()));
 
         pedido.setDataAgendamento(dto.getDataAgendamento());
         pedido.setObservacao(dto.getObservacao());
@@ -48,9 +45,6 @@ public class PedidoMapper {
         PedidoListagemDto pedidoListagemDto = new PedidoListagemDto();
 
         pedidoListagemDto.setCliente(entity.getCliente().getNome() + " " + entity.getCliente().getSobrenome());
-
-        pedidoListagemDto.setListaServico(ServicoMapper.toDto(entity.getListaServico()));
-        pedidoListagemDto.setListaProduto(ProdutoMapper.toDto(entity.getListaProduto()));
 
         pedidoListagemDto.setPrestador(PrestadorMapper.toDto(entity.getPrestador()));
 

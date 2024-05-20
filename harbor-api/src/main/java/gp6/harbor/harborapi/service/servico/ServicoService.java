@@ -1,6 +1,8 @@
 package gp6.harbor.harborapi.service.servico;
 
+import gp6.harbor.harborapi.domain.servico.Servico;
 import gp6.harbor.harborapi.domain.servico.repository.ServicoRepository;
+import gp6.harbor.harborapi.exception.NaoEncontradoException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,5 +12,8 @@ public class ServicoService {
 
     private final ServicoRepository servicoRepository;
 
+    public Servico buscaPorId(Integer id) {
+        return servicoRepository.findById(id).orElseThrow(() -> new NaoEncontradoException("Servico"));
+    }
 
 }

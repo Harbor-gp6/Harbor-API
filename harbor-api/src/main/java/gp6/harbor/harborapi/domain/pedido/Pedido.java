@@ -28,17 +28,17 @@ public class Pedido {
     @JoinColumn(name = "id_cliente")
     private Cliente cliente;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    private List<Produto> listaProduto;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    private List<Servico> listaServico;
-
     @ManyToOne
     @JoinColumn(name = "id_prestador")
     private Prestador prestador;
 
     private LocalDateTime dataAgendamento;
+
+    @OneToMany
+    private List<PedidoProduto> pedidoProdutos;
+
+    @OneToMany
+    private List<PedidoServico> pedidoServicos;
 
     @CreationTimestamp
     private LocalDateTime dataCriacao;

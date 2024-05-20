@@ -12,11 +12,9 @@ import java.util.List;
 public class PedidoCriacaoDto {
     private Cliente cliente;
 
-    private List<Integer> listaProdutoIds;
-
-    private List<Integer> listaServicoIds;
-
     private LocalDateTime dataAgendamento;
+
+    private List<Integer> servicos;
 
     private Integer prestadorId;
 

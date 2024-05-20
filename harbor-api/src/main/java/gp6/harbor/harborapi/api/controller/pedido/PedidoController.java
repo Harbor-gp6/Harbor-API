@@ -11,6 +11,7 @@ import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoCriacaoDto;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoListagemDto;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoMapper;
+import gp6.harbor.harborapi.service.pedido.PedidoService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,26 +26,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PedidoController {
 
-    private final PedidoRepository pedidoRepository;
-    private final ProdutoRepository produtoRepository;
-    private final ServicoRepository servicoRepository;
-    private final PrestadorRepository prestadorRepository;
+    private final PedidoService pedidoService;
 
     @PostMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<PedidoListagemDto> criarPedido(@RequestBody @Valid PedidoCriacaoDto novoPedido) {
-        Pedido pedido = PedidoMapper.toEntity(novoPedido, servicoRepository, produtoRepository);
-
-        Optional<Prestador> prestador = prestadorRepository.findById(Long.valueOf(novoPedido.getPrestadorId()));
-
-        if (prestador.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        pedido.setPrestador(prestador.get());
-
-        Pedido pedidoSalvo = pedidoRepository.save(pedido);
-
+        Pedido pedidoSalvo = pedidoService.criarPedido(PedidoMapper.toEntity(novoPedido), novoPedido.getServicos());
 
         PedidoListagemDto listagemDto = PedidoMapper.toDto(pedidoSalvo);
         return ResponseEntity.status(201).body(listagemDto);
@@ -53,7 +40,7 @@ public class PedidoController {
     @GetMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PedidoListagemDto>> listarPedidos() {
-        List<Pedido> pedidos = pedidoRepository.findAll();
+        List<Pedido> pedidos = pedidoService.listarPedidos();
 
         if (pedidos.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -65,48 +52,13 @@ public class PedidoController {
     @GetMapping("/prestador")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PedidoListagemDto>> listarPorNomePrestador(@RequestParam String prestador) {
-        List<Pedido> pedidos = pedidoRepository.listarPorPrestador(prestador);
+        List<Pedido> pedidos = pedidoService.listarPorPrestador(prestador);
 
         if (pedidos.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
         return ResponseEntity.ok().body(PedidoMapper.toDto(pedidos));
-    }
-
-    @GetMapping("/total-ganho")
-    public ResponseEntity<Double> calcularTotalGanho() {
-        List<Pedido> pedidos = pedidoRepository.findAll();
-
-        if (pedidos.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(totalGanho(pedidos, 0));
-    }
-
-    private Double totalGanho(List<Pedido> listaPedidos, int indice) {
-        if (indice == listaPedidos.size()) {
-            return 0.0;
-        }
-
-        Double total = 0.0;
-
-        List<Produto> produtos = listaPedidos.get(indice).getListaProduto();
-        List<Servico> servicos = listaPedidos.get(indice).getListaServico();
-
-        if (!produtos.isEmpty()) {
-            for (Produto p : produtos) {
-                total += p.getPrecoVenda();
-            }
-        }
-
-        if (!servicos.isEmpty()) {
-            for (Servico s : servicos) {
-                total += s.getValorServico();
-            }
-        }
-
-        return total + totalGanho(listaPedidos, indice + 1);
     }
 
 }

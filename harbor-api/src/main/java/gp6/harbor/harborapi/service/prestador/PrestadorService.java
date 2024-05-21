@@ -1,5 +1,6 @@
 package gp6.harbor.harborapi.service.prestador;
 
+import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.exception.ConflitoException;
@@ -39,6 +40,10 @@ public class PrestadorService {
 
     public List<Prestador> buscarPeloNome(String nome) {
         return prestadorRepository.findByNomeContainsIgnoreCase(nome);
+    }
+
+    public List<Prestador> buscarPorEmpresa(Empresa empresa) {
+        return prestadorRepository.findByEmpresa(empresa);
     }
      
     public boolean existePorId(Long id) {

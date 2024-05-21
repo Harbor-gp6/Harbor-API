@@ -2,6 +2,7 @@ package gp6.harbor.harborapi.api.controller.prestador;
 
 import gp6.harbor.harborapi.arquivoCsv.Gravacao;
 import gp6.harbor.harborapi.domain.cargo.repository.CargoRepository;
+import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
 import gp6.harbor.harborapi.domain.endereco.repository.EnderecoRepository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
@@ -43,6 +44,8 @@ public class PrestadorController {
 
     @Autowired
     private CargoRepository cargoRepository;
+    @Autowired
+    private PrestadorService prestadorService;
 
     @PostMapping
     public ResponseEntity<Void> criar(@RequestBody @Valid PrestadorCriacaoDto usuarioCriacaoDto) {
@@ -136,6 +139,23 @@ public class PrestadorController {
         PrestadorListagemDto listagemDto = PrestadorMapper.toDto(prestadorSalvo);
 
         return ResponseEntity.status(200).body(listagemDto);
+    }
+
+    @GetMapping("empresa/{empresaId}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<PrestadorListagemDto>> prestadorPorEmpresaId(@PathVariable Integer empresaId){
+        Optional<Empresa> empresaBuscada = empresaRepository.findById(empresaId);
+        if (empresaBuscada.isEmpty()) {
+            return ResponseEntity.status(404).build();
+        }
+
+        List<Prestador> prestadores = service.buscarPorEmpresa(empresaBuscada.get());
+        if (prestadores.isEmpty()) {
+            return ResponseEntity.status(204).build();
+        }
+
+        List<PrestadorListagemDto> prestadoresDto = PrestadorMapper.toDto(prestadores);
+        return ResponseEntity.status(200).body(prestadoresDto);
     }
     public boolean existePorCpf(String cpf){
         return prestadorRepository.existsByCpf(cpf);

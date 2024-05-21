@@ -1,5 +1,6 @@
 package gp6.harbor.harborapi.domain.prestador.repository;
 
+import gp6.harbor.harborapi.domain.empresa.Empresa;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
@@ -16,4 +17,6 @@ public interface PrestadorRepository extends JpaRepository<Prestador, Long> {
     List<Prestador> findByCpf(String cpf);
 
     Boolean existsByCpf(String cpf);
+
+    List<Prestador> findByEmpresa(Empresa empresa);
 }

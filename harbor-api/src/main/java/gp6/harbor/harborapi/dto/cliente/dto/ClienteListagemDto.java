@@ -20,5 +20,7 @@ public class ClienteListagemDto {
 
     private String cpf;
 
+    private byte[] foto;
+
     private LocalDate dataCriacao;
 }

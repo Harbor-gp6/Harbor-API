@@ -1,5 +1,6 @@
 package gp6.harbor.harborapi.domain.cliente;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,6 +29,11 @@ public class Cliente {
     private String telefone;
 
     private String cpf;
+
+    @JsonIgnore
+    @Column(length = 50 * 1024 * 1024)
+    private byte[] foto;
+
     @CreationTimestamp
     private LocalDate dataCriacao;
 }

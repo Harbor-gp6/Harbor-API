@@ -8,8 +8,7 @@ import gp6.harbor.harborapi.exception.NaoEncontradoException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +48,5 @@ public class PrestadorService {
     public boolean existePorId(Long id) {
         return prestadorRepository.existsById(id);
     }
-    
     
 }

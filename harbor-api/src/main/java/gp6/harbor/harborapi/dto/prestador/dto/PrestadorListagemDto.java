@@ -11,6 +11,7 @@ import lombok.Setter;
 public class PrestadorListagemDto {
     private Integer id;
     private Empresa empresa;
+    private byte[] foto;
     private String nome;
     private String sobrenome;
     private String telefone;

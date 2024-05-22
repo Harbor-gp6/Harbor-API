@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import gp6.harbor.harborapi.dto.usuario.UsuarioService;
@@ -39,13 +40,6 @@ public class PrestadorController {
     @Autowired
     private EmpresaRepository empresaRepository;
 
-    @Autowired
-    private EnderecoRepository enderecoRepository;
-
-    @Autowired
-    private CargoRepository cargoRepository;
-    @Autowired
-    private PrestadorService prestadorService;
 
     @PostMapping
     public ResponseEntity<Void> criar(@RequestBody @Valid PrestadorCriacaoDto usuarioCriacaoDto) {
@@ -157,6 +151,32 @@ public class PrestadorController {
         List<PrestadorListagemDto> prestadoresDto = PrestadorMapper.toDto(prestadores);
         return ResponseEntity.status(200).body(prestadoresDto);
     }
+
+    @CrossOrigin("*")
+    @PatchMapping(value = "/foto/{id}", consumes = {"image/jpeg", "image/png"})
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> patchFoto(@PathVariable Long id,
+                                          @RequestBody byte[] novaFoto) {
+        if (!prestadorRepository.existsById(id)) {
+            return ResponseEntity.status(404).build();
+        }
+
+        prestadorRepository.setFoto(id, novaFoto);
+        return ResponseEntity.status(200).build();
+    }
+    @GetMapping(value = "/foto/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<byte[]> getFoto(@PathVariable Long id) {
+        if (!prestadorRepository.existsById(id)) {
+            return ResponseEntity.status(404).build();
+        }
+
+        byte[] foto = prestadorRepository.getFoto(id);
+
+        return ResponseEntity.status(200).header("content-disposition",
+                "attachment; filename=\"foto-cliente.jpg\"").body(foto);
+    }
+
     public boolean existePorCpf(String cpf){
         return prestadorRepository.existsByCpf(cpf);
     }

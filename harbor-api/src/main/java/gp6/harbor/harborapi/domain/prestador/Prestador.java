@@ -1,6 +1,7 @@
 package gp6.harbor.harborapi.domain.prestador;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gp6.harbor.harborapi.domain.cargo.Cargo;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import jakarta.persistence.*;
@@ -20,6 +21,9 @@ public class Prestador {
     private String sobrenome;
     private String telefone;
     private String cpf;
+    @JsonIgnore
+    @Column(length = 50 * 1024 * 1024)
+    private byte[] foto;
     private String email;
     private String senha;
     @ManyToOne(cascade = CascadeType.PERSIST)

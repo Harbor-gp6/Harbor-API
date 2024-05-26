@@ -28,21 +28,8 @@ import java.util.*;
 public class PrestadorController {
 
     private final PrestadorService service;
-
-    @Autowired
-    private UsuarioService usuarioService;
-
-    @Autowired
-    private PrestadorRepository prestadorRepository;
-
-    @Autowired
-    private EmpresaRepository empresaRepository;
-
-    @Autowired
-    private EnderecoRepository enderecoRepository;
-
-    @Autowired
-    private CargoRepository cargoRepository;
+    private final UsuarioService usuarioService;
+    private final PrestadorRepository prestadorRepository;
 
     @PostMapping
     public ResponseEntity<Void> criar(@RequestBody @Valid PrestadorCriacaoDto usuarioCriacaoDto) {

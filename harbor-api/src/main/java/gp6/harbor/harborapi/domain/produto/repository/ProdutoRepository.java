@@ -10,4 +10,5 @@ import java.util.List;
 public interface ProdutoRepository extends JpaRepository<Produto, Integer> {
     List<Produto> findAllByOrderByPrecoVendaDesc();
     List<Produto> findAllByOrderByPrecoVendaAsc();
+    List<Produto> findByIdIn(List<Integer> ids);
 }

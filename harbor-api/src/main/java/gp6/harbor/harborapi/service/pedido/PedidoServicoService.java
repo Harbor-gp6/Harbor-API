@@ -7,6 +7,8 @@ import gp6.harbor.harborapi.domain.servico.Servico;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PedidoServicoService {
@@ -20,5 +22,9 @@ public class PedidoServicoService {
         pedidoServico.setPedido(pedido);
 
         return pedidoServicoRepository.save(pedidoServico);
+    }
+
+    public List<PedidoServico> salvarTodos(List<PedidoServico> pedidoServicos) {
+        return pedidoServicoRepository.saveAll(pedidoServicos);
     }
 }

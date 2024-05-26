@@ -16,7 +16,7 @@ public class PedidoServico {
     @Column(name = "id_pedido_servico")
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_pedido")
     private Pedido pedido;
 

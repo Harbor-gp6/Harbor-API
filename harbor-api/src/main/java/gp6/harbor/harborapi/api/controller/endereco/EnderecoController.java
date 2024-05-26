@@ -2,15 +2,15 @@ package gp6.harbor.harborapi.api.controller.endereco;
 
 
 import gp6.harbor.harborapi.domain.endereco.Endereco;
-import gp6.harbor.harborapi.domain.endereco.repository.EnderecoRepository;
 import gp6.harbor.harborapi.domain.listaobj.ListaObj;
 import gp6.harbor.harborapi.dto.endereco.dto.*;
+import gp6.harbor.harborapi.service.endereco.EnderecoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
@@ -19,16 +19,14 @@ import org.springframework.web.client.RestClient;
 import org.slf4j.Logger;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @RestController
 @RequestMapping("/enderecos")
-public class
-EnderecoController {
+@RequiredArgsConstructor
+public class EnderecoController {
 
-    @Autowired
-    private EnderecoRepository enderecoRepository;
+    private final EnderecoService enderecoService;
 
 
 
@@ -38,8 +36,7 @@ EnderecoController {
     @PostMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<EnderecoListagemDto> cadastrar (@RequestBody @Valid EnderecoCriacaoDto novoEndereco){
-        Endereco endereco = EnderecoMapper.toEntity(novoEndereco);
-        Endereco enderecoSalvo = enderecoRepository.save(endereco);
+        Endereco enderecoSalvo = enderecoService.cadastrar(EnderecoMapper.toEntity(novoEndereco));
         EnderecoListagemDto listagemDto = EnderecoMapper.toDto(enderecoSalvo);
         return ResponseEntity.status(201).body(listagemDto);
     }
@@ -47,20 +44,16 @@ EnderecoController {
     @GetMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<EnderecoListagemDto> buscarPeloId(@PathVariable int id){
-        Optional<Endereco> enderecoOptional = enderecoRepository.findById(id);
+        Endereco endereco = enderecoService.buscarPorId(id);
 
-        if (enderecoOptional.isEmpty()){
-            return ResponseEntity.status(404).build();
-        }
-
-        EnderecoListagemDto dto = EnderecoMapper.toDto(enderecoOptional.get());
+        EnderecoListagemDto dto = EnderecoMapper.toDto(endereco);
         return ResponseEntity.status(200).body(dto);
     }
 
     @GetMapping("/cep")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<EnderecoListagemDto>> buscarPeloCep(@RequestParam String cep){
-        List<Endereco> enderecos = enderecoRepository.findByCep(cep);
+        List<Endereco> enderecos = enderecoService.buscarPorCep(cep);
 
         if (enderecos.isEmpty()){
             return ResponseEntity.status(204).build();
@@ -74,7 +67,7 @@ EnderecoController {
     @GetMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<EnderecoListagemDto>> buscar(){
-        List<Endereco> enderecos = enderecoRepository.findAll();
+        List<Endereco> enderecos = enderecoService.listar();
 
         if (enderecos.isEmpty()){
             return ResponseEntity.status(204).build();
@@ -93,13 +86,10 @@ EnderecoController {
             @PathVariable int id,
             @RequestBody @Valid EnderecoCriacaoDto enderecoAtualizado){
 
-        if (!enderecoRepository.existsById(id)){
-            return ResponseEntity.status(404).build();
-        }
-
+        enderecoService.buscarPorId(id);
         Endereco endereco = EnderecoMapper.toEntity(enderecoAtualizado);
         endereco.setId(id);
-        Endereco enderecoSalvo = enderecoRepository.save(endereco);
+        Endereco enderecoSalvo = enderecoService.cadastrar(endereco);
         EnderecoListagemDto listagemDto = EnderecoMapper.toDto(enderecoSalvo);
 
         return ResponseEntity.status(200).body(listagemDto);
@@ -143,7 +133,7 @@ EnderecoController {
 
     @GetMapping("/cep-cadastrado")
     public ResponseEntity<EnderecoListagemDto> buscarCepCadastrado(@RequestParam String cep) {
-        List<Endereco> enderecos = enderecoRepository.findAll();
+        List<Endereco> enderecos = enderecoService.buscarPorCep(cep);
 
         if (enderecos.isEmpty()) {
             return ResponseEntity.noContent().build();

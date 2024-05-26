@@ -1,13 +1,10 @@
 package gp6.harbor.harborapi.domain.pedido;
 
+import gp6.harbor.harborapi.api.enums.FormaPagamento;
 import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
-import gp6.harbor.harborapi.domain.produto.Produto;
-import gp6.harbor.harborapi.domain.servico.Servico;
-import gp6.harbor.harborapi.domain.servico.repository.ServicoRepository;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -43,5 +40,7 @@ public class Pedido {
     @CreationTimestamp
     private LocalDateTime dataCriacao;
 
-    private String observacao;
+    private Double total;
+
+    private FormaPagamento formaPagamento;
 }

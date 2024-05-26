@@ -1,9 +1,12 @@
 package gp6.harbor.harborapi.domain.produto;
 
 import gp6.harbor.harborapi.domain.empresa.Empresa;
+import gp6.harbor.harborapi.domain.pedido.PedidoProduto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter

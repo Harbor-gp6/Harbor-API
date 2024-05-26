@@ -49,4 +49,8 @@ public class ProdutoService {
             throw new NaoEncontradoException("Produto");
         }
     }
+
+    public List<Produto> buscarTodosPorId(List<Integer> ids) {
+        return produtoRepository.findByIdIn(ids);
+    }
 }

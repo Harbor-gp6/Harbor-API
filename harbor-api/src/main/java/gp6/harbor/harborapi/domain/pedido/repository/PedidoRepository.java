@@ -11,4 +11,6 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
 
     @Query("SELECT p FROM Pedido p JOIN p.prestador u WHERE u.nome LIKE CONCAT('%', :prestador, '%') ORDER BY u.nome")
     List<Pedido> listarPorPrestador(String prestador);
+
+    List<Pedido> findByPrestadorId(Long prestadorId);
 }

@@ -1,15 +1,20 @@
 package gp6.harbor.harborapi.dto.empresa.dto;
 
+import gp6.harbor.harborapi.domain.endereco.Endereco;
 import gp6.harbor.harborapi.dto.endereco.dto.EnderecoCriacaoDto;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.br.CNPJ;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -25,63 +30,13 @@ public class EmpresaCriacaoDto {
     @CNPJ
     private String cnpj;
 
-    @Valid
+    @NotNull
     private EnderecoCriacaoDto endereco;
 
-    private LocalDate dataCriacao;
+    @NotNull
+    private LocalTime horarioAbertura;
 
-    private LocalDate dataInativacao;
+    @NotNull
+    private LocalTime horarioFechamento;
 
-
-
-
-
-    public String getRazaoSocial() {
-        return razaoSocial;
-    }
-
-    public void setRazaoSocial(String razaoSocial) {
-        this.razaoSocial = razaoSocial;
-    }
-
-    public String getNomeFantasia() {
-        return nomeFantasia;
-    }
-
-    public void setNomeFantasia(String nomeFantasia) {
-        this.nomeFantasia = nomeFantasia;
-    }
-
-    public String getCnpj() {
-        return cnpj;
-    }
-
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
-    }
-
-
-    public EnderecoCriacaoDto getEndereco() {
-        return endereco;
-    }
-
-    public void setEndereco(EnderecoCriacaoDto endereco) {
-        this.endereco = endereco;
-    }
-
-    public LocalDate getDataCriacao() {
-        return dataCriacao;
-    }
-
-    public void setDataCriacao(LocalDate dataCriacao) {
-        this.dataCriacao = LocalDate.now();
-    }
-
-    public LocalDate getDataInativacao() {
-        return dataInativacao;
-    }
-
-    public void setDataInativacao(LocalDate dataInativacao) {
-        this.dataInativacao = dataInativacao;
-    }
 }

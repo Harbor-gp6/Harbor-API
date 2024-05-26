@@ -6,7 +6,9 @@ import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
 import gp6.harbor.harborapi.exception.ConflitoException;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,6 +23,10 @@ public class EmpresaService {
     public Empresa cadastrar(Empresa empresa) {
         if (existePorCnpj(empresa.getCnpj())) {
             throw new ConflitoException("Empresa");
+        }
+
+        if (empresa.getHorarioAbertura().isAfter(empresa.getHorarioFechamento())) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         return empresaRepository.save(empresa);

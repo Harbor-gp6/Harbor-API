@@ -17,7 +17,7 @@ public interface PrestadorRepository extends JpaRepository<Prestador, Long> {
     Optional<Prestador> findByEmail(String email);
 
     List<Prestador> findByNomeContainsIgnoreCase(String nome);
-    List<Prestador> findByCpf(String cpf);
+    List<Prestador> findByCpfLike(String cpf);
 
     Boolean existsByCpf(String cpf);
 

@@ -7,6 +7,7 @@ import gp6.harbor.harborapi.domain.servico.repository.ServicoRepository;
 import gp6.harbor.harborapi.dto.servico.dto.ServicoCriacaoDto;
 import gp6.harbor.harborapi.dto.servico.dto.ServicoListagemDto;
 import gp6.harbor.harborapi.dto.servico.dto.ServicoMapper;
+import gp6.harbor.harborapi.service.servico.ServicoService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.Optional;
 public class ServicoController {
 
     private final ServicoRepository servicoRepository2;
+    private final ServicoService servicoService;
     private final EmpresaRepository empresaRepository;
 
     @PostMapping
@@ -56,6 +58,22 @@ public class ServicoController {
         }
 
         List<ServicoListagemDto> listaAuxiliar = ServicoMapper.toDto(servicos);
+        return ResponseEntity.status(200).body(listaAuxiliar);
+    }
+
+    @GetMapping("/empresa/{empresaId}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<ServicoListagemDto>> buscarPorEmpresa(@PathVariable Integer empresaId){
+        Optional<Empresa> empresaOptional = empresaRepository.findById(empresaId);
+
+        if (empresaOptional.isEmpty()){
+            return ResponseEntity.status(404).build();
+        }
+        List<Servico> servicosPorEmpresa = servicoService.buscaPorEmpresa(empresaOptional.get());
+        if (servicosPorEmpresa.isEmpty()) {
+            return ResponseEntity.status(404).build();
+        }
+        List<ServicoListagemDto> listaAuxiliar = ServicoMapper.toDto(servicosPorEmpresa);
         return ResponseEntity.status(200).body(listaAuxiliar);
     }
 

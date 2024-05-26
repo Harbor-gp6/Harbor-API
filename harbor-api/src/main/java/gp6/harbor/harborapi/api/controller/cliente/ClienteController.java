@@ -1,7 +1,6 @@
 package gp6.harbor.harborapi.api.controller.cliente;
 
 import gp6.harbor.harborapi.domain.cliente.Cliente;
-import gp6.harbor.harborapi.domain.cliente.repository.ClienteRepository;
 
 import gp6.harbor.harborapi.dto.cliente.dto.ClienteCriacaoDto;
 import gp6.harbor.harborapi.dto.cliente.dto.ClienteListagemDto;
@@ -10,12 +9,10 @@ import gp6.harbor.harborapi.service.cliente.ClienteService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 

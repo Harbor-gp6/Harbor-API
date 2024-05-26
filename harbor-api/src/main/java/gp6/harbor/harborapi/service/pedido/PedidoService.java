@@ -90,4 +90,9 @@ public class PedidoService {
     public List<Pedido> listarPorPrestador(String nomePrestador) {
         return pedidoRepository.listarPorPrestador(nomePrestador);
     }
+
+    public List<Pedido> listarPorPrestadorId(Long prestadorId) {
+        return pedidoRepository.findByPrestadorId(prestadorId);
+    }
+
 }

@@ -21,6 +21,8 @@ public class EmpresaMapper {
         empresa.setNomeFantasia(dto.getNomeFantasia());
         empresa.setCnpj(dto.getCnpj());
         empresa.setDataCriacao(LocalDate.now());
+        empresa.setHorarioAbertura(dto.getHorarioAbertura());
+        empresa.setHorarioFechamento(dto.getHorarioFechamento());
 
         Endereco endereco = EnderecoMapper.toEntity(dto.getEndereco());
 

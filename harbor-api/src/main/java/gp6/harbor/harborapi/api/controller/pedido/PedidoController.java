@@ -75,7 +75,7 @@ public class PedidoController {
 
     @PatchMapping("/produtos/{pedidoId}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<PedidoListagemDto> adicionarProduto(@PathVariable Integer pedidoId, @RequestBody PedidoAtualizacaoProdutoDto produtos) {
+    public ResponseEntity<PedidoListagemDto> adicionarProduto(@PathVariable Integer pedidoId, @Valid @RequestBody PedidoAtualizacaoProdutoDto produtos) {
         return ResponseEntity.ok(PedidoMapper.toDto(pedidoService.adicionarProduto(pedidoId, produtos)));
     }
 

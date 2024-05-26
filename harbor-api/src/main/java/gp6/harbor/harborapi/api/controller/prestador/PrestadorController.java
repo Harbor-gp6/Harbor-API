@@ -20,6 +20,7 @@ import gp6.harbor.harborapi.dto.usuario.UsuarioService;
 import gp6.harbor.harborapi.dto.usuario.autenticacao.dto.UsuarioLoginDto;
 import gp6.harbor.harborapi.dto.usuario.autenticacao.dto.UsuarioTokenDto;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -29,7 +30,7 @@ public class PrestadorController {
 
     private final PrestadorService service;
     private final UsuarioService usuarioService;
-    private final PrestadorRepository prestadorRepository;
+    private final PrestadorService prestadorService;
 
     @PostMapping
     public ResponseEntity<Void> criar(@RequestBody @Valid PrestadorCriacaoDto usuarioCriacaoDto) {
@@ -109,6 +110,18 @@ public class PrestadorController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/horarios/{prestadorId}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<LocalDateTime>> listarHorariosOcupados(@PathVariable Long prestadorId) {
+        List<LocalDateTime> horarios = prestadorService.listarHorariosOcupados(prestadorId);
+
+        if (horarios.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(horarios);
+    }
+
     @PutMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<PrestadorListagemDto> atualizarPrestador(@PathVariable long id, @RequestBody @Valid PrestadorCriacaoDto prestadorAtualizado){
@@ -119,12 +132,12 @@ public class PrestadorController {
 
         Prestador prestador = PrestadorMapper.toEntity(prestadorAtualizado);
         prestador.setId(id);
-        Prestador prestadorSalvo = prestadorRepository.save(prestador);
+        Prestador prestadorSalvo = prestadorService.criar(prestador);
         PrestadorListagemDto listagemDto = PrestadorMapper.toDto(prestadorSalvo);
 
         return ResponseEntity.status(200).body(listagemDto);
     }
     public boolean existePorCpf(String cpf){
-        return prestadorRepository.existsByCpf(cpf);
+        return prestadorService.existePorCpf(cpf);
     }
 }

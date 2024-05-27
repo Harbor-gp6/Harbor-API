@@ -132,9 +132,6 @@ public class PrestadorController {
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PrestadorListagemDto>> prestadorPorEmpresaId(@PathVariable Integer empresaId){
         Empresa empresaBuscada = empresaService.buscarPorId(empresaId);
-        if (empresaBuscada == null) {
-            return ResponseEntity.status(404).build();
-        }
 
         List<Prestador> prestadores = service.buscarPorEmpresa(empresaBuscada);
         if (prestadores.isEmpty()) {

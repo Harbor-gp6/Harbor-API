@@ -1,13 +1,13 @@
 package gp6.harbor.harborapi.dto.empresa.dto;
 
 
+import java.time.LocalDate;
+import java.util.List;
+
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.endereco.Endereco;
 import gp6.harbor.harborapi.dto.endereco.dto.EnderecoMapper;
 import jakarta.validation.Valid;
-
-import java.time.LocalDate;
-import java.util.List;
 
 public class EmpresaMapper {
 
@@ -34,6 +34,7 @@ public class EmpresaMapper {
         if (entity == null) return null;
 
         EmpresaListagemDto listagemDto = new EmpresaListagemDto();
+        listagemDto.setId(entity.getId());
         listagemDto.setRazaoSocial(entity.getRazaoSocial());
         listagemDto.setNomeFantasia(entity.getNomeFantasia());
         listagemDto.setEndereco(entity.getEndereco());

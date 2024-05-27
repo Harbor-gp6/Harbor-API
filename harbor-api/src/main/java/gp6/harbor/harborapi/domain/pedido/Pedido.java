@@ -40,6 +40,8 @@ public class Pedido {
     @CreationTimestamp
     private LocalDateTime dataCriacao;
 
+    private Boolean finalizado;
+
     private Double total;
 
     private FormaPagamento formaPagamento;

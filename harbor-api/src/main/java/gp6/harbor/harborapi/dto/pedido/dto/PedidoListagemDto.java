@@ -27,6 +27,8 @@ public class PedidoListagemDto {
 
     private PrestadorListagemDto prestador;
 
+    private Boolean finalizado;
+
     private FormaPagamento formaPagamento;
 
     @Data

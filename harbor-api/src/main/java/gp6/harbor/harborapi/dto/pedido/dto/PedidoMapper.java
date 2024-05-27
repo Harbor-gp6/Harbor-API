@@ -29,6 +29,8 @@ public class PedidoMapper {
 
         pedido.setDataAgendamento(dto.getDataAgendamento());
 
+        pedido.setFinalizado(false);
+
         pedido.setFormaPagamento(FormaPagamento.fromCodigo(dto.getFormaPagamento()));
 
         return pedido;
@@ -54,6 +56,8 @@ public class PedidoMapper {
         }
 
         pedidoListagemDto.setListaServico(toServicoDto(entity.getPedidoServicos()));
+
+        pedidoListagemDto.setFinalizado(entity.getFinalizado());
 
         pedidoListagemDto.setFormaPagamento(entity.getFormaPagamento());
 

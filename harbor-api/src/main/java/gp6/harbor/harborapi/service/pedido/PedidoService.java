@@ -37,7 +37,6 @@ public class PedidoService {
         if (novoPedido.getDataAgendamento().getHour() < novoPedido.getPrestador().getEmpresa().getHorarioAbertura().getHour() || novoPedido.getDataAgendamento().getHour() > novoPedido.getPrestador().getEmpresa().getHorarioFechamento().getHour()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
         }
-
         Pedido pedido = pedidoRepository.save(novoPedido);
 
         AtomicReference<Double> total = new AtomicReference<>(0.0);

@@ -67,13 +67,12 @@ public class PrestadorService {
 
         pedidos.forEach(pedido -> {
             AtomicReference<Integer> tempo = new AtomicReference<>(0);
-            pedido.getPedidoServicos().forEach(pedidoServico -> {
-                tempo.updateAndGet(v -> v + pedidoServico.getServico().getTempoMedioEmMinutos());
-            });
+            pedido.getPedidoServicos().forEach(pedidoServico -> tempo.updateAndGet(v -> v + pedidoServico.getServico().getTempoMedioEmMinutos()));
             LocalDateTime horarioFim = pedido.getDataAgendamento().plusMinutes(tempo.get());
             LocalDateTime horarioIteracao = pedido.getDataAgendamento();
             while(horarioIteracao.isBefore(horarioFim) || horarioIteracao.isEqual(horarioFim)) {
-                if ((horarioIteracao.plusMinutes(30).getMinute() == 0 || horarioIteracao.plusMinutes(30).getMinute() == 30) || (horarioIteracao.isEqual(horarioFim) && (horarioIteracao.getMinute() == 0 || horarioIteracao.getMinute() == 30))) {
+                if (horarioIteracao.plusMinutes(30).isEqual(horarioFim) || horarioIteracao.plusMinutes(30).isAfter(horarioFim)) {
+                    horarios.add(horarioIteracao);
                     break;
                 }
                 horarios.add(horarioIteracao);

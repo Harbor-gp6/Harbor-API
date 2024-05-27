@@ -4,15 +4,12 @@ import gp6.harbor.harborapi.domain.pedido.Pedido;
 import gp6.harbor.harborapi.domain.pedido.PedidoProduto;
 import gp6.harbor.harborapi.domain.pedido.PedidoServico;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
-import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.servico.Servico;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoProdutoDto;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
-import gp6.harbor.harborapi.service.prestador.PrestadorService;
 import gp6.harbor.harborapi.service.produto.ProdutoService;
 import gp6.harbor.harborapi.service.servico.ServicoService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,7 +17,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
@@ -68,14 +64,19 @@ public class PedidoService {
     public Pedido adicionarProduto(Integer pedidoId, PedidoAtualizacaoProdutoDto produtos) {
         Pedido pedidoEncontrado = pedidoRepository.findById(pedidoId).orElseThrow(() -> new NaoEncontradoException("Pedido"));
 
-        List<Produto> produtosDoBanco = produtoService.buscarTodosPorId(produtos.getProdutos().stream().map(PedidoAtualizacaoProdutoDto.ProdutoDto::getId).toList());
-
         List<PedidoProduto> pedidoProdutos = new ArrayList<>();
 
-        produtosDoBanco.forEach((produto) -> {
+        AtomicReference<Double> total = new AtomicReference<>(pedidoEncontrado.getTotal());
+
+        produtos.getProdutos().forEach(produtoDto -> {
+            Produto produto = produtoService.buscarPorId(produtoDto.getId());
             PedidoProduto pedidoProduto = new PedidoProduto();
+
+            pedidoProduto.setQuantidade(produtoDto.getQuantidade());
             pedidoProduto.setProduto(produto);
             pedidoProduto.setPedido(pedidoEncontrado);
+
+            total.updateAndGet(v -> v + produto.getPrecoVenda() * produtoDto.getQuantidade());
 
             pedidoProdutos.add(pedidoProduto);
         });

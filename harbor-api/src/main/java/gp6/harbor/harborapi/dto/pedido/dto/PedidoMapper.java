@@ -61,6 +61,8 @@ public class PedidoMapper {
 
         pedidoListagemDto.setFormaPagamento(entity.getFormaPagamento());
 
+        pedidoListagemDto.setTotal(entity.getTotal());
+
         return pedidoListagemDto;
     }
 
@@ -86,7 +88,7 @@ public class PedidoMapper {
         PedidoListagemDto.PedidoServicoListagemDto dto = new PedidoListagemDto.PedidoServicoListagemDto();
 
         dto.setId(entity.getId());
-        dto.setServico(entity.getServico());
+        dto.setServico(ServicoMapper.toDto(entity.getServico()));
 
         return dto;
     }

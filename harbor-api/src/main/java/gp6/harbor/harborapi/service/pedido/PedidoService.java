@@ -34,7 +34,12 @@ public class PedidoService {
     private final ServicoService servicoService;
 
     public Pedido criarPedido(Pedido novoPedido, List<Integer> servicosIds) {
+        if (novoPedido.getDataAgendamento().getHour() < novoPedido.getPrestador().getEmpresa().getHorarioAbertura().getHour() || novoPedido.getDataAgendamento().getHour() > novoPedido.getPrestador().getEmpresa().getHorarioFechamento().getHour()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
         Pedido pedido = pedidoRepository.save(novoPedido);
+
         AtomicReference<Double> total = new AtomicReference<>(0.0);
 
         List<Servico> servicosDoBanco = servicoService.buscaTodosPorIds(servicosIds);

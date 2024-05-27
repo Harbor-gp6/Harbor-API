@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class EmpresaListagemDto {
+    private Integer id;
 
     private String razaoSocial;
 

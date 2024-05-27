@@ -68,7 +68,7 @@ public class PedidoMapper {
         PedidoListagemDto.PedidoProdutoListagemDto dto = new PedidoListagemDto.PedidoProdutoListagemDto();
 
         dto.setId(entity.getId());
-        dto.setProduto(dto.getProduto());
+        dto.setProduto(ProdutoMapper.toDto(entity.getProduto()));
         dto.setQuantidade(entity.getQuantidade());
 
         return dto;

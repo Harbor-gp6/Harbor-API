@@ -62,12 +62,12 @@ public class PrestadorController {
         List<Prestador> prestadores = service.listar();
 
         if (prestadores.isEmpty()) {
-            return ResponseEntity.status(204).build();
+            return ResponseEntity.noContent().build();
         }
 
         List<PrestadorListagemDto> dtos = PrestadorMapper.toDto(prestadores);
 
-        return ResponseEntity.status(200).body(dtos);
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")

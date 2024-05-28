@@ -27,12 +27,16 @@ public class PedidoListagemDto {
 
     private PrestadorListagemDto prestador;
 
+    private Boolean finalizado;
+
+    private Double total;
+
     private FormaPagamento formaPagamento;
 
     @Data
     public static class PedidoServicoListagemDto {
         private Integer id;
-        private Servico servico;
+        private ServicoListagemDto servico;
     }
 
     @Data

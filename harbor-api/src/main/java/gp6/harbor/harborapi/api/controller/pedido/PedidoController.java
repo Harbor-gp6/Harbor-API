@@ -1,12 +1,6 @@
 package gp6.harbor.harborapi.api.controller.pedido;
 
 import gp6.harbor.harborapi.domain.pedido.Pedido;
-import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
-import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
-import gp6.harbor.harborapi.domain.produto.Produto;
-import gp6.harbor.harborapi.domain.produto.repository.ProdutoRepository;
-import gp6.harbor.harborapi.domain.servico.Servico;
-import gp6.harbor.harborapi.domain.servico.repository.ServicoRepository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoProdutoDto;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoCriacaoDto;
@@ -18,12 +12,10 @@ import gp6.harbor.harborapi.service.prestador.PrestadorService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.engine.spi.Resolution;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/pedidos")

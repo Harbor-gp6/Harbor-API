@@ -29,6 +29,8 @@ public class PedidoMapper {
 
         pedido.setDataAgendamento(dto.getDataAgendamento());
 
+        pedido.setFinalizado(false);
+
         pedido.setFormaPagamento(FormaPagamento.fromCodigo(dto.getFormaPagamento()));
 
         return pedido;
@@ -55,7 +57,11 @@ public class PedidoMapper {
 
         pedidoListagemDto.setListaServico(toServicoDto(entity.getPedidoServicos()));
 
+        pedidoListagemDto.setFinalizado(entity.getFinalizado());
+
         pedidoListagemDto.setFormaPagamento(entity.getFormaPagamento());
+
+        pedidoListagemDto.setTotal(entity.getTotal());
 
         return pedidoListagemDto;
     }
@@ -82,7 +88,7 @@ public class PedidoMapper {
         PedidoListagemDto.PedidoServicoListagemDto dto = new PedidoListagemDto.PedidoServicoListagemDto();
 
         dto.setId(entity.getId());
-        dto.setServico(entity.getServico());
+        dto.setServico(ServicoMapper.toDto(entity.getServico()));
 
         return dto;
     }

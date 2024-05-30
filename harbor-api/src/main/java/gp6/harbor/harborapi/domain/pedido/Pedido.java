@@ -44,5 +44,6 @@ public class Pedido {
 
     private Double total;
 
+    @Enumerated(EnumType.ORDINAL)
     private FormaPagamento formaPagamento;
 }

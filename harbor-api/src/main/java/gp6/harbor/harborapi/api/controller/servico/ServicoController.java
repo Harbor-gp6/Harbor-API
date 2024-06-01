@@ -1,5 +1,16 @@
 package gp6.harbor.harborapi.api.controller.servico;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
 import gp6.harbor.harborapi.domain.servico.Servico;
@@ -11,11 +22,6 @@ import gp6.harbor.harborapi.service.servico.ServicoService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/servicos")
@@ -62,6 +68,7 @@ public class ServicoController {
     }
 
     @GetMapping("/empresa/{empresaId}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ServicoListagemDto>> buscarPorEmpresa(@PathVariable Integer empresaId){
         Optional<Empresa> empresaOptional = empresaRepository.findById(empresaId);
 

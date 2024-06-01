@@ -62,7 +62,6 @@ public class ServicoController {
     }
 
     @GetMapping("/empresa/{empresaId}")
-    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ServicoListagemDto>> buscarPorEmpresa(@PathVariable Integer empresaId){
         Optional<Empresa> empresaOptional = empresaRepository.findById(empresaId);
 

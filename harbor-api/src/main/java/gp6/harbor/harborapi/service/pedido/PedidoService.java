@@ -4,10 +4,12 @@ import gp6.harbor.harborapi.domain.pedido.Pedido;
 import gp6.harbor.harborapi.domain.pedido.PedidoProduto;
 import gp6.harbor.harborapi.domain.pedido.PedidoServico;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
+import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.servico.Servico;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoProdutoDto;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
+import gp6.harbor.harborapi.service.prestador.PrestadorService;
 import gp6.harbor.harborapi.service.produto.ProdutoService;
 import gp6.harbor.harborapi.service.servico.ServicoService;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +17,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
@@ -28,6 +33,7 @@ public class PedidoService {
     private final PedidoProdutoService pedidoProdutoService;
     private final PedidoServicoService pedidoServicoService;
     private final ServicoService servicoService;
+    private final PrestadorService prestadorService;
 
     public Pedido criarPedido(Pedido novoPedido, List<Integer> servicosIds) {
         if (novoPedido.getDataAgendamento().getHour() < novoPedido.getPrestador().getEmpresa().getHorarioAbertura().getHour() || novoPedido.getDataAgendamento().getHour() > novoPedido.getPrestador().getEmpresa().getHorarioFechamento().getHour()) {
@@ -97,7 +103,52 @@ public class PedidoService {
     }
 
     public List<Pedido> listarPorPrestadorId(Long prestadorId) {
+        prestadorService.buscarPorId(prestadorId);
         return pedidoRepository.findByPrestadorId(prestadorId);
+    }
+
+    public Double somarValorFaturado(LocalDate dataInicio, LocalDate dataFim, Long prestadorId) {
+
+        verificarPrestadorAdmin(prestadorId);
+
+        LocalDateTime inicio = dataInicio.atTime(0, 0);
+        LocalDateTime fim = dataFim.atTime(23, 59);
+
+        Double faturamentoBruto = pedidoRepository.somarFaturamentoBruto(inicio, fim);
+
+        return Objects.requireNonNullElse(faturamentoBruto, 0.0);
+
+    }
+
+    public Double calcularTicketMedio(LocalDate dataInicio, LocalDate dataFim, Long prestadorId) {
+
+        verificarPrestadorAdmin(prestadorId);
+
+        LocalDateTime inicio = dataInicio.atTime(0, 0);
+        LocalDateTime fim = dataFim.atTime(23, 59);
+
+        return pedidoRepository.somarFaturamentoBruto(inicio, fim) / pedidoRepository.contarPedidosPorPeriodo(inicio, fim);
+    }
+
+    public Double somarValorFaturadoPorPrestador(LocalDate dataInicio, LocalDate dataFim, Long prestadorId, Long prestadorBuscadoId) {
+
+        verificarPrestadorAdmin(prestadorId);
+
+        LocalDateTime inicio = dataInicio.atTime(0, 0);
+        LocalDateTime fim = dataFim.atTime(23, 59);
+
+        Double faturamentoBruto = pedidoRepository.somarFaturamentoBrutoPorPrestador(inicio, fim, prestadorBuscadoId);
+
+        return Objects.requireNonNullElse(faturamentoBruto, 0.0);
+
+    }
+
+    private void verificarPrestadorAdmin (Long prestadorId) {
+        Prestador prestador = prestadorService.buscarPorId(prestadorId);
+
+        if (!prestador.getCargo().getNomeCargo().equalsIgnoreCase("Admin")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
     }
 
 }

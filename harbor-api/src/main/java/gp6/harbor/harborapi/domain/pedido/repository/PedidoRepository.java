@@ -15,12 +15,12 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
 
     List<Pedido> findByPrestadorId(Long prestadorId);
 
-    @Query("SELECT SUM(total) from Pedido p WHERE p.data_agendamento >= :dataInicio AND p.data_agendamento <= :dataFim")
+    @Query("SELECT SUM(p.total) from Pedido p WHERE p.dataAgendamento >= :dataInicio AND p.dataAgendamento <= :dataFim")
     Double somarFaturamentoBruto(LocalDateTime dataInicio, LocalDateTime dataFim);
 
-    @Query("SELECT SUM(total) from Pedido p WHERE p.data_agendamento >= :dataInicio AND p.data_agendamento <= :dataFim AND p.prestador_id = :prestadorId")
+    @Query("SELECT SUM(p.total) from Pedido p WHERE p.dataAgendamento >= :dataInicio AND p.dataAgendamento <= :dataFim AND p.prestador.id = :prestadorId")
     Double somarFaturamentoBrutoPorPrestador(LocalDateTime dataInicio, LocalDateTime dataFim, Long prestadorId);
 
-    @Query("SELECT COUNT(p) FROM Pedido p WHERE p.data_agendamento >= :dataInicio AND p.data_agendamento <= :dataFim")
+    @Query("SELECT COUNT(p) FROM Pedido p WHERE p.dataAgendamento >= :dataInicio AND p.dataAgendamento <= :dataFim")
     Integer contarPedidosPorPeriodo(LocalDateTime dataInicio, LocalDateTime dataFim);
 }

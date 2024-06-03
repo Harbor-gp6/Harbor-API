@@ -102,11 +102,6 @@ public class PedidoService {
         return pedidoRepository.listarPorPrestador(nomePrestador);
     }
 
-    public List<Pedido> listarPorPrestadorId(Long prestadorId) {
-        prestadorService.buscarPorId(prestadorId);
-        return pedidoRepository.findByPrestadorId(prestadorId);
-    }
-
     public Double somarValorFaturado(LocalDate dataInicio, LocalDate dataFim, Long prestadorId) {
 
         verificarPrestadorAdmin(prestadorId);

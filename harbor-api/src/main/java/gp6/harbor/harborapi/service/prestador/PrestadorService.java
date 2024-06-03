@@ -2,6 +2,7 @@ package gp6.harbor.harborapi.service.prestador;
 
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.pedido.Pedido;
+import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.exception.ConflitoException;
@@ -19,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PrestadorService {
 
     private final PrestadorRepository prestadorRepository;
-    private final PedidoService pedidoService;
+    private final PedidoRepository pedidoRepository;
 
     public Prestador criar(Prestador prestador) {
         if (prestadorRepository.existsById(prestador.getId())) {
@@ -58,10 +59,15 @@ public class PrestadorService {
         return prestadorRepository.existsById(id);
     }
 
+    public List<Pedido> listarPedidosPorPrestadorId(Long prestadorId) {
+        buscarPorId(prestadorId);
+        return pedidoRepository.findByPrestadorId(prestadorId);
+    }
+
     public List<LocalDateTime> listarHorariosOcupados(Long prestadorId) {
         buscarPorId(prestadorId);
 
-        List<Pedido> pedidos = pedidoService.listarPorPrestadorId(prestadorId);
+        List<Pedido> pedidos = listarPedidosPorPrestadorId(prestadorId);
 
         List<LocalDateTime> horarios = new ArrayList<>();
 

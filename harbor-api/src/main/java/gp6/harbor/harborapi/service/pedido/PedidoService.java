@@ -12,6 +12,7 @@ import gp6.harbor.harborapi.exception.NaoEncontradoException;
 import gp6.harbor.harborapi.service.prestador.PrestadorService;
 import gp6.harbor.harborapi.service.produto.ProdutoService;
 import gp6.harbor.harborapi.service.servico.ServicoService;
+import gp6.harbor.harborapi.util.PedidoFilaEspera;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,8 @@ public class PedidoService {
     private final PedidoProdutoService pedidoProdutoService;
     private final PedidoServicoService pedidoServicoService;
     private final ServicoService servicoService;
+    private PedidoFilaEspera<Pedido> filaPedido = new PedidoFilaEspera<>(10);
+
 
     public Pedido criarPedido(Pedido novoPedido, List<Integer> servicosIds) {
         Pedido pedido = pedidoRepository.save(novoPedido);
@@ -57,6 +60,8 @@ public class PedidoService {
         pedido.setTotal(total.get());
 
         pedido.setPedidoServicos(pedidoServicoService.salvarTodos(listPedidoServico));
+
+        enfileirarPedido(pedido);
 
         return pedidoRepository.save(pedido);
     }
@@ -94,5 +99,16 @@ public class PedidoService {
     public List<Pedido> listarPorPrestadorId(Long prestadorId) {
         return pedidoRepository.findByPrestadorId(prestadorId);
     }
+
+    //fila
+
+    public void enfileirarPedido(Pedido pedido) {
+        filaPedido.adicionarPedidoNaFila(pedido);
+    }
+
+    public Pedido proximoPedido() {
+        return filaPedido.prestarProximoPedido();
+    }
+
 
 }

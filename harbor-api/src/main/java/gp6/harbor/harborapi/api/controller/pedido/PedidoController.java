@@ -23,7 +23,6 @@ import java.util.List;
 public class PedidoController {
 
     private final PedidoService pedidoService;
-    private final ClienteService clienteService;
     private final PrestadorService prestadorService;
 
     @PostMapping

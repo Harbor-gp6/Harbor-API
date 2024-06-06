@@ -25,6 +25,4 @@ public class ClienteCriacaoDto {
     @CPF
     @NotBlank
     private String cpf;
-
-    private LocalDate dataCriacao;
 }

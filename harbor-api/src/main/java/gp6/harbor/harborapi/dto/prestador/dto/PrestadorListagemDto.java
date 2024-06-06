@@ -1,5 +1,6 @@
 package gp6.harbor.harborapi.dto.prestador.dto;
 
+import gp6.harbor.harborapi.api.enums.CargoEnum;
 import gp6.harbor.harborapi.domain.cargo.Cargo;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import lombok.Getter;
@@ -17,6 +18,6 @@ public class PrestadorListagemDto {
     private String telefone;
     private String cpf;
     private String email;
-    private Cargo cargo;
+    private CargoEnum cargo;
 
 }

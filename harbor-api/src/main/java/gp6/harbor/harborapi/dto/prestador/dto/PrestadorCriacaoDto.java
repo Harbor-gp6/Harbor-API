@@ -1,8 +1,10 @@
 package gp6.harbor.harborapi.dto.prestador.dto;
 
 
+import gp6.harbor.harborapi.api.enums.CargoEnum;
 import gp6.harbor.harborapi.domain.cargo.Cargo;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
+import gp6.harbor.harborapi.dto.empresa.dto.EmpresaCriacaoDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -33,9 +35,7 @@ public class PrestadorCriacaoDto {
     @NotBlank(message = "A senha não pode estar em branco")
     @Size(min = 8, max = 30)
     private String senha;
-    @Valid
-    private Cargo cargo;
-    @Valid
-    private Empresa empresa;
+    private CargoEnum cargo;
+    private EmpresaCriacaoDto empresa;
 
 }

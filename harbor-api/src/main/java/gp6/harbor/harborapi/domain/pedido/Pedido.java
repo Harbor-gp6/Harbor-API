@@ -1,6 +1,6 @@
 package gp6.harbor.harborapi.domain.pedido;
 
-import gp6.harbor.harborapi.api.enums.FormaPagamento;
+import gp6.harbor.harborapi.api.enums.FormaPagamentoEnum;
 import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import jakarta.persistence.*;
@@ -45,5 +45,5 @@ public class Pedido {
     private Double total;
 
     @Enumerated(EnumType.ORDINAL)
-    private FormaPagamento formaPagamento;
+    private FormaPagamentoEnum formaPagamentoEnum;
 }

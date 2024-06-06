@@ -1,18 +1,13 @@
 package gp6.harbor.harborapi.dto.pedido.dto;
 
-import gp6.harbor.harborapi.api.enums.FormaPagamento;
+import gp6.harbor.harborapi.api.enums.FormaPagamentoEnum;
 import gp6.harbor.harborapi.domain.pedido.Pedido;
 import gp6.harbor.harborapi.domain.pedido.PedidoProduto;
 import gp6.harbor.harborapi.domain.pedido.PedidoServico;
-import gp6.harbor.harborapi.domain.produto.Produto;
-import gp6.harbor.harborapi.domain.produto.repository.ProdutoRepository;
-import gp6.harbor.harborapi.domain.servico.Servico;
-import gp6.harbor.harborapi.domain.servico.repository.ServicoRepository;
 import gp6.harbor.harborapi.dto.cliente.dto.ClienteMapper;
 import gp6.harbor.harborapi.dto.prestador.dto.PrestadorMapper;
 import gp6.harbor.harborapi.dto.produto.dto.ProdutoMapper;
 import gp6.harbor.harborapi.dto.servico.dto.ServicoMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -31,7 +26,7 @@ public class PedidoMapper {
 
         pedido.setFinalizado(false);
 
-        pedido.setFormaPagamento(FormaPagamento.fromCodigo(dto.getFormaPagamento()));
+        pedido.setFormaPagamentoEnum(FormaPagamentoEnum.fromCodigo(dto.getFormaPagamento()));
 
         return pedido;
 
@@ -59,7 +54,7 @@ public class PedidoMapper {
 
         pedidoListagemDto.setFinalizado(entity.getFinalizado());
 
-        pedidoListagemDto.setFormaPagamento(entity.getFormaPagamento());
+        pedidoListagemDto.setFormaPagamentoEnum(entity.getFormaPagamentoEnum());
 
         pedidoListagemDto.setTotal(entity.getTotal());
 

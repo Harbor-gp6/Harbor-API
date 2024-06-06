@@ -37,7 +37,7 @@ public class EmpresaMapper {
         listagemDto.setId(entity.getId());
         listagemDto.setRazaoSocial(entity.getRazaoSocial());
         listagemDto.setNomeFantasia(entity.getNomeFantasia());
-        listagemDto.setEndereco(entity.getEndereco());
+        listagemDto.setEndereco(EnderecoMapper.toDto(entity.getEndereco()));
         listagemDto.setCnpj(entity.getCnpj());
         return listagemDto;
     }

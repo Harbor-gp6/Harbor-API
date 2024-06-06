@@ -1,7 +1,6 @@
 package gp6.harbor.harborapi.dto.pedido.dto;
 
-import gp6.harbor.harborapi.api.enums.FormaPagamento;
-import gp6.harbor.harborapi.domain.servico.Servico;
+import gp6.harbor.harborapi.api.enums.FormaPagamentoEnum;
 import gp6.harbor.harborapi.dto.prestador.dto.PrestadorListagemDto;
 import gp6.harbor.harborapi.dto.produto.dto.ProdutoListagemDto;
 import gp6.harbor.harborapi.dto.servico.dto.ServicoListagemDto;
@@ -31,7 +30,7 @@ public class PedidoListagemDto {
 
     private Double total;
 
-    private FormaPagamento formaPagamento;
+    private FormaPagamentoEnum formaPagamentoEnum;
 
     @Data
     public static class PedidoServicoListagemDto {

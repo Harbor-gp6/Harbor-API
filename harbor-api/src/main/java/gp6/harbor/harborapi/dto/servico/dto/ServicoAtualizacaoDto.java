@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ServicoCriacaoDto {
+public class ServicoAtualizacaoDto {
     @NotBlank(message = "A descrição do serviço não pode estar em branco")
     @Size(min = 2, max = 45, message = "A descrição do serviço deve ter entre 2 e 45 caracteres")
     private String descricaoServico;
@@ -20,6 +20,4 @@ public class ServicoCriacaoDto {
     private Integer tempoMedioEmMinutos;
     @NotNull
     private Double valorServico;
-    @NotNull
-    private String cnpjEmpresa;
 }

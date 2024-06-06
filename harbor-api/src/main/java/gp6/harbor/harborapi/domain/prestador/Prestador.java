@@ -3,7 +3,6 @@ package gp6.harbor.harborapi.domain.prestador;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gp6.harbor.harborapi.api.enums.CargoEnum;
-import gp6.harbor.harborapi.domain.cargo.Cargo;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -1,6 +1,5 @@
 package gp6.harbor.harborapi.dto.prestador.dto;
 
-import gp6.harbor.harborapi.domain.cargo.Cargo;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.dto.empresa.dto.EmpresaMapper;

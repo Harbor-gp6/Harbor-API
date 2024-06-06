@@ -33,7 +33,7 @@ public class PrestadorMapper {
 
         PrestadorListagemDto listagemDto = new PrestadorListagemDto();
         listagemDto.setId(Math.toIntExact(entity.getId()));
-        listagemDto.setEmpresa(entity.getEmpresa());
+        listagemDto.setEmpresa(EmpresaMapper.toDto(entity.getEmpresa()));
         listagemDto.setNome(entity.getNome());
         listagemDto.setSobrenome(entity.getSobrenome());
         listagemDto.setTelefone(entity.getTelefone());

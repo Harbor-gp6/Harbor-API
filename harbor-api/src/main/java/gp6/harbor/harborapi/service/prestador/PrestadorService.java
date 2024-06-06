@@ -8,6 +8,7 @@ import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.exception.ConflitoException;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
 import gp6.harbor.harborapi.service.pedido.PedidoService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -62,6 +63,14 @@ public class PrestadorService {
     public List<Pedido> listarPedidosPorPrestadorId(Long prestadorId) {
         buscarPorId(prestadorId);
         return pedidoRepository.findByPrestadorId(prestadorId);
+    }
+    @Transactional
+    public void setFoto(Long id, byte[] novaFoto) {
+        prestadorRepository.setFoto(id, novaFoto);
+    }
+
+    public byte[] getFoto(Long id) {
+        return prestadorRepository.getFoto(id);
     }
 
     public List<LocalDateTime> listarHorariosOcupados(Long prestadorId) {

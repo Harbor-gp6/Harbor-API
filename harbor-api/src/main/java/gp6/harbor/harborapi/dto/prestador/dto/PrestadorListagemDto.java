@@ -11,7 +11,7 @@ import lombok.Setter;
 public class PrestadorListagemDto {
     private Integer id;
     private Empresa empresa;
-    private byte[] foto;
+    private String fotoPrestador;
     private String nome;
     private String sobrenome;
     private String telefone;
@@ -19,4 +19,15 @@ public class PrestadorListagemDto {
     private String email;
     private Cargo cargo;
 
+    public void setFoto(byte[] foto) {
+        this.fotoPrestador = truncateBase64(foto);
+    }
+
+    private String truncateBase64(byte[] foto) {
+        if (foto == null) {
+            return null;
+        }
+        String base64 = java.util.Base64.getEncoder().encodeToString(foto);
+        return base64.length() > 20 ? base64.substring(0, 20) + "..." : base64;
+    }
 }

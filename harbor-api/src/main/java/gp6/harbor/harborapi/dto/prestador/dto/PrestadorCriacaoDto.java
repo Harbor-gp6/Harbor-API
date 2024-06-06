@@ -37,5 +37,6 @@ public class PrestadorCriacaoDto {
     private Cargo cargo;
     @Valid
     private Empresa empresa;
-
+    @Valid
+    private byte[] foto;
 }

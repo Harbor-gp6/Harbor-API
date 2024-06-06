@@ -11,7 +11,7 @@ import lombok.Setter;
 public class PrestadorListagemDto {
     private Integer id;
     private Empresa empresa;
-    private String fotoPrestador;
+    private String foto;
     private String nome;
     private String sobrenome;
     private String telefone;
@@ -20,7 +20,7 @@ public class PrestadorListagemDto {
     private Cargo cargo;
 
     public void setFoto(byte[] foto) {
-        this.fotoPrestador = truncateBase64(foto);
+        this.foto = truncateBase64(foto);
     }
 
     private String truncateBase64(byte[] foto) {

@@ -1,5 +1,8 @@
 package gp6.harbor.harborapi.api.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum CargoEnum {
     ADMIN("Admin"),
     EMPREGADO("Empregado"),

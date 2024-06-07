@@ -141,7 +141,7 @@ public class PedidoService {
     private void verificarPrestadorAdmin (Long prestadorId) {
         Prestador prestador = prestadorService.buscarPorId(prestadorId);
 
-        if (!prestador.getCargo().getNomeCargo().equalsIgnoreCase("Admin")) {
+        if (!prestador.getCargo().getCargo().equalsIgnoreCase("Admin")) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
     }

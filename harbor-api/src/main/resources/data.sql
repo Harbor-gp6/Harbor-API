@@ -3,9 +3,6 @@ insert into prestador
 values
     ('John Doe', 'john@doe.com', '$2a$10$0/TKTGxdREbWaWjWYhwf6e9P1fPOAMMNqEnZgOG95jnSkHSfkkIrC');
 
-
-insert into cargo (nome_cargo) values ('Gestor'), ('Prestador'), ('Atendente');
-
 INSERT INTO endereco (bairro, logradouro, cidade, estado, cep, complemento) VALUES
 ('Vila Nova Cachoeirinha', 'Avenida Deputado Emílio Carlos', 'São Paulo', 'SP', '02611000', 'Apto 101'),
 ('Centro', 'Rua Direita', 'Rio de Janeiro', 'RJ', '20010020', 'Sala 202'),

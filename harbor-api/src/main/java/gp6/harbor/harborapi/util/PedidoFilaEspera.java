@@ -1,55 +1,63 @@
 package gp6.harbor.harborapi.util;
 
-public class PedidoFilaEspera <T> {
-    // Atributos
-    private T[] fila;
-    private int tamanho;
-    private int capacidadeMaxima;
+import gp6.harbor.harborapi.domain.cliente.Cliente;
+import gp6.harbor.harborapi.domain.pedido.Pedido;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
 
-    // Construtor
+public class PedidoFilaEspera <T extends Pedido> {
+
+    private final Map<Cliente, Queue<T>> filasPorCliente;
+    private final int capacidadeMaxima;
+
     public PedidoFilaEspera(int capacidadeMaxima) {
-        this.fila = (T[]) new Object[capacidadeMaxima];
-        this.tamanho = 0;
+        this.filasPorCliente = new HashMap<>();
         this.capacidadeMaxima = capacidadeMaxima;
     }
 
-    // Métodos
-    public boolean adicionarPedidoNaFila(T elemento) {
-        if (tamanho == capacidadeMaxima) {
-            return false; // Fila cheia, não é possível enfileirar
+    public boolean adicionarPedido(T pedido) {
+
+        Cliente cliente = pedido.getCliente();
+
+        Queue<T> filaCliente = filasPorCliente.get(cliente);
+
+        if(filaCliente == null) {
+            filaCliente = new LinkedList<>();
+            filasPorCliente.put(cliente, filaCliente);
         }
 
-        fila[tamanho] = elemento;
-        tamanho++;
+        if(filaCliente.size() >= capacidadeMaxima) {
+            return false;
+        }
+
+        filaCliente.add((T) pedido);
         return true;
+
     }
 
-    public T prestarProximoPedido() {
-        if (tamanho == 0) {
-            return null; // Fila vazia, não há elementos a desenfileirar
+    public T prestarProximoPedido(Cliente cliente) {
+
+        Queue<T> filaCliente = filasPorCliente.get(cliente);
+
+        if(filaCliente.isEmpty()) {
+            return null;
         }
 
-        T elementoRemovido = fila[0];
-        deslocarPedidoNaFila();
-        tamanho--;
-        return elementoRemovido;
-    }
+        return filaCliente.poll();
 
-    private void deslocarPedidoNaFila() {
-        for (int i = 0; i < tamanho - 1; i++) {
-            fila[i] = fila[i + 1];
-        }
     }
 
     public int tamanhoFila() {
-        return tamanho;
+        return capacidadeMaxima;
     }
 
     public boolean filaVazia() {
-        return tamanho == 0;
+        return capacidadeMaxima == 0;
     }
 
     public boolean filaCheia() {
-        return tamanho == capacidadeMaxima;
+        return capacidadeMaxima == capacidadeMaxima;
     }
 }

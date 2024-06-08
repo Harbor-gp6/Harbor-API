@@ -12,6 +12,7 @@ import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoProdutoDto;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoCriacaoDto;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoListagemDto;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoMapper;
+import gp6.harbor.harborapi.exception.PedidoCapacidadeExcedidoException;
 import gp6.harbor.harborapi.service.cliente.ClienteService;
 import gp6.harbor.harborapi.service.pedido.PedidoService;
 import gp6.harbor.harborapi.service.prestador.PrestadorService;
@@ -43,10 +44,14 @@ public class PedidoController {
 
         pedido.setPrestador(prestador);
 
-        Pedido pedidoSalvo = pedidoService.criarPedido(pedido, novoPedido.getServicos());
+        try {
+            Pedido pedidoSalvo = pedidoService.criarPedido(pedido, novoPedido.getServicos());
+            PedidoListagemDto listagemDto = PedidoMapper.toDto(pedidoSalvo);
+            return ResponseEntity.status(201).body(listagemDto);
 
-        PedidoListagemDto listagemDto = PedidoMapper.toDto(pedidoSalvo);
-        return ResponseEntity.status(201).body(listagemDto);
+        } catch (PedidoCapacidadeExcedidoException e) {
+            return ResponseEntity.status(429).build();
+        }
     }
 
     @GetMapping

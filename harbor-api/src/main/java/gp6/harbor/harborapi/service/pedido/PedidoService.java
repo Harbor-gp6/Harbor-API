@@ -9,6 +9,7 @@ import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.servico.Servico;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoProdutoDto;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
+import gp6.harbor.harborapi.exception.PedidoCapacidadeExcedidoException;
 import gp6.harbor.harborapi.service.prestador.PrestadorService;
 import gp6.harbor.harborapi.service.produto.ProdutoService;
 import gp6.harbor.harborapi.service.servico.ServicoService;
@@ -37,14 +38,17 @@ public class PedidoService {
 
 
     public Pedido criarPedido(Pedido novoPedido, List<Integer> servicosIds) {
+
+        if(!filaPedido.adicionarPedido(novoPedido)) {
+            throw new PedidoCapacidadeExcedidoException("Fila no limite de pedidos");
+        }
+
         Pedido pedido = pedidoRepository.save(novoPedido);
         AtomicReference<Double> total = new AtomicReference<>(0.0);
 
         List<Servico> servicosDoBanco = servicoService.buscaTodosPorIds(servicosIds);
 
         List<PedidoServico> listPedidoServico = new ArrayList<>();
-
-
 
         servicosDoBanco.forEach(servico -> {
             PedidoServico pedidoServico = new PedidoServico();
@@ -60,8 +64,6 @@ public class PedidoService {
         pedido.setTotal(total.get());
 
         pedido.setPedidoServicos(pedidoServicoService.salvarTodos(listPedidoServico));
-
-        enfileirarPedido(pedido);
 
         return pedidoRepository.save(pedido);
     }
@@ -99,16 +101,4 @@ public class PedidoService {
     public List<Pedido> listarPorPrestadorId(Long prestadorId) {
         return pedidoRepository.findByPrestadorId(prestadorId);
     }
-
-    //fila
-
-    public void enfileirarPedido(Pedido pedido) {
-        filaPedido.adicionarPedidoNaFila(pedido);
-    }
-
-    public Pedido proximoPedido() {
-        return filaPedido.prestarProximoPedido();
-    }
-
-
 }

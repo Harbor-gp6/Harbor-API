@@ -27,5 +27,6 @@ public class ClienteCriacaoDto {
     @NotBlank
     private String cpf;
     @Email
+    @NotBlank
     private String email;
 }

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
             message.setTo(toEmail);
             message.setSubject(subject);
             message.setText(body);
-            message.setFrom("henrique.jaldim@hotmail.com");
+            message.setFrom("email");
 
             mailSender.send(message);
         }

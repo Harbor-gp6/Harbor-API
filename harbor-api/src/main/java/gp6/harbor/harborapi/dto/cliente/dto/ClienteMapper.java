@@ -14,6 +14,7 @@ public class ClienteMapper {
         cliente.setSobrenome(dto.getSobrenome());
         cliente.setTelefone(dto.getTelefone());
         cliente.setCpf(dto.getCpf());
+        cliente.setEmail(dto.getEmail());
 
         return cliente;
     }
@@ -27,6 +28,7 @@ public class ClienteMapper {
         listagemDto.setSobrenome(entity.getSobrenome());
         listagemDto.setTelefone(entity.getTelefone());
         listagemDto.setCpf(entity.getCpf());
+        listagemDto.setEmail(entity.getEmail());
         listagemDto.setDataCriacao(entity.getDataCriacao());
 
         return listagemDto;

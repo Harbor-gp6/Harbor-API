@@ -73,13 +73,13 @@ public class PedidoService {
             String subject = "AGENDAMENTO REALIZADO COM SUCESSO";
             String message = "Voce tem um agendamento em " + pedidoSalvo.getPrestador().getEmpresa().getNomeFantasia() + " para dia " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com " + pedidoSalvo.getPrestador().getNome() + " " + pedidoSalvo.getPrestador().getSobrenome();
 
-            emailService.sendEmail(pedidoSalvo.getPrestador().getEmail(), pedidoSalvo.getCliente().getEmail(), subject, message);
+            emailService.sendEmail(pedidoSalvo.getCliente().getEmail(), subject, message);
         }
 
         String subject = "VOCÊ TEM UM NOVO SERVIÇO AGENDADO";
         String message = "Voce tem um serviço agendado para dia " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com cliente " + pedidoSalvo.getCliente().getNome() + " " + pedidoSalvo.getCliente().getSobrenome();
 
-        emailService.sendEmail("henrique.mosca@sptech.school", pedidoSalvo.getPrestador().getEmail(), subject, message);
+        emailService.sendEmail(pedidoSalvo.getPrestador().getEmail(), subject, message);
 
         return pedidoSalvo;
     }

@@ -13,8 +13,10 @@ public class PrestadorMapper {
         }
         Prestador prestador = new Prestador();
 
-        Empresa empresa = EmpresaMapper.toEntity(dto.getEmpresa());
-        prestador.setEmpresa(empresa);
+        if (!(dto.getEmpresa() == null)) {
+            Empresa empresa = EmpresaMapper.toEntity(dto.getEmpresa());
+            prestador.setEmpresa(empresa);
+        }
 
         prestador.setNome(dto.getNome());
         prestador.setSobrenome(dto.getSobrenome());

@@ -9,6 +9,7 @@ import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.servico.Servico;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoProdutoDto;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
+import gp6.harbor.harborapi.service.email.EmailService;
 import gp6.harbor.harborapi.service.prestador.PrestadorService;
 import gp6.harbor.harborapi.service.produto.ProdutoService;
 import gp6.harbor.harborapi.service.servico.ServicoService;
@@ -19,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -34,6 +36,7 @@ public class PedidoService {
     private final PedidoServicoService pedidoServicoService;
     private final ServicoService servicoService;
     private final PrestadorService prestadorService;
+    private final EmailService emailService;
 
     public Pedido criarPedido(Pedido novoPedido, List<Integer> servicosIds) {
         if (novoPedido.getDataAgendamento().getHour() < novoPedido.getPrestador().getEmpresa().getHorarioAbertura().getHour() || novoPedido.getDataAgendamento().getHour() > novoPedido.getPrestador().getEmpresa().getHorarioFechamento().getHour()) {
@@ -64,7 +67,21 @@ public class PedidoService {
 
         pedido.setPedidoServicos(pedidoServicoService.salvarTodos(listPedidoServico));
 
-        return pedidoRepository.save(pedido);
+        Pedido pedidoSalvo = pedidoRepository.save(pedido);
+
+        if (pedidoSalvo.getCliente().getEmail() != null) {
+            String subject = "AGENDAMENTO REALIZADO COM SUCESSO";
+            String message = "Voce tem um agendamento em " + pedidoSalvo.getPrestador().getEmpresa().getNomeFantasia() + " para dia " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com " + pedidoSalvo.getPrestador().getNome() + " " + pedidoSalvo.getPrestador().getSobrenome();
+
+            emailService.sendEmail(pedidoSalvo.getPrestador().getEmail(), pedidoSalvo.getCliente().getEmail(), subject, message);
+        }
+
+        String subject = "VOCÊ TEM UM NOVO SERVIÇO AGENDADO";
+        String message = "Voce tem um serviço agendado para dia " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com cliente " + pedidoSalvo.getCliente().getNome() + " " + pedidoSalvo.getCliente().getSobrenome();
+
+        emailService.sendEmail("henrique.mosca@sptech.school", pedidoSalvo.getPrestador().getEmail(), subject, message);
+
+        return pedidoSalvo;
     }
 
     public Pedido adicionarProduto(Integer pedidoId, PedidoAtualizacaoProdutoDto produtos) {

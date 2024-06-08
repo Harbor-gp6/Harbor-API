@@ -2,7 +2,7 @@ package gp6.harbor.harborapi.service;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import gp6.harbor.harborapi.domain.cargo.Cargo;
+import gp6.harbor.harborapi.api.enums.CargoEnum;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.endereco.Endereco;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
@@ -39,10 +39,6 @@ public class PrestadorServiceTest {
 
     Prestador setUp() {
 
-        Cargo cargo = new Cargo();
-        cargo.setId(1);
-        cargo.setNomeCargo("gestor");
-
         Endereco endereco = new Endereco();
         endereco.setId(1);
         endereco.setLogradouro("Rua Exemplo");
@@ -71,7 +67,7 @@ public class PrestadorServiceTest {
         prestador.setEmail("email@exemplo.com");
         prestador.setSenha("senhaSegura");
         prestador.setEmpresa(empresa);
-        prestador.setCargo(cargo);
+        prestador.setCargo(CargoEnum.ADMIN);
 
         return prestador;
     }

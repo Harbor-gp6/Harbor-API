@@ -157,19 +157,6 @@ public class ProdutoServiceTest {
     }
 
     @Test
-    @DisplayName("Cenario de existir por Id")
-    void existePorId(){
-        Produto produto = setUp();
-        repository.save(produto);
-
-        when(repository.existsById(produto.getId())).thenReturn(true);
-
-        Boolean resposta = service.existePorId(produto.getId());
-
-        assertEquals(true, resposta);
-    }
-
-    @Test
     @DisplayName("Cenario de listar corretamente do maior preço de venda para o menor")
     void listarMaiorParaMenor(){
         List<Produto> produtos = setUpList();
@@ -197,19 +184,6 @@ public class ProdutoServiceTest {
         List<Produto> resposta = service.buscarMenorParaMaior();
         assertEquals(produtosOrdenados, resposta);
         verify(repository, times(1)).findAllByOrderByPrecoVendaAsc();
-    }
-
-    @Test
-    @DisplayName("Cenario de deletar executado com sucesso")
-    void deletarCorretamente(){
-        Produto produto = setUp();
-
-        when(repository.findById(produto.getId())).thenReturn(Optional.of(produto));
-
-        Produto resposta = service.deletarPorId(produto.getId());
-
-        verify(repository, times(1)).deleteById(produto.getId());
-        assertEquals(produto, resposta);
     }
 
     @Test

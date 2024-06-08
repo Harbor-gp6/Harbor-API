@@ -15,7 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import gp6.harbor.harborapi.domain.cargo.Cargo;
+import gp6.harbor.harborapi.api.enums.CargoEnum;
 import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.endereco.Endereco;
@@ -69,9 +69,6 @@ public class PedidoServicoServiceTest {
         cliente.setCpf("20487594815");
         cliente.setTelefone("11985478123");
 
-        Cargo cargo = new Cargo();
-        cargo.setId(1);
-        cargo.setNomeCargo("cabeleleiro");
 
         Prestador prestador = new Prestador();
         prestador.setId(1L);
@@ -83,7 +80,7 @@ public class PedidoServicoServiceTest {
         prestador.setEmail("email@exemplo.com");
         prestador.setSenha("senhaSegura");
         prestador.setEmpresa(empresa);
-        prestador.setCargo(cargo);
+        prestador.setCargo(CargoEnum.ADMIN);
 
         Pedido pedido = new Pedido();
         pedido.setId(1);

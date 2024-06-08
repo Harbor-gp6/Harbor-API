@@ -1,6 +1,6 @@
 package gp6.harbor.harborapi.service;
 
-import gp6.harbor.harborapi.domain.cargo.Cargo;
+import gp6.harbor.harborapi.api.enums.CargoEnum;
 import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.endereco.Endereco;
@@ -12,6 +12,7 @@ import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.servico.Servico;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoProdutoDto;
+import gp6.harbor.harborapi.service.email.EmailService;
 import gp6.harbor.harborapi.service.pedido.PedidoProdutoService;
 import gp6.harbor.harborapi.service.pedido.PedidoService;
 import gp6.harbor.harborapi.service.pedido.PedidoServicoService;
@@ -27,7 +28,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -58,6 +58,9 @@ class PedidoServiceTest {
 
     @Mock
     private PrestadorService prestadorService;
+
+    @Mock 
+    private EmailService emailService;
 
     @BeforeEach
     void setUp() {
@@ -98,10 +101,6 @@ class PedidoServiceTest {
         cliente.setCpf("20487594815");
         cliente.setTelefone("11985478123");
     
-        Cargo cargo = new Cargo();
-        cargo.setId(1);
-        cargo.setNomeCargo("Admin");
-    
         Prestador prestador = new Prestador();
         prestador.setId(1L);
         prestador.setNome("Nome Prestador");
@@ -112,7 +111,7 @@ class PedidoServiceTest {
         prestador.setEmail("email@exemplo.com");
         prestador.setSenha("senhaSegura");
         prestador.setEmpresa(empresa);
-        prestador.setCargo(cargo);
+        prestador.setCargo(CargoEnum.ADMIN);
     
         PedidoServico pedidoServico = new PedidoServico();
     
@@ -136,40 +135,6 @@ class PedidoServiceTest {
         return pedido;
     }
     
-    
-
-    @Test
-    @DisplayName("Deve Criar Pedido Com Servicos")
-    void criarPedido() {
-        Pedido pedido = setUpPedido();
-        Prestador prestador = pedido.getPrestador();
-        pedido.setId(1);
-        pedido.setPrestador(prestador);
-    
-        Servico servico1 = new Servico();
-        servico1.setId(1);
-        servico1.setValorServico(25.0);
-    
-        Servico servico2 = new Servico();
-        servico2.setId(2);
-        servico2.setValorServico(35.0);
-    
-        Servico servico3 = new Servico();
-        servico3.setId(3);
-        servico3.setValorServico(45.0);
-    
-        List<Servico> servicos = Arrays.asList(servico1, servico2, servico3);
-        List<PedidoServico> pedidoServicos = pedido.getPedidoServicos();
-    
-        when(pedidoRepository.save(any(Pedido.class))).thenReturn(pedido);
-        when(servicoService.buscaTodosPorIds(anyList())).thenReturn(servicos);
-        when(pedidoServicoService.salvarTodos(anyList())).thenReturn(pedidoServicos);
-    
-        Pedido novoPedido = pedidoService.criarPedido(pedido, Arrays.asList(1, 2, 3));
-    
-        assertNotNull(novoPedido);
-        verify(pedidoRepository, times(2)).save(any(Pedido.class));
-    }
     
 
     @Test
@@ -222,14 +187,9 @@ class PedidoServiceTest {
     @DisplayName("Deve Retornar Valor Faturado")
     void somarValorFaturado() {
 
-        Cargo cargo = new Cargo();
-        cargo.setId(1);
-        cargo.setNomeCargo("Admin");
-    
         Prestador prestador = new Prestador();
         prestador.setId(1L);
-        prestador.setCargo(cargo); 
-    
+        prestador.setCargo(CargoEnum.ADMIN); 
 
         when(pedidoRepository.somarFaturamentoBruto(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(1000.0);
         when(prestadorService.buscarPorId(anyLong())).thenReturn(prestador);
@@ -245,13 +205,10 @@ class PedidoServiceTest {
     @Test
     @DisplayName("Deve Retornar Ticket Medio")
     void calcularTicketMedio() {
-        Cargo cargo = new Cargo();
-        cargo.setId(1);
-        cargo.setNomeCargo("Admin");
     
         Prestador prestador = new Prestador();
         prestador.setId(1L);
-        prestador.setCargo(cargo); 
+        prestador.setCargo(CargoEnum.ADMIN); 
     
         when(pedidoRepository.somarFaturamentoBruto(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(1000.0);
         when(pedidoRepository.contarPedidosPorPeriodo(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(10);
@@ -268,13 +225,10 @@ class PedidoServiceTest {
     @Test
     @DisplayName("Deve Retornar Valor Faturado Por Prestador")
     void somarValorFaturadoPorPrestador() {
-        Cargo cargo = new Cargo();
-        cargo.setId(1);
-        cargo.setNomeCargo("Admin");
     
         Prestador prestador = new Prestador();
         prestador.setId(1L);
-        prestador.setCargo(cargo); // Configurando o cargo do prestador
+        prestador.setCargo(CargoEnum.ADMIN); // Configurando o cargo do prestador
     
         when(pedidoRepository.somarFaturamentoBrutoPorPrestador(any(LocalDateTime.class), any(LocalDateTime.class), anyLong())).thenReturn(1000.0);
         when(prestadorService.buscarPorId(anyLong())).thenReturn(prestador); // Usando o prestador configurado

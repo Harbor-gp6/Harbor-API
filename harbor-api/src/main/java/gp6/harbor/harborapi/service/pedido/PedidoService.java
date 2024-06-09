@@ -1,5 +1,6 @@
 package gp6.harbor.harborapi.service.pedido;
 
+import gp6.harbor.harborapi.api.controller.pedido.PedidoController;
 import gp6.harbor.harborapi.domain.pedido.Pedido;
 import gp6.harbor.harborapi.domain.pedido.PedidoProduto;
 import gp6.harbor.harborapi.domain.pedido.PedidoServico;
@@ -9,6 +10,7 @@ import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.servico.Servico;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoProdutoDto;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
+import gp6.harbor.harborapi.exception.PedidoCapacidadeExcedidoException;
 import gp6.harbor.harborapi.service.email.EmailService;
 import gp6.harbor.harborapi.service.prestador.PrestadorService;
 import gp6.harbor.harborapi.service.produto.ProdutoService;
@@ -42,6 +44,11 @@ public class PedidoService {
         if (novoPedido.getDataAgendamento().getHour() < novoPedido.getPrestador().getEmpresa().getHorarioAbertura().getHour() || novoPedido.getDataAgendamento().getHour() > novoPedido.getPrestador().getEmpresa().getHorarioFechamento().getHour()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
         }
+
+        if (PedidoController.filaPedido.filaCheia()) {
+            throw new PedidoCapacidadeExcedidoException("Pedidos demais, aguarde um momento");
+        }
+
 
         Pedido pedido = pedidoRepository.save(novoPedido);
 
@@ -79,6 +86,8 @@ public class PedidoService {
         message = "Voce tem um serviço agendado para dia " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com cliente " + pedidoSalvo.getCliente().getNome() + " " + pedidoSalvo.getCliente().getSobrenome();
 
         emailService.sendEmail(pedidoSalvo.getPrestador().getEmail(), subject, message);
+
+        PedidoController.filaPedido.adicionarPedido(pedidoSalvo);
 
         return pedidoSalvo;
     }

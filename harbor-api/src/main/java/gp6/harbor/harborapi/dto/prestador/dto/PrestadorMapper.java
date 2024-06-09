@@ -24,6 +24,7 @@ public class PrestadorMapper {
         prestador.setCpf(dto.getCpf());
         prestador.setEmail(dto.getEmail());
         prestador.setSenha(dto.getSenha());
+        prestador.setFoto(dto.getFoto());
         prestador.setCargo(dto.getCargo());
 
         return prestador;
@@ -40,6 +41,7 @@ public class PrestadorMapper {
         listagemDto.setTelefone(entity.getTelefone());
         listagemDto.setCpf(entity.getCpf());
         listagemDto.setEmail(entity.getEmail());
+        listagemDto.setFoto(entity.getFoto());
         listagemDto.setCargo(entity.getCargo());
 
         return listagemDto;

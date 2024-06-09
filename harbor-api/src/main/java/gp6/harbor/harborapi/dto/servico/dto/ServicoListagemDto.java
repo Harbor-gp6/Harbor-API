@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 public class ServicoListagemDto {
 
+    private Integer id;
     private String descricaoServico;
     private Boolean servicoEspecial;
     private Integer tempoMedioEmMinutos;

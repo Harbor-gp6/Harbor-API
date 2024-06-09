@@ -41,6 +41,7 @@ public class ServicoMapper {
         if (entity == null) return null;
 
         ServicoListagemDto listagemDto = new ServicoListagemDto();
+        listagemDto.setId(entity.getId());
         listagemDto.setDescricaoServico(entity.getDescricaoServico());
         listagemDto.setServicoEspecial(entity.getServicoEspecial());
         listagemDto.setTempoMedioEmMinutos(entity.getTempoMedioEmMinutos());

@@ -1,5 +1,6 @@
 package gp6.harbor.harborapi.dto.cliente.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -25,4 +26,7 @@ public class ClienteCriacaoDto {
     @CPF
     @NotBlank
     private String cpf;
+    @Email
+    @NotBlank
+    private String email;
 }

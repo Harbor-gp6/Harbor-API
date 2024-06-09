@@ -23,4 +23,6 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
 
     @Query("SELECT COUNT(p) FROM Pedido p WHERE p.dataAgendamento >= :dataInicio AND p.dataAgendamento <= :dataFim")
     Integer contarPedidosPorPeriodo(LocalDateTime dataInicio, LocalDateTime dataFim);
+
+    List<Pedido> findAllByPrestadorId(Long prestadorId);
 }

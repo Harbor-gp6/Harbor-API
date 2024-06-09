@@ -1,8 +1,9 @@
 package gp6.harbor.harborapi.service.email;
-import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
 
     @Service
     @RequiredArgsConstructor
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
             message.setTo(toEmail);
             message.setSubject(subject);
             message.setText(body);
-            message.setFrom("vitor.ramos@sptech.school");
+            message.setFrom("leonardo.souza@sptech.school");
 
             mailSender.send(message);
         }

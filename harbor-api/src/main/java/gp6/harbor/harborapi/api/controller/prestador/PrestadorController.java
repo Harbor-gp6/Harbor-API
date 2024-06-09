@@ -175,6 +175,7 @@ public class PrestadorController {
         return ResponseEntity.status(200).header("content-disposition",
                 "attachment; filename=\"foto-cliente.jpg\"").body(foto);
     }
+
     public boolean existePorCpf(String cpf){
         return prestadorService.existePorCpf(cpf);
     }

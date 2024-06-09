@@ -2,7 +2,7 @@ package gp6.harbor.harborapi.domain.prestador;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import gp6.harbor.harborapi.domain.cargo.Cargo;
+import gp6.harbor.harborapi.api.enums.CargoEnum;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -29,8 +29,7 @@ public class Prestador {
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_empresa")
     private Empresa empresa;
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "id_cargo")
-    private Cargo cargo;
+    @Enumerated(EnumType.STRING)
+    private CargoEnum cargo;
 
 }

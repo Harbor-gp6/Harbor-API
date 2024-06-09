@@ -4,7 +4,7 @@ package gp6.harbor.harborapi.api.enums;
 import lombok.Getter;
 
 @Getter
-public enum FormaPagamento {
+public enum FormaPagamentoEnum {
     CREDITO(1),
     DEBITO(2),
     DINHEIRO(3),
@@ -12,12 +12,12 @@ public enum FormaPagamento {
 
     private int formaPagamento;
 
-    FormaPagamento(int formaPagamento) {
+    FormaPagamentoEnum(int formaPagamento) {
         this.formaPagamento = formaPagamento;
     }
 
-    public static FormaPagamento fromCodigo(int codigo) {
-        for (FormaPagamento forma : FormaPagamento.values()) {
+    public static FormaPagamentoEnum fromCodigo(int codigo) {
+        for (FormaPagamentoEnum forma : FormaPagamentoEnum.values()) {
             if (forma.formaPagamento == codigo) {
                 return forma;
             }

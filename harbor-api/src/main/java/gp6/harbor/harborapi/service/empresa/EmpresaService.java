@@ -35,7 +35,11 @@ public class EmpresaService {
     public List<Empresa> listar() { return empresaRepository.findAll(); }
 
     public Empresa buscarPorId(int id) {
-        return empresaRepository.findById(id).orElseThrow(() -> new NaoEncontradoException("Cliente"));
+        return empresaRepository.findById(id).orElseThrow(() -> new NaoEncontradoException("Empresa"));
+    }
+
+    public Empresa buscarPorCnpj(String cnpj) {
+        return empresaRepository.findByCnpj(cnpj).orElseThrow(() -> new NaoEncontradoException("Empresa"));
     }
 
     public boolean existePorCnpj(String cnpj) {
@@ -47,13 +51,8 @@ public class EmpresaService {
     }
 
     public void inativarEmpresa(int id) {
-        Optional<Empresa> empresaOptional = empresaRepository.findById(id);
-        if (empresaOptional.isPresent()) {
-            Empresa empresa = empresaOptional.get();
-            empresa.setDataInativacao(LocalDate.now());
-            empresaRepository.save(empresa);
-        } else {
-            throw new NaoEncontradoException("Empresa");
-        }
+        Empresa empresa = buscarPorId(id);
+        empresa.setDataInativacao(LocalDate.now());
+        empresaRepository.save(empresa);
     }
 }

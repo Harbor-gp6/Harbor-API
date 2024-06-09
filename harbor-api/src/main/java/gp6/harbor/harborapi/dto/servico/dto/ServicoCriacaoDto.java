@@ -21,5 +21,5 @@ public class ServicoCriacaoDto {
     @NotNull
     private Double valorServico;
     @NotNull
-    private String CNPJempresa;
+    private String cnpjEmpresa;
 }

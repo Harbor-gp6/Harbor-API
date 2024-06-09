@@ -2,11 +2,13 @@ package gp6.harbor.harborapi.service.prestador;
 
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.pedido.Pedido;
+import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.exception.ConflitoException;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
 import gp6.harbor.harborapi.service.pedido.PedidoService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PrestadorService {
 
     private final PrestadorRepository prestadorRepository;
-    private final PedidoService pedidoService;
+    private final PedidoRepository pedidoRepository;
 
     public Prestador criar(Prestador prestador) {
         if (prestadorRepository.existsById(prestador.getId())) {
@@ -58,22 +60,34 @@ public class PrestadorService {
         return prestadorRepository.existsById(id);
     }
 
+    public List<Pedido> listarPedidosPorPrestadorId(Long prestadorId) {
+        buscarPorId(prestadorId);
+        return pedidoRepository.findByPrestadorId(prestadorId);
+    }
+    @Transactional
+    public void setFoto(Long id, byte[] novaFoto) {
+        prestadorRepository.setFoto(id, novaFoto);
+    }
+
+    public byte[] getFoto(Long id) {
+        return prestadorRepository.getFoto(id);
+    }
+
     public List<LocalDateTime> listarHorariosOcupados(Long prestadorId) {
         buscarPorId(prestadorId);
 
-        List<Pedido> pedidos = pedidoService.listarPorPrestadorId(prestadorId);
+        List<Pedido> pedidos = listarPedidosPorPrestadorId(prestadorId);
 
         List<LocalDateTime> horarios = new ArrayList<>();
 
         pedidos.forEach(pedido -> {
             AtomicReference<Integer> tempo = new AtomicReference<>(0);
-            pedido.getPedidoServicos().forEach(pedidoServico -> {
-                tempo.updateAndGet(v -> v + pedidoServico.getServico().getTempoMedioEmMinutos());
-            });
+            pedido.getPedidoServicos().forEach(pedidoServico -> tempo.updateAndGet(v -> v + pedidoServico.getServico().getTempoMedioEmMinutos()));
             LocalDateTime horarioFim = pedido.getDataAgendamento().plusMinutes(tempo.get());
             LocalDateTime horarioIteracao = pedido.getDataAgendamento();
             while(horarioIteracao.isBefore(horarioFim) || horarioIteracao.isEqual(horarioFim)) {
-                if ((horarioIteracao.plusMinutes(30).getMinute() == 0 || horarioIteracao.plusMinutes(30).getMinute() == 30) || (horarioIteracao.isEqual(horarioFim) && (horarioIteracao.getMinute() == 0 || horarioIteracao.getMinute() == 30))) {
+                if (horarioIteracao.plusMinutes(30).isEqual(horarioFim) || horarioIteracao.plusMinutes(30).isAfter(horarioFim)) {
+                    horarios.add(horarioIteracao);
                     break;
                 }
                 horarios.add(horarioIteracao);

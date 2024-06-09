@@ -1,9 +1,11 @@
 package gp6.harbor.harborapi.dto.usuario;
 
+import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.dto.prestador.dto.PrestadorCriacaoDto;
 import gp6.harbor.harborapi.dto.prestador.dto.PrestadorMapper;
+import gp6.harbor.harborapi.service.empresa.EmpresaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +25,9 @@ import gp6.harbor.harborapi.dto.usuario.dto.UsuarioMapper;
 public class UsuarioService {
 
     @Autowired
+    private EmpresaService empresaService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -39,6 +44,10 @@ public class UsuarioService {
 
     public void criar(PrestadorCriacaoDto usuarioCriacaoDto) {
         final Prestador novoUsuario = PrestadorMapper.toEntity(usuarioCriacaoDto);
+        if (usuarioCriacaoDto.getEmpresaId() != null) {
+            Empresa empresa = empresaService.buscarPorId(usuarioCriacaoDto.getEmpresaId());
+            novoUsuario.setEmpresa(empresa);
+        }
 
         String senhaCriptografada = passwordEncoder.encode(novoUsuario.getSenha());
         novoUsuario.setSenha(senhaCriptografada);

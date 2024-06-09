@@ -1,8 +1,8 @@
 package gp6.harbor.harborapi.dto.prestador.dto;
 
-import gp6.harbor.harborapi.domain.cargo.Cargo;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
+import gp6.harbor.harborapi.dto.empresa.dto.EmpresaMapper;
 
 import java.util.List;
 
@@ -13,8 +13,10 @@ public class PrestadorMapper {
         }
         Prestador prestador = new Prestador();
 
-        Empresa empresa = dto.getEmpresa();
-        prestador.setEmpresa(empresa);
+        if (!(dto.getEmpresa() == null)) {
+            Empresa empresa = EmpresaMapper.toEntity(dto.getEmpresa());
+            prestador.setEmpresa(empresa);
+        }
 
         prestador.setNome(dto.getNome());
         prestador.setSobrenome(dto.getSobrenome());
@@ -22,10 +24,8 @@ public class PrestadorMapper {
         prestador.setCpf(dto.getCpf());
         prestador.setEmail(dto.getEmail());
         prestador.setSenha(dto.getSenha());
-
-
-        Cargo cargo = dto.getCargo();
-        prestador.setCargo(cargo);
+        prestador.setFoto(dto.getFoto());
+        prestador.setCargo(dto.getCargo());
 
         return prestador;
     }
@@ -35,12 +35,13 @@ public class PrestadorMapper {
 
         PrestadorListagemDto listagemDto = new PrestadorListagemDto();
         listagemDto.setId(Math.toIntExact(entity.getId()));
-        listagemDto.setEmpresa(entity.getEmpresa());
+        listagemDto.setEmpresa(EmpresaMapper.toDto(entity.getEmpresa()));
         listagemDto.setNome(entity.getNome());
         listagemDto.setSobrenome(entity.getSobrenome());
         listagemDto.setTelefone(entity.getTelefone());
         listagemDto.setCpf(entity.getCpf());
         listagemDto.setEmail(entity.getEmail());
+        listagemDto.setFoto(entity.getFoto());
         listagemDto.setCargo(entity.getCargo());
 
         return listagemDto;

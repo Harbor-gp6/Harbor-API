@@ -2,11 +2,11 @@ package gp6.harbor.harborapi.domain.pedido;
 
 import gp6.harbor.harborapi.domain.produto.Produto;
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "pedido_produto")
 public class PedidoProduto {

@@ -1,27 +1,26 @@
 package gp6.harbor.harborapi.api.controller.prestador;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import gp6.harbor.harborapi.arquivoCsv.Gravacao;
-import gp6.harbor.harborapi.domain.cargo.repository.CargoRepository;
-import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
-import gp6.harbor.harborapi.domain.endereco.repository.EnderecoRepository;
+import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
-import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.dto.prestador.dto.PrestadorCriacaoDto;
 import gp6.harbor.harborapi.dto.prestador.dto.PrestadorListagemDto;
 import gp6.harbor.harborapi.dto.prestador.dto.PrestadorMapper;
+import gp6.harbor.harborapi.dto.usuario.UsuarioService;
+import gp6.harbor.harborapi.dto.usuario.autenticacao.dto.UsuarioLoginDto;
+import gp6.harbor.harborapi.dto.usuario.autenticacao.dto.UsuarioTokenDto;
+import gp6.harbor.harborapi.service.empresa.EmpresaService;
 import gp6.harbor.harborapi.service.prestador.PrestadorService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import gp6.harbor.harborapi.dto.usuario.UsuarioService;
-import gp6.harbor.harborapi.dto.usuario.autenticacao.dto.UsuarioLoginDto;
-import gp6.harbor.harborapi.dto.usuario.autenticacao.dto.UsuarioTokenDto;
-
-import java.time.LocalDateTime;
-import java.util.*;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -31,6 +30,7 @@ public class PrestadorController {
     private final PrestadorService service;
     private final UsuarioService usuarioService;
     private final PrestadorService prestadorService;
+    private final EmpresaService empresaService;
 
     @PostMapping
     public ResponseEntity<Void> criar(@RequestBody @Valid PrestadorCriacaoDto usuarioCriacaoDto) {
@@ -56,12 +56,12 @@ public class PrestadorController {
         List<Prestador> prestadores = service.listar();
 
         if (prestadores.isEmpty()) {
-            return ResponseEntity.status(204).build();
+            return ResponseEntity.noContent().build();
         }
 
         List<PrestadorListagemDto> dtos = PrestadorMapper.toDto(prestadores);
 
-        return ResponseEntity.status(200).body(dtos);
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
@@ -122,6 +122,20 @@ public class PrestadorController {
         return ResponseEntity.ok(horarios);
     }
 
+    @GetMapping("empresa/{empresaId}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<PrestadorListagemDto>> prestadorPorEmpresaId(@PathVariable Integer empresaId){
+        Empresa empresaBuscada = empresaService.buscarPorId(empresaId);
+
+        List<Prestador> prestadores = service.buscarPorEmpresa(empresaBuscada);
+        if (prestadores.isEmpty()) {
+            return ResponseEntity.status(204).build();
+        }
+
+        List<PrestadorListagemDto> prestadoresDto = PrestadorMapper.toDto(prestadores);
+        return ResponseEntity.status(200).body(prestadoresDto);
+    }
+
     @PutMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<PrestadorListagemDto> atualizarPrestador(@PathVariable long id, @RequestBody @Valid PrestadorCriacaoDto prestadorAtualizado){
@@ -137,6 +151,31 @@ public class PrestadorController {
 
         return ResponseEntity.status(200).body(listagemDto);
     }
+    @CrossOrigin("*")
+    @PatchMapping(value = "/foto/{id}", consumes = {"image/jpeg", "image/png"})
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> patchFoto(@PathVariable Long id,
+                                          @RequestBody byte[] novaFoto) {
+        if (!prestadorService.existePorId(id)) {
+            return ResponseEntity.status(404).build();
+        }
+
+        prestadorService.setFoto(id, novaFoto);
+        return ResponseEntity.status(200).build();
+    }
+    @GetMapping(value = "/foto/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<byte[]> getFoto(@PathVariable Long id) {
+        if (!prestadorService.existePorId(id)) {
+            return ResponseEntity.status(404).build();
+        }
+
+        byte[] foto = prestadorService.getFoto(id);
+
+        return ResponseEntity.status(200).header("content-disposition",
+                "attachment; filename=\"foto-cliente.jpg\"").body(foto);
+    }
+
     public boolean existePorCpf(String cpf){
         return prestadorService.existePorCpf(cpf);
     }

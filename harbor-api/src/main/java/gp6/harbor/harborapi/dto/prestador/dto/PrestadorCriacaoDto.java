@@ -1,19 +1,17 @@
 package gp6.harbor.harborapi.dto.prestador.dto;
 
 
-import gp6.harbor.harborapi.domain.cargo.Cargo;
-import gp6.harbor.harborapi.domain.empresa.Empresa;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import gp6.harbor.harborapi.api.enums.CargoEnum;
+import gp6.harbor.harborapi.dto.empresa.dto.EmpresaCriacaoDto;
+import gp6.harbor.harborapi.dto.validations.OnlyOne;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.br.CPF;
 
 @Setter
 @Getter
+@OnlyOne(first = "empresa", second = "empresaId", message = "Apenas um entre empresa e empresaId deve ser preenchido")
 public class PrestadorCriacaoDto {
     @NotBlank(message = "O nome não pode estar em branco")
     @Size(min = 2, max = 100, message = "O nome deve ter entre 2 e 100 caracteres")
@@ -33,9 +31,9 @@ public class PrestadorCriacaoDto {
     @NotBlank(message = "A senha não pode estar em branco")
     @Size(min = 8, max = 30)
     private String senha;
-    @Valid
-    private Cargo cargo;
-    @Valid
-    private Empresa empresa;
-
+    @NotNull
+    private CargoEnum cargo;
+    private EmpresaCriacaoDto empresa;
+    private Integer empresaId;
+    private byte[] foto;
 }

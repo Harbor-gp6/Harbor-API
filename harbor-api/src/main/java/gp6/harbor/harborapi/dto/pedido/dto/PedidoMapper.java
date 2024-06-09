@@ -1,18 +1,13 @@
 package gp6.harbor.harborapi.dto.pedido.dto;
 
-import gp6.harbor.harborapi.api.enums.FormaPagamento;
+import gp6.harbor.harborapi.api.enums.FormaPagamentoEnum;
 import gp6.harbor.harborapi.domain.pedido.Pedido;
 import gp6.harbor.harborapi.domain.pedido.PedidoProduto;
 import gp6.harbor.harborapi.domain.pedido.PedidoServico;
-import gp6.harbor.harborapi.domain.produto.Produto;
-import gp6.harbor.harborapi.domain.produto.repository.ProdutoRepository;
-import gp6.harbor.harborapi.domain.servico.Servico;
-import gp6.harbor.harborapi.domain.servico.repository.ServicoRepository;
 import gp6.harbor.harborapi.dto.cliente.dto.ClienteMapper;
 import gp6.harbor.harborapi.dto.prestador.dto.PrestadorMapper;
 import gp6.harbor.harborapi.dto.produto.dto.ProdutoMapper;
 import gp6.harbor.harborapi.dto.servico.dto.ServicoMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -29,7 +24,9 @@ public class PedidoMapper {
 
         pedido.setDataAgendamento(dto.getDataAgendamento());
 
-        pedido.setFormaPagamento(FormaPagamento.fromCodigo(dto.getFormaPagamento()));
+        pedido.setFinalizado(false);
+
+        pedido.setFormaPagamentoEnum(FormaPagamentoEnum.fromCodigo(dto.getFormaPagamento()));
 
         return pedido;
 
@@ -55,7 +52,11 @@ public class PedidoMapper {
 
         pedidoListagemDto.setListaServico(toServicoDto(entity.getPedidoServicos()));
 
-        pedidoListagemDto.setFormaPagamento(entity.getFormaPagamento());
+        pedidoListagemDto.setFinalizado(entity.getFinalizado());
+
+        pedidoListagemDto.setFormaPagamentoEnum(entity.getFormaPagamentoEnum());
+
+        pedidoListagemDto.setTotal(entity.getTotal());
 
         return pedidoListagemDto;
     }
@@ -68,7 +69,7 @@ public class PedidoMapper {
         PedidoListagemDto.PedidoProdutoListagemDto dto = new PedidoListagemDto.PedidoProdutoListagemDto();
 
         dto.setId(entity.getId());
-        dto.setProduto(dto.getProduto());
+        dto.setProduto(ProdutoMapper.toDto(entity.getProduto()));
         dto.setQuantidade(entity.getQuantidade());
 
         return dto;
@@ -82,7 +83,7 @@ public class PedidoMapper {
         PedidoListagemDto.PedidoServicoListagemDto dto = new PedidoListagemDto.PedidoServicoListagemDto();
 
         dto.setId(entity.getId());
-        dto.setServico(entity.getServico());
+        dto.setServico(ServicoMapper.toDto(entity.getServico()));
 
         return dto;
     }

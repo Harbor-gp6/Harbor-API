@@ -16,6 +16,8 @@ public class ClienteListagemDto {
 
     private String sobrenome;
 
+    private String email;
+
     private String telefone;
 
     private String cpf;

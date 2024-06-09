@@ -1,11 +1,13 @@
 package gp6.harbor.harborapi.api.controller.produto;
 
+import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.produto.repository.ProdutoRepository;
 import gp6.harbor.harborapi.dto.produto.dto.ProdutoCriacaoDto;
 import gp6.harbor.harborapi.dto.produto.dto.ProdutoListagemDto;
 import gp6.harbor.harborapi.dto.produto.dto.ProdutoMapper;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
+import gp6.harbor.harborapi.service.empresa.EmpresaService;
 import gp6.harbor.harborapi.service.produto.ProdutoService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -23,11 +25,14 @@ import java.util.Optional;
 public class ProdutoController {
 
     private final ProdutoService produtoService;
+    private final EmpresaService empresaService;
 
     @PostMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ProdutoListagemDto> cadastrar(@RequestBody @Valid ProdutoCriacaoDto novoProduto) {
+        Empresa empresa = empresaService.buscarPorId(novoProduto.getEmpresaId());
         Produto produto = ProdutoMapper.toEntity(novoProduto);
+        produto.setEmpresa(empresa);
         Produto produtoSalvo = produtoService.cadastrar(produto);
         ProdutoListagemDto listagemDto = ProdutoMapper.toDto(produtoSalvo);
 
@@ -59,11 +64,7 @@ public class ProdutoController {
     public ResponseEntity<ProdutoListagemDto> atualizarEndereco(
             @PathVariable int id,
             @RequestBody @Valid ProdutoCriacaoDto produtoAtualizado){
-
-        if (!produtoService.existePorId(id)){
-            return ResponseEntity.status(404).build();
-        }
-
+        produtoService.buscarPorId(id);
         Produto produto = ProdutoMapper.toEntity(produtoAtualizado);
         produto.setId(id);
         Produto produtoSalvo = produtoService.cadastrar(produto);
@@ -99,12 +100,8 @@ public class ProdutoController {
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> deletarPorId(@PathVariable @Valid int id) {
-        try {
-            produtoService.deletarPorId(id);
-            return ResponseEntity.status(204).build();
-        } catch (NaoEncontradoException exception) {
-            return ResponseEntity.status(404).build();
-        }
+        produtoService.deletarPorId(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

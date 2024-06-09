@@ -1,28 +1,22 @@
 package gp6.harbor.harborapi.service.pedido;
 
+import gp6.harbor.harborapi.api.controller.pedido.PedidoController;
 import gp6.harbor.harborapi.domain.pedido.Pedido;
 import gp6.harbor.harborapi.domain.pedido.PedidoProduto;
 import gp6.harbor.harborapi.domain.pedido.PedidoServico;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
-import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.servico.Servico;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoProdutoDto;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
 import gp6.harbor.harborapi.exception.PedidoCapacidadeExcedidoException;
-import gp6.harbor.harborapi.service.prestador.PrestadorService;
 import gp6.harbor.harborapi.service.produto.ProdutoService;
 import gp6.harbor.harborapi.service.servico.ServicoService;
 import gp6.harbor.harborapi.util.PedidoFilaEspera;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
@@ -34,12 +28,10 @@ public class PedidoService {
     private final PedidoProdutoService pedidoProdutoService;
     private final PedidoServicoService pedidoServicoService;
     private final ServicoService servicoService;
-    private PedidoFilaEspera<Pedido> filaPedido = new PedidoFilaEspera<>(10);
-
 
     public Pedido criarPedido(Pedido novoPedido, List<Integer> servicosIds) {
 
-        if(!filaPedido.adicionarPedido(novoPedido)) {
+        if(!PedidoController.filaPedido.adicionarPedido(novoPedido)) {
             throw new PedidoCapacidadeExcedidoException("Fila no limite de pedidos");
         }
 

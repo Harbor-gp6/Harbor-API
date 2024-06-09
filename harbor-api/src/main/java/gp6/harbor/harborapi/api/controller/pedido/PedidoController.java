@@ -16,6 +16,7 @@ import gp6.harbor.harborapi.exception.PedidoCapacidadeExcedidoException;
 import gp6.harbor.harborapi.service.cliente.ClienteService;
 import gp6.harbor.harborapi.service.pedido.PedidoService;
 import gp6.harbor.harborapi.service.prestador.PrestadorService;
+import gp6.harbor.harborapi.util.PedidoFilaEspera;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,8 @@ import java.util.Optional;
 @RequestMapping("/pedidos")
 @RequiredArgsConstructor
 public class PedidoController {
+
+    public static PedidoFilaEspera<Pedido> filaPedido = new PedidoFilaEspera<>(10);
 
     private final PedidoService pedidoService;
     private final ClienteService clienteService;

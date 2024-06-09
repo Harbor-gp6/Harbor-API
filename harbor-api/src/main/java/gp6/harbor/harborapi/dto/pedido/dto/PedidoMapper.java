@@ -91,5 +91,14 @@ public class PedidoMapper {
     private static List<PedidoListagemDto.PedidoServicoListagemDto> toServicoDto(List<PedidoServico> entities) {
         return entities.stream().map(PedidoMapper::toServicoDto).toList();
     }
+
+    private static Pedido toPedidoStatusEntity (PedidoAtualizacaoStatusDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        Pedido pedido = new Pedido();
+        pedido.setFinalizado(dto.getFinalizado());
+        return pedido;
+    }
 }
 

@@ -1,5 +1,16 @@
 package gp6.harbor.harborapi.service.pedido;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import gp6.harbor.harborapi.api.controller.pedido.PedidoController;
 import gp6.harbor.harborapi.domain.pedido.Pedido;
 import gp6.harbor.harborapi.domain.pedido.PedidoProduto;
@@ -9,6 +20,7 @@ import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.servico.Servico;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoProdutoDto;
+import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoStatusDto;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
 import gp6.harbor.harborapi.exception.PedidoCapacidadeExcedidoException;
 import gp6.harbor.harborapi.service.email.EmailService;
@@ -16,17 +28,6 @@ import gp6.harbor.harborapi.service.prestador.PrestadorService;
 import gp6.harbor.harborapi.service.produto.ProdutoService;
 import gp6.harbor.harborapi.service.servico.ServicoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
@@ -77,15 +78,15 @@ public class PedidoService {
 
         Pedido pedidoSalvo = pedidoRepository.save(pedido);
 
-        String subject = "AGENDAMENTO REALIZADO COM SUCESSO";
-        String message = "Voce tem um agendamento em " + pedidoSalvo.getPrestador().getEmpresa().getNomeFantasia() + " para dia " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com " + pedidoSalvo.getPrestador().getNome() + " " + pedidoSalvo.getPrestador().getSobrenome();
+        // String subject = "AGENDAMENTO REALIZADO COM SUCESSO";
+        // String message = "Voce tem um agendamento em " + pedidoSalvo.getPrestador().getEmpresa().getNomeFantasia() + " para dia " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com " + pedidoSalvo.getPrestador().getNome() + " " + pedidoSalvo.getPrestador().getSobrenome();
 
-        emailService.sendEmail(pedidoSalvo.getCliente().getEmail(), subject, message);
+        // emailService.sendEmail(pedidoSalvo.getCliente().getEmail(), subject, message);
 
-        subject = "VOCÊ TEM UM NOVO SERVIÇO AGENDADO";
-        message = "Voce tem um serviço agendado para dia " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com cliente " + pedidoSalvo.getCliente().getNome() + " " + pedidoSalvo.getCliente().getSobrenome();
+        // subject = "VOCÊ TEM UM NOVO SERVIÇO AGENDADO";
+        // message = "Voce tem um serviço agendado para dia " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com cliente " + pedidoSalvo.getCliente().getNome() + " " + pedidoSalvo.getCliente().getSobrenome();
 
-        emailService.sendEmail(pedidoSalvo.getPrestador().getEmail(), subject, message);
+        // emailService.sendEmail(pedidoSalvo.getPrestador().getEmail(), subject, message);
 
         PedidoController.filaPedido.adicionarPedido(pedidoSalvo);
 
@@ -119,12 +120,19 @@ public class PedidoService {
         return pedidoRepository.save(pedidoEncontrado);
     }
 
+    public Pedido atualizarStatus(Integer pedidoId, PedidoAtualizacaoStatusDto status) {
+        Pedido pedidoEncontrado = pedidoRepository.findById(pedidoId).orElseThrow(() -> new NaoEncontradoException("Pedido"));
+
+        pedidoEncontrado.setFinalizado(status.getFinalizado());
+        return pedidoRepository.save(pedidoEncontrado);
+    }
+
     public List<Pedido> listarPedidos() {
         return pedidoRepository.findAll();
     }
 
-    public List<Pedido> listarPorPrestador(String nomePrestador) {
-        return pedidoRepository.listarPorPrestador(nomePrestador);
+    public List<Pedido> listarPorPrestador(Long prestadorId) {
+        return pedidoRepository.findAllByPrestadorId(prestadorId);
     }
 
     public Double somarValorFaturado(LocalDate dataInicio, LocalDate dataFim, Long prestadorId) {

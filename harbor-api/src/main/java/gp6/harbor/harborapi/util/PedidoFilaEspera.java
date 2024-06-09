@@ -1,11 +1,12 @@
 package gp6.harbor.harborapi.util;
 
-import gp6.harbor.harborapi.domain.cliente.Cliente;
-import gp6.harbor.harborapi.domain.pedido.Pedido;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+
+import gp6.harbor.harborapi.domain.cliente.Cliente;
+import gp6.harbor.harborapi.domain.pedido.Pedido;
 
 public class PedidoFilaEspera <T extends Pedido> {
 
@@ -58,6 +59,6 @@ public class PedidoFilaEspera <T extends Pedido> {
     }
 
     public boolean filaCheia() {
-        return capacidadeMaxima == capacidadeMaxima;
+        return filasPorCliente.size() == capacidadeMaxima;
     }
 }

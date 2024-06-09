@@ -7,6 +7,7 @@ import gp6.harbor.harborapi.dto.pedido.dto.PedidoCriacaoDto;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoListagemDto;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoMapper;
 import gp6.harbor.harborapi.exception.PedidoCapacidadeExcedidoException;
+import gp6.harbor.harborapi.dto.pedido.dto.*;
 import gp6.harbor.harborapi.service.cliente.ClienteService;
 import gp6.harbor.harborapi.service.pedido.PedidoService;
 import gp6.harbor.harborapi.service.prestador.PrestadorService;
@@ -60,10 +61,10 @@ public class PedidoController {
         return ResponseEntity.status(200).body(PedidoMapper.toDto(pedidos));
     }
 
-    @GetMapping("/prestador")
+    @GetMapping("/prestador/{prestadorId}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<PedidoListagemDto>> listarPorNomePrestador(@RequestParam String prestador) {
-        List<Pedido> pedidos = pedidoService.listarPorPrestador(prestador);
+    public ResponseEntity<List<PedidoListagemDto>> listarPorNomePrestador(@PathVariable Long prestadorId) {
+        List<Pedido> pedidos = pedidoService.listarPorPrestador(prestadorId);
 
         if (pedidos.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -76,6 +77,14 @@ public class PedidoController {
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<PedidoListagemDto> adicionarProduto(@PathVariable Integer pedidoId, @Valid @RequestBody PedidoAtualizacaoProdutoDto produtos) {
         return ResponseEntity.ok(PedidoMapper.toDto(pedidoService.adicionarProduto(pedidoId, produtos)));
+    }
+
+    @PatchMapping("/status/{pedidoId}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<PedidoListagemDto> atualizarStatus(@PathVariable Integer pedidoId, @Valid @RequestBody PedidoAtualizacaoStatusDto status) {
+       Pedido pedidoAtualizado = pedidoService.atualizarStatus(pedidoId, status);
+
+       return ResponseEntity.ok(PedidoMapper.toDto(pedidoAtualizado));
     }
 
 }

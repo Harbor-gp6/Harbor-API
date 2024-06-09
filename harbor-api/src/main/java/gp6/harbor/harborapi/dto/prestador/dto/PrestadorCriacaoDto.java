@@ -35,5 +35,5 @@ public class PrestadorCriacaoDto {
     private CargoEnum cargo;
     private EmpresaCriacaoDto empresa;
     private Integer empresaId;
-
+    private byte[] foto;
 }

@@ -1,6 +1,7 @@
 package gp6.harbor.harborapi.api.controller.pedido;
 
 import gp6.harbor.harborapi.domain.pedido.Pedido;
+import gp6.harbor.harborapi.domain.pilha.PilhaObj;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoProdutoDto;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoCriacaoDto;
@@ -26,6 +27,7 @@ import java.util.List;
 public class PedidoController {
 
     public static PedidoFilaEspera<Pedido> filaPedido = new PedidoFilaEspera<>(10);
+    public static PilhaObj<Pedido> pilhaPedido = new PilhaObj<>(10);
 
     private final PedidoService pedidoService;
     private final PrestadorService prestadorService;
@@ -41,6 +43,7 @@ public class PedidoController {
 
         try {
             Pedido pedidoSalvo = pedidoService.criarPedido(pedido, novoPedido.getServicos());
+            pilhaPedido.push(pedidoSalvo);
             PedidoListagemDto listagemDto = PedidoMapper.toDto(pedidoSalvo);
             return ResponseEntity.status(201).body(listagemDto);
 
@@ -87,4 +90,11 @@ public class PedidoController {
        return ResponseEntity.ok(PedidoMapper.toDto(pedidoAtualizado));
     }
 
+    @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> desfazer (@PathVariable Integer pedidoId) {
+        pilhaPedido.pop();
+        pedidoService.deletar(pedidoId);
+        return ResponseEntity.noContent().build();
+    }
 }

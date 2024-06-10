@@ -2,6 +2,7 @@ package gp6.harbor.harborapi.service.pedido;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -78,15 +79,15 @@ public class PedidoService {
 
         Pedido pedidoSalvo = pedidoRepository.save(pedido);
 
-        // String subject = "AGENDAMENTO REALIZADO COM SUCESSO";
-        // String message = "Voce tem um agendamento em " + pedidoSalvo.getPrestador().getEmpresa().getNomeFantasia() + " para dia " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com " + pedidoSalvo.getPrestador().getNome() + " " + pedidoSalvo.getPrestador().getSobrenome();
+         String subject = "AGENDAMENTO REALIZADO COM SUCESSO";
+         String message = "Voce tem um agendamento em " + pedidoSalvo.getPrestador().getEmpresa().getNomeFantasia() + " para dia " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com " + pedidoSalvo.getPrestador().getNome() + " " + pedidoSalvo.getPrestador().getSobrenome();
 
-        // emailService.sendEmail(pedidoSalvo.getCliente().getEmail(), subject, message);
+         emailService.sendEmail(pedidoSalvo.getCliente().getEmail(), subject, message);
 
-        // subject = "VOCÊ TEM UM NOVO SERVIÇO AGENDADO";
-        // message = "Voce tem um serviço agendado para dia " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com cliente " + pedidoSalvo.getCliente().getNome() + " " + pedidoSalvo.getCliente().getSobrenome();
+         subject = "VOCÊ TEM UM NOVO SERVIÇO AGENDADO";
+         message = "Voce tem um serviço agendado para dia " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com cliente " + pedidoSalvo.getCliente().getNome() + " " + pedidoSalvo.getCliente().getSobrenome();
 
-        // emailService.sendEmail(pedidoSalvo.getPrestador().getEmail(), subject, message);
+         emailService.sendEmail(pedidoSalvo.getPrestador().getEmail(), subject, message);
 
         PedidoController.filaPedido.adicionarPedido(pedidoSalvo);
 

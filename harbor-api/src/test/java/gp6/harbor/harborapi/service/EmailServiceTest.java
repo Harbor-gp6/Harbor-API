@@ -47,6 +47,6 @@ public class EmailServiceTest {
         // Verifica se os dados do email estão corretos
         assertEquals(subject, capturedMessage.getSubject());
         assertEquals(body, capturedMessage.getText());
-        assertEquals("henrique.jaldim@hotmail.com", capturedMessage.getFrom());
+        assertEquals("leonardo.souza@sptech.school", capturedMessage.getFrom());
     }
 }

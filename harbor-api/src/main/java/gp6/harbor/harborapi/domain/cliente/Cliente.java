@@ -1,5 +1,6 @@
 package gp6.harbor.harborapi.domain.cliente;
 
+import gp6.harbor.harborapi.interfaces.IEntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,7 +16,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Entity
-public class Cliente {
+public class Cliente implements IEntityBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_cliente")

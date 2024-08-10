@@ -1,6 +1,7 @@
 package gp6.harbor.harborapi.api.controller.pedido;
 
 import gp6.harbor.harborapi.domain.pedido.Pedido;
+import gp6.harbor.harborapi.domain.pedido.PedidoV2;
 import gp6.harbor.harborapi.domain.pilha.PilhaObj;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoProdutoDto;
@@ -28,9 +29,16 @@ public class PedidoController {
 
     public static PedidoFilaEspera<Pedido> filaPedido = new PedidoFilaEspera<>(10);
     public static PilhaObj<Pedido> pilhaPedido = new PilhaObj<>(10);
-
     private final PedidoService pedidoService;
     private final PrestadorService prestadorService;
+
+    @PostMapping("criarPedidoV2")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<PedidoV2> criarPedido(@RequestBody PedidoV2 pedido) {
+        pedido.setId(0);
+        pedidoService.criarPedidoV2(pedido);
+        return ResponseEntity.ok(pedido);
+    }
 
     @PostMapping
     @SecurityRequirement(name = "Bearer")

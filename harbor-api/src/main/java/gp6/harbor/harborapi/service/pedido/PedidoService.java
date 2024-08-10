@@ -8,14 +8,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import gp6.harbor.harborapi.domain.pedido.*;
+import gp6.harbor.harborapi.domain.pedido.repository.PedidoV2Repository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import gp6.harbor.harborapi.api.controller.pedido.PedidoController;
-import gp6.harbor.harborapi.domain.pedido.Pedido;
-import gp6.harbor.harborapi.domain.pedido.PedidoProduto;
-import gp6.harbor.harborapi.domain.pedido.PedidoServico;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.produto.Produto;
@@ -35,12 +35,22 @@ import lombok.RequiredArgsConstructor;
 public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
+    private final PedidoV2Repository pedidoV2Repository;
     private final ProdutoService produtoService;
     private final PedidoProdutoService pedidoProdutoService;
     private final PedidoServicoService pedidoServicoService;
     private final ServicoService servicoService;
     private final PrestadorService prestadorService;
     private final EmailService emailService;
+
+    @Transactional
+    public PedidoV2 criarPedidoV2(PedidoV2 pedido) {
+        // Associa cada PedidoBarbeiro ao Pedido
+        for (PedidoPrestador pb : pedido.getPedidoPrestador()) {
+            pb.setPedido(pedido);
+        }
+        return pedidoV2Repository.save(pedido);
+    }
 
     public Pedido criarPedido(Pedido novoPedido, List<Integer> servicosIds) {
         if (novoPedido.getDataAgendamento().getHour() < novoPedido.getPrestador().getEmpresa().getHorarioAbertura().getHour() || novoPedido.getDataAgendamento().getHour() > novoPedido.getPrestador().getEmpresa().getHorarioFechamento().getHour()) {

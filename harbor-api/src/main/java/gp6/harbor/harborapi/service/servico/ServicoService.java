@@ -1,11 +1,15 @@
 package gp6.harbor.harborapi.service.servico;
 
 import gp6.harbor.harborapi.domain.empresa.Empresa;
+import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
+import gp6.harbor.harborapi.domain.prestador.Prestador;
+import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.domain.servico.Servico;
 import gp6.harbor.harborapi.domain.servico.repository.ServicoRepository;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
 import gp6.harbor.harborapi.service.empresa.EmpresaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +19,8 @@ import java.util.List;
 public class ServicoService {
 
     private final ServicoRepository servicoRepository;
+    private final PrestadorRepository prestadorRepository;
+    private final EmpresaRepository empresaRepository;
     private final EmpresaService empresaService;
 
     public Servico buscaPorId(Integer id) {
@@ -34,7 +40,14 @@ public class ServicoService {
     }
 
     public List<Servico> listar() {
-        return servicoRepository.findAll();
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+
+        Empresa empresa = prestador.getEmpresa();
+
+        //return servicoRepository.findAll();
+        return servicoRepository.findByEmpresa(empresa);
     }
 
     public List<Servico> buscaTodosPorIds(List<Integer> ids) {

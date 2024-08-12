@@ -1,11 +1,14 @@
 package gp6.harbor.harborapi.service.produto;
 
 import gp6.harbor.harborapi.domain.empresa.Empresa;
+import gp6.harbor.harborapi.domain.prestador.Prestador;
+import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.produto.repository.ProdutoRepository;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
 import gp6.harbor.harborapi.service.empresa.EmpresaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +19,7 @@ import java.util.Optional;
 public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
+    private final PrestadorRepository prestadorRepository;
 
     public Produto cadastrar(Produto novoProduto) {
         return produtoRepository.save(novoProduto);
@@ -26,7 +30,13 @@ public class ProdutoService {
     }
 
     public List<Produto> listar() {
-        return produtoRepository.findAll();
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+
+        Empresa empresa = prestador.getEmpresa();
+
+        return produtoRepository.findByEmpresa(empresa);
     }
 
     public List<Produto> buscarMaiorParaMenor() {

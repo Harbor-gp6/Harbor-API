@@ -9,4 +9,6 @@ import java.util.List;
 public interface ServicoRepository extends JpaRepository<Servico, Integer>{
 
     List<Servico> findByIdIn(List<Integer> ids);
-    List<Servico> findByEmpresa(Empresa empresa);}
+    List<Servico> findByEmpresa(Empresa empresa);
+
+}

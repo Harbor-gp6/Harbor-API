@@ -12,8 +12,6 @@ public interface EmpresaRepository extends JpaRepository<Empresa, Integer> {
 
     List<Empresa> findByRazaoSocialContainingIgnoreCase(String razaoSocial);
     Optional<Empresa> findByCnpj(String cnpj);
-
-
     boolean existsByCnpj(String cnpj);
 
 }

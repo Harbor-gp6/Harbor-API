@@ -5,6 +5,7 @@ import gp6.harbor.harborapi.domain.endereco.Endereco;
 import gp6.harbor.harborapi.domain.listaobj.ListaObj;
 import gp6.harbor.harborapi.dto.endereco.dto.*;
 import gp6.harbor.harborapi.service.endereco.EnderecoService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -32,7 +33,7 @@ public class EnderecoController {
 
     private static final Logger log = LoggerFactory.getLogger(EnderecoController.class);
 
-
+    @Hidden
     @PostMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<EnderecoListagemDto> cadastrar (@RequestBody @Valid EnderecoCriacaoDto novoEndereco){
@@ -41,6 +42,7 @@ public class EnderecoController {
         return ResponseEntity.status(201).body(listagemDto);
     }
 
+    @Hidden
     @GetMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<EnderecoListagemDto> buscarPeloId(@PathVariable int id){
@@ -50,6 +52,7 @@ public class EnderecoController {
         return ResponseEntity.status(200).body(dto);
     }
 
+    @Hidden
     @GetMapping("/cep")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<EnderecoListagemDto>> buscarPeloCep(@RequestParam String cep){
@@ -64,6 +67,7 @@ public class EnderecoController {
         return ResponseEntity.status(200).body(listaAuxiliar);
     }
 
+    @Hidden
     @GetMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<EnderecoListagemDto>> buscar(){
@@ -80,6 +84,7 @@ public class EnderecoController {
         return ResponseEntity.status(200).body(listaAuxiliar);
     }
 
+    @Hidden
     @PutMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<EnderecoListagemDto> atualizarEndereco(
@@ -95,6 +100,7 @@ public class EnderecoController {
         return ResponseEntity.status(200).body(listagemDto);
     }
 
+    @Hidden
     @GetMapping("/busca")
     @Operation(summary = "Buscar dados do endereço")
     @ApiResponse(responseCode = "200", description = "Dados de endereço")
@@ -131,6 +137,7 @@ public class EnderecoController {
         return ResponseEntity.ok(resposta);
     }
 
+    @Hidden
     @GetMapping("/cep-cadastrado")
     public ResponseEntity<EnderecoListagemDto> buscarCepCadastrado(@RequestParam String cep) {
         List<Endereco> enderecos = enderecoService.buscarPorCep(cep);
@@ -158,6 +165,7 @@ public class EnderecoController {
 
     }
 
+    @Hidden
     public void ordenaPorCep(ListaObj<Endereco> listaEnderecos) {
         if (listaEnderecos == null || listaEnderecos.getTamanho() == 0) {
             return;
@@ -165,6 +173,7 @@ public class EnderecoController {
         sort(listaEnderecos, 0, listaEnderecos.getTamanho() - 1);
     }
 
+    @Hidden
     private void sort(ListaObj<Endereco> listaEnderecos, int indInicio, int indFim) {
         int i = indInicio, j = indFim;
         Endereco pivot = listaEnderecos.getElemento((indFim + indInicio) / 2);
@@ -190,12 +199,14 @@ public class EnderecoController {
         }
     }
 
+    @Hidden
     private void trocar(ListaObj<Endereco> listaEnderecos, int i, int j) {
         Endereco temp = listaEnderecos.getElemento(i);
         listaEnderecos.substitui(listaEnderecos.getElemento(i), listaEnderecos.getElemento(j));
         listaEnderecos.substitui(listaEnderecos.getElemento(j), temp);
     }
 
+    @Hidden
     public int buscaBinariaPorCep(ListaObj<Endereco> listaEnderecos, String cepAlvo) {
         if (listaEnderecos == null || listaEnderecos.getTamanho() == 0) {
             return -1;
@@ -203,6 +214,7 @@ public class EnderecoController {
         return buscar(listaEnderecos, cepAlvo, 0, listaEnderecos.getTamanho() - 1);
     }
 
+    @Hidden
     private int buscar(ListaObj<Endereco> listaEnderecos, String cepAlvo, int indInicio, int indFim) {
         while (indInicio <= indFim) {
             int meio = (indFim + indInicio) / 2;

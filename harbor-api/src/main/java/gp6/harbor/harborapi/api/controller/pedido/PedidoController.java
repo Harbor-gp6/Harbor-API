@@ -1,8 +1,6 @@
 package gp6.harbor.harborapi.api.controller.pedido;
 
 import gp6.harbor.harborapi.domain.pedido.Pedido;
-import gp6.harbor.harborapi.domain.pedido.PedidoV2;
-import gp6.harbor.harborapi.domain.pilha.PilhaObj;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoProdutoDto;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoCriacaoDto;
@@ -29,7 +27,6 @@ import java.util.List;
 public class PedidoController {
 
     public static PedidoFilaEspera<Pedido> filaPedido = new PedidoFilaEspera<>(10);
-    public static PilhaObj<Pedido> pilhaPedido = new PilhaObj<>(10);
     private final PedidoService pedidoService;
     private final PrestadorService prestadorService;
 
@@ -53,7 +50,6 @@ public class PedidoController {
 
         try {
             Pedido pedidoSalvo = pedidoService.criarPedido(pedido, novoPedido.getServicos());
-            pilhaPedido.push(pedidoSalvo);
             PedidoListagemDto listagemDto = PedidoMapper.toDto(pedidoSalvo);
             return ResponseEntity.status(201).body(listagemDto);
 
@@ -116,27 +112,4 @@ public class PedidoController {
        return ResponseEntity.ok(PedidoMapper.toDto(pedidoAtualizado));
     }
 
-    @Hidden
-    @DeleteMapping("/{id}")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Void> desfazer (@PathVariable Integer pedidoId) {
-        pilhaPedido.pop();
-        pedidoService.deletar(pedidoId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/finalizar/{pedidoId}")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<PedidoV2> finalizarPedido(@PathVariable Integer pedidoId) {
-        PedidoV2 pedido = pedidoService.finalizarPedidoV2(pedidoId);
-        return ResponseEntity.ok(pedido);
-    }
-
-    //filtrar pedidosV2 por cpf do prestador
-    @GetMapping("/filtrar/{cpf}")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<PedidoV2>> filtrarPedidosV2(@PathVariable String cpf) {
-        List<PedidoV2> pedidos = pedidoService.listarPorCpfPrestador(cpf);
-        return ResponseEntity.ok(pedidos);
-    }
 }

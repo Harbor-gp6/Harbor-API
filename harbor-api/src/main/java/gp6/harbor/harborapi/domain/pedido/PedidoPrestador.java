@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -20,7 +22,7 @@ public class PedidoPrestador {
     @JoinColumn(name = "id_prestador", nullable = false)
     private Prestador prestador;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_servico", nullable = false)
     private Servico servico;
 
@@ -28,4 +30,14 @@ public class PedidoPrestador {
     @JoinColumn(name = "id_pedido", nullable = false)
     @JsonBackReference
     private PedidoV2 pedido;
+
+    private LocalDateTime dataInicio;
+    private LocalDateTime dataFim;
+
+    // Método para configurar as datas
+    public void calcularDataFim() {
+        if (this.dataInicio != null && this.servico != null) {
+            this.dataFim = this.dataInicio.plusMinutes(servico.getTempoMedioEmMinutos());
+        }
+    }
 }

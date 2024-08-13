@@ -23,6 +23,8 @@ public interface PrestadorRepository extends JpaRepository<Prestador, Long> {
 
     List<Prestador> findByEmpresa(Empresa empresa);
 
+
+
     @Modifying
     @Transactional
     @Query("update Prestador p set p.foto = ?2 where p.id = ?1")

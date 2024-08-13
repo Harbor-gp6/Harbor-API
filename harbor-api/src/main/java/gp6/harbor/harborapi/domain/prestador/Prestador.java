@@ -8,6 +8,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+
+
 @Setter
 @Getter
 @Entity
@@ -31,5 +33,4 @@ public class Prestador {
     private Empresa empresa;
     @Enumerated(EnumType.STRING)
     private CargoEnum cargo;
-
 }

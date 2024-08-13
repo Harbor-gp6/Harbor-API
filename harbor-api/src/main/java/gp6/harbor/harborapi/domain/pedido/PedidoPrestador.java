@@ -20,7 +20,7 @@ public class PedidoPrestador {
     @JoinColumn(name = "id_prestador", nullable = false)
     private Prestador prestador;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_servico", nullable = false)
     private Servico servico;
 

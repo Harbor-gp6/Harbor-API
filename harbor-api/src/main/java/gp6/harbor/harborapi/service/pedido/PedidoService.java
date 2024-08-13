@@ -57,6 +57,16 @@ public class PedidoService {
 
     @Transactional
     public PedidoV2 criarPedidoV2(PedidoV2 pedido) {
+        if (pedido.getCliente().getCpf() != null) {
+            Cliente cliente = clienteRepository.findByCpf(pedido.getCliente().getCpf()).orElse(null);
+            if (cliente == null) {
+                cliente = clienteRepository.save(pedido.getCliente());
+            }
+            if (clienteService.validarCliente(cliente)){
+                pedido.setCliente(cliente);
+            }
+        }
+
         //busca empresa e coloca no pedido
         String cnpjEmpresa = pedido.getEmpresa().getCnpj();
         if (cnpjEmpresa != null) {
@@ -67,25 +77,9 @@ public class PedidoService {
             pedido.setEmpresa(empresa);
         }
 
-        if (pedido.getCliente().getCpf() != null) {
-            Cliente cliente = clienteRepository.findByCpf(pedido.getCliente().getCpf()).orElse(null);
-            if (cliente == null) {
-                pedido.getCliente().setEmpresa(pedido.getEmpresa());
-                cliente = clienteRepository.save(pedido.getCliente());
-            }
-            cliente.setEmpresa(pedido.getEmpresa());
-            if (clienteService.validarCliente(cliente)){
-                pedido.setCliente(cliente);
-            }
-        }
-
         // Associa cada PedidoBarbeiro ao Pedido
         for (PedidoPrestador pb : pedido.getPedidoPrestador()) {
             pb.setPedido(pedido);
-        }
-        // Associa cada PedidoProduto ao Pedido
-        for (PedidoProdutoV2 pp : pedido.getPedidoProdutos()) {
-            pp.setPedido(pedido);
         }
 
 
@@ -102,10 +96,6 @@ public class PedidoService {
         //verificar se o pedido pertence a empresa que o prestador está vinculado para poder finalizar
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
-        Empresa empresa = prestador.getEmpresa();
-        if (!pedidoEncontrado.getEmpresa().equals(empresa)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
         pedidoEncontrado.setFinalizado(true);
         return pedidoV2Repository.save(pedidoEncontrado);
     }
@@ -202,6 +192,11 @@ public class PedidoService {
         return pedidoV2Repository.findByEmpresa(empresa);
     }
 
+    //listar por cpf
+    public List<PedidoV2> listarPorCpf(String cpf) {
+        return pedidoV2Repository.findByPedidoPrestadorPrestadorCpf(cpf);
+    }
+
     public List<Pedido> listarPedidos() {
         return pedidoRepository.findAll();
     }
@@ -256,11 +251,6 @@ public class PedidoService {
         if (!(prestador.getCargo().getCargo().equalsIgnoreCase("ADMIN"))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-    }
-
-    //filtrar pedidosV2 por cpf do prestador
-    public List<PedidoV2> listarPorCpfPrestador(String cpf) {
-        return pedidoV2Repository.findByPedidoPrestadorPrestadorCpf(cpf);
     }
 
     //validar pedidoV2

@@ -14,6 +14,7 @@ import gp6.harbor.harborapi.service.cliente.ClienteService;
 import gp6.harbor.harborapi.service.pedido.PedidoService;
 import gp6.harbor.harborapi.service.prestador.PrestadorService;
 import gp6.harbor.harborapi.util.PedidoFilaEspera;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ public class PedidoController {
         return ResponseEntity.ok(pedido);
     }
 
+    @Hidden
     @PostMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<PedidoListagemDto> criarPedido(@RequestBody @Valid PedidoCriacaoDto novoPedido) {
@@ -60,6 +62,7 @@ public class PedidoController {
         }
     }
 
+    @Hidden
     @GetMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PedidoListagemDto>> listarPedidos() {
@@ -72,6 +75,19 @@ public class PedidoController {
         return ResponseEntity.status(200).body(PedidoMapper.toDto(pedidos));
     }
 
+    @GetMapping("/pedidosV2")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<PedidoV2>> listarPedidosV2() {
+        List<PedidoV2> pedidos = pedidoService.listarPedidosV2();
+
+        if (pedidos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.status(200).body(pedidos);
+    }
+
+    @Hidden
     @GetMapping("/prestador/{prestadorId}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PedidoListagemDto>> listarPorNomePrestador(@PathVariable Long prestadorId) {
@@ -84,12 +100,14 @@ public class PedidoController {
         return ResponseEntity.ok().body(PedidoMapper.toDto(pedidos));
     }
 
+    @Hidden
     @PatchMapping("/produtos/{pedidoId}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<PedidoListagemDto> adicionarProduto(@PathVariable Integer pedidoId, @Valid @RequestBody PedidoAtualizacaoProdutoDto produtos) {
         return ResponseEntity.ok(PedidoMapper.toDto(pedidoService.adicionarProduto(pedidoId, produtos)));
     }
 
+    @Hidden
     @PatchMapping("/status/{pedidoId}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<PedidoListagemDto> atualizarStatus(@PathVariable Integer pedidoId, @Valid @RequestBody PedidoAtualizacaoStatusDto status) {
@@ -98,11 +116,27 @@ public class PedidoController {
        return ResponseEntity.ok(PedidoMapper.toDto(pedidoAtualizado));
     }
 
+    @Hidden
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> desfazer (@PathVariable Integer pedidoId) {
         pilhaPedido.pop();
         pedidoService.deletar(pedidoId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/finalizar/{pedidoId}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<PedidoV2> finalizarPedido(@PathVariable Integer pedidoId) {
+        PedidoV2 pedido = pedidoService.finalizarPedidoV2(pedidoId);
+        return ResponseEntity.ok(pedido);
+    }
+
+    //filtrar pedidosV2 por cpf do prestador
+    @GetMapping("/filtrar/{cpf}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<PedidoV2>> filtrarPedidosV2(@PathVariable String cpf) {
+        List<PedidoV2> pedidos = pedidoService.listarPorCpfPrestador(cpf);
+        return ResponseEntity.ok(pedidos);
     }
 }

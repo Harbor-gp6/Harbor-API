@@ -8,9 +8,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import gp6.harbor.harborapi.domain.cliente.Cliente;
+import gp6.harbor.harborapi.domain.cliente.repository.ClienteRepository;
+import gp6.harbor.harborapi.domain.empresa.Empresa;
+import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
 import gp6.harbor.harborapi.domain.pedido.*;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoV2Repository;
+import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
+import gp6.harbor.harborapi.service.cliente.ClienteService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -34,24 +41,74 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PedidoService {
 
-    private final PedidoRepository pedidoRepository;
+    private final PrestadorRepository prestadorRepository;
     private final PedidoV2Repository pedidoV2Repository;
-    private final ProdutoService produtoService;
-    private final PedidoProdutoService pedidoProdutoService;
+    private final ClienteRepository clienteRepository;
+    private final PedidoRepository pedidoRepository;
+    private final EmpresaRepository empresaRepository;
     private final PedidoServicoService pedidoServicoService;
-    private final ServicoService servicoService;
+    private final PedidoProdutoService pedidoProdutoService;
     private final PrestadorService prestadorService;
+    private final ProdutoService produtoService;
+    private final ServicoService servicoService;
     private final EmailService emailService;
+    private final ClienteService clienteService;
+
 
     @Transactional
     public PedidoV2 criarPedidoV2(PedidoV2 pedido) {
+        //busca empresa e coloca no pedido
+        String cnpjEmpresa = pedido.getEmpresa().getCnpj();
+        if (cnpjEmpresa != null) {
+            Empresa empresa = empresaRepository.findByCnpj(cnpjEmpresa).orElse(null);
+            if (empresa == null) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+            pedido.setEmpresa(empresa);
+        }
+
+        if (pedido.getCliente().getCpf() != null) {
+            Cliente cliente = clienteRepository.findByCpf(pedido.getCliente().getCpf()).orElse(null);
+            if (cliente == null) {
+                pedido.getCliente().setEmpresa(pedido.getEmpresa());
+                cliente = clienteRepository.save(pedido.getCliente());
+            }
+            cliente.setEmpresa(pedido.getEmpresa());
+            if (clienteService.validarCliente(cliente)){
+                pedido.setCliente(cliente);
+            }
+        }
+
         // Associa cada PedidoBarbeiro ao Pedido
         for (PedidoPrestador pb : pedido.getPedidoPrestador()) {
             pb.setPedido(pedido);
         }
+        // Associa cada PedidoProduto ao Pedido
+        for (PedidoProdutoV2 pp : pedido.getPedidoProdutos()) {
+            pp.setPedido(pedido);
+        }
+
+
+
+        if (!validarPedidoV2(pedido)) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         return pedidoV2Repository.save(pedido);
     }
 
+    public PedidoV2 finalizarPedidoV2(Integer pedidoId) {
+        PedidoV2 pedidoEncontrado = pedidoV2Repository.findById(pedidoId).orElseThrow(() -> new NaoEncontradoException("Pedido"));
+
+        //verificar se o pedido pertence a empresa que o prestador está vinculado para poder finalizar
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        Empresa empresa = prestador.getEmpresa();
+        if (!pedidoEncontrado.getEmpresa().equals(empresa)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        pedidoEncontrado.setFinalizado(true);
+        return pedidoV2Repository.save(pedidoEncontrado);
+    }
     public Pedido criarPedido(Pedido novoPedido, List<Integer> servicosIds) {
         if (novoPedido.getDataAgendamento().getHour() < novoPedido.getPrestador().getEmpresa().getHorarioAbertura().getHour() || novoPedido.getDataAgendamento().getHour() > novoPedido.getPrestador().getEmpresa().getHorarioFechamento().getHour()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
@@ -138,6 +195,13 @@ public class PedidoService {
         return pedidoRepository.save(pedidoEncontrado);
     }
 
+    public List<PedidoV2> listarPedidosV2() {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        Empresa empresa = prestador.getEmpresa();
+        return pedidoV2Repository.findByEmpresa(empresa);
+    }
+
     public List<Pedido> listarPedidos() {
         return pedidoRepository.findAll();
     }
@@ -192,6 +256,21 @@ public class PedidoService {
         if (!(prestador.getCargo().getCargo().equalsIgnoreCase("ADMIN"))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    //filtrar pedidosV2 por cpf do prestador
+    public List<PedidoV2> listarPorCpfPrestador(String cpf) {
+        return pedidoV2Repository.findByPedidoPrestadorPrestadorCpf(cpf);
+    }
+
+    //validar pedidoV2
+    public boolean validarPedidoV2(PedidoV2 pedidoV2){
+        //validar se todos os atributos do pedidoV2 são validos
+        if (!clienteService.validarCliente(pedidoV2.getCliente())) {
+            return false;
+        }
+
+        return true;
     }
 
 }

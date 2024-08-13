@@ -2,9 +2,13 @@ package gp6.harbor.harborapi.service.cliente;
 
 import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.cliente.repository.ClienteRepository;
+import gp6.harbor.harborapi.domain.empresa.Empresa;
+import gp6.harbor.harborapi.domain.prestador.Prestador;
+import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.exception.ConflitoException;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,9 +18,15 @@ import java.util.List;
 public class ClienteService {
 
     private final ClienteRepository clienteRepository;
+    private final PrestadorRepository prestadorRepository;
 
     public List<Cliente> buscarTodos() {
-        return clienteRepository.findAll();
+        //buscar apenas os clienets da empresa que esta requisitando
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        Empresa empresa = prestador.getEmpresa();
+
+        return clienteRepository.findByEmpresa(empresa);
     }
 
     public Cliente buscarPorId(int id) {
@@ -52,5 +62,25 @@ public class ClienteService {
 
     public boolean existePorCpf(String cpf) {
         return clienteRepository.existsByCpf(cpf);
+    }
+
+    public boolean validarCliente(Cliente cliente){
+        //validar se todos os atributos do cliente são validos
+        if (cliente.getNome() == null || cliente.getNome().isEmpty()) {
+            return false;
+        }
+        if (cliente.getSobrenome() == null || cliente.getSobrenome().isEmpty()) {
+            return false;
+        }
+        if (cliente.getCpf() == null || cliente.getCpf().isEmpty()) {
+            return false;
+        }
+        if (cliente.getEmail() == null || cliente.getEmail().isEmpty()) {
+            return false;
+        }
+        if (cliente.getTelefone() == null || cliente.getTelefone().isEmpty()) {
+            return false;
+        }
+        return true;
     }
 }

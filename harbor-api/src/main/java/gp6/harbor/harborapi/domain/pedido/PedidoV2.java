@@ -3,6 +3,7 @@ package gp6.harbor.harborapi.domain.pedido;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import gp6.harbor.harborapi.api.enums.FormaPagamentoEnum;
 import gp6.harbor.harborapi.domain.cliente.Cliente;
+import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.produto.Produto;
 import jakarta.persistence.*;
@@ -27,6 +28,10 @@ public class PedidoV2 {
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_cliente")
     private Cliente cliente;
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "id_empresa")
+    private Empresa empresa;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "pedido")
     @JsonManagedReference

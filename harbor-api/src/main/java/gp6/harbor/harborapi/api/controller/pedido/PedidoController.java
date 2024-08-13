@@ -136,7 +136,7 @@ public class PedidoController {
     @GetMapping("/filtrar/{cpf}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PedidoV2>> filtrarPedidosV2(@PathVariable String cpf) {
-        List<PedidoV2> pedidos = pedidoService.listarPorCpfPrestador(cpf);
+        List<PedidoV2> pedidos = pedidoService.listarPorCpf(cpf);
         return ResponseEntity.ok(pedidos);
     }
 }

@@ -13,6 +13,7 @@ import gp6.harbor.harborapi.domain.cliente.repository.ClienteRepository;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
 import gp6.harbor.harborapi.domain.pedido.*;
+import gp6.harbor.harborapi.domain.pedido.repository.HorarioOcupado;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoV2Repository;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.service.cliente.ClienteService;
@@ -57,7 +58,18 @@ public class PedidoService {
 
     @Transactional
     public PedidoV2 criarPedidoV2(PedidoV2 pedido) {
-        //busca empresa e coloca no pedido
+        // Verifica e salva cliente
+        if (pedido.getCliente().getCpf() != null) {
+            Cliente cliente = clienteRepository.findByCpf(pedido.getCliente().getCpf()).orElse(null);
+            if (cliente == null) {
+                cliente = clienteRepository.save(pedido.getCliente());
+            }
+            if (clienteService.validarCliente(cliente)) {
+                pedido.setCliente(cliente);
+            }
+        }
+
+        // Verifica e salva empresa
         String cnpjEmpresa = pedido.getEmpresa().getCnpj();
         if (cnpjEmpresa != null) {
             Empresa empresa = empresaRepository.findByCnpj(cnpjEmpresa).orElse(null);
@@ -67,34 +79,55 @@ public class PedidoService {
             pedido.setEmpresa(empresa);
         }
 
-        if (pedido.getCliente().getCpf() != null) {
-            Cliente cliente = clienteRepository.findByCpf(pedido.getCliente().getCpf()).orElse(null);
-            if (cliente == null) {
-                pedido.getCliente().setEmpresa(pedido.getEmpresa());
-                cliente = clienteRepository.save(pedido.getCliente());
+        // Busca e atribui serviços ao PedidoPrestador
+        for (PedidoPrestador pedidoPrestador : pedido.getPedidoPrestador()) {
+            Servico servico = servicoService.buscaPorId(pedidoPrestador.getServico().getId());
+            if (servico == null || servico.getTempoMedioEmMinutos() == null) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "O serviço ou seu tempo médio está inválido.");
             }
-            cliente.setEmpresa(pedido.getEmpresa());
-            if (clienteService.validarCliente(cliente)){
-                pedido.setCliente(cliente);
+            pedidoPrestador.setServico(servico);
+        }
+
+        // Hora inicial do primeiro serviço
+        LocalDateTime horarioAtual = pedido.getDataAgendamento();  // Supondo que pedido tenha um campo dataAgendamento
+
+        // Associa cada PedidoPrestador ao Pedido e calcula os horários
+        for (PedidoPrestador pedidoPrestador : pedido.getPedidoPrestador()) {
+            pedidoPrestador.setPedido(pedido);
+
+            // Define a data de início e fim do serviço para o prestador
+            HorarioOcupado horarioOcupado = new HorarioOcupado();
+            horarioOcupado.setDataInicio(horarioAtual);
+            horarioOcupado.setDataFim(horarioAtual.plusMinutes(pedidoPrestador.getServico().getTempoMedioEmMinutos()));
+
+            // Associa o prestador ao HorarioOcupado
+            Prestador prestador = prestadorService.buscarPorId(pedidoPrestador.getPrestador().getId());
+            horarioOcupado.setPrestador(prestador);
+
+            // Adiciona o horário ocupado na lista de horários do prestador
+            if (!prestador.adicionarHorarioOcupado(horarioOcupado)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Horário conflita com outro agendamento.");
             }
+
+            // Atualiza o horário atual para o próximo serviço
+            horarioAtual = horarioOcupado.getDataFim();
         }
 
-        // Associa cada PedidoBarbeiro ao Pedido
-        for (PedidoPrestador pb : pedido.getPedidoPrestador()) {
-            pb.setPedido(pedido);
-        }
-        // Associa cada PedidoProduto ao Pedido
-        for (PedidoProdutoV2 pp : pedido.getPedidoProdutos()) {
-            pp.setPedido(pedido);
-        }
-
-
-
+        // Valida o pedido
         if (!validarPedidoV2(pedido)) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        return pedidoV2Repository.save(pedido);
+
+        // Salva o pedido e os horários ocupados do prestador
+        PedidoV2 pedidoSalvo = pedidoV2Repository.save(pedido);
+        for (PedidoPrestador pedidoPrestador : pedido.getPedidoPrestador()) {
+            Prestador prestador = prestadorService.buscarPorId(pedidoPrestador.getPrestador().getId());
+            prestadorRepository.save(prestador);  // Salva o prestador com a lista atualizada de horários ocupados
+        }
+
+        return pedidoSalvo;
     }
+
 
     public PedidoV2 finalizarPedidoV2(Integer pedidoId) {
         PedidoV2 pedidoEncontrado = pedidoV2Repository.findById(pedidoId).orElseThrow(() -> new NaoEncontradoException("Pedido"));
@@ -102,10 +135,6 @@ public class PedidoService {
         //verificar se o pedido pertence a empresa que o prestador está vinculado para poder finalizar
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
-        Empresa empresa = prestador.getEmpresa();
-        if (!pedidoEncontrado.getEmpresa().equals(empresa)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
         pedidoEncontrado.setFinalizado(true);
         return pedidoV2Repository.save(pedidoEncontrado);
     }
@@ -202,6 +231,11 @@ public class PedidoService {
         return pedidoV2Repository.findByEmpresa(empresa);
     }
 
+    //listar por cpf
+    public List<PedidoV2> listarPorCpf(String cpf) {
+        return pedidoV2Repository.findByPedidoPrestadorPrestadorCpf(cpf);
+    }
+
     public List<Pedido> listarPedidos() {
         return pedidoRepository.findAll();
     }
@@ -256,11 +290,6 @@ public class PedidoService {
         if (!(prestador.getCargo().getCargo().equalsIgnoreCase("ADMIN"))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-    }
-
-    //filtrar pedidosV2 por cpf do prestador
-    public List<PedidoV2> listarPorCpfPrestador(String cpf) {
-        return pedidoV2Repository.findByPedidoPrestadorPrestadorCpf(cpf);
     }
 
     //validar pedidoV2

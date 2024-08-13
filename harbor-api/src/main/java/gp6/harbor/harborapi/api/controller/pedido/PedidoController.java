@@ -8,7 +8,6 @@ import gp6.harbor.harborapi.dto.pedido.dto.PedidoListagemDto;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoMapper;
 import gp6.harbor.harborapi.exception.PedidoCapacidadeExcedidoException;
 import gp6.harbor.harborapi.dto.pedido.dto.*;
-import gp6.harbor.harborapi.service.cliente.ClienteService;
 import gp6.harbor.harborapi.service.pedido.PedidoService;
 import gp6.harbor.harborapi.service.prestador.PrestadorService;
 import gp6.harbor.harborapi.util.PedidoFilaEspera;
@@ -29,14 +28,6 @@ public class PedidoController {
     public static PedidoFilaEspera<Pedido> filaPedido = new PedidoFilaEspera<>(10);
     private final PedidoService pedidoService;
     private final PrestadorService prestadorService;
-
-    @PostMapping("criarPedidoV2")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<PedidoV2> criarPedido(@RequestBody PedidoV2 pedido) {
-        pedido.setId(0);
-        pedidoService.criarPedidoV2(pedido);
-        return ResponseEntity.ok(pedido);
-    }
 
     @Hidden
     @PostMapping
@@ -69,18 +60,6 @@ public class PedidoController {
         }
 
         return ResponseEntity.status(200).body(PedidoMapper.toDto(pedidos));
-    }
-
-    @GetMapping("/pedidosV2")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<PedidoV2>> listarPedidosV2() {
-        List<PedidoV2> pedidos = pedidoService.listarPedidosV2();
-
-        if (pedidos.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.status(200).body(pedidos);
     }
 
     @Hidden

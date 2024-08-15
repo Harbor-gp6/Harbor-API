@@ -1,6 +1,7 @@
 package gp6.harbor.harborapi.api.controller.pedido;
 
 import gp6.harbor.harborapi.domain.pedido.Pedido;
+import gp6.harbor.harborapi.domain.pedido.PedidoV2;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoProdutoDto;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoCriacaoDto;

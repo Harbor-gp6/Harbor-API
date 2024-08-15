@@ -244,10 +244,6 @@ public class PedidoService {
         return pedidoRepository.findAllByPrestadorId(prestadorId);
     }
 
-    public void deletar (Integer prestadorId) {
-        pedidoRepository.deleteById(prestadorId);
-    }
-
     public Double somarValorFaturado(LocalDate dataInicio, LocalDate dataFim, Long prestadorId) {
 
         verificarPrestadorAdmin(prestadorId);

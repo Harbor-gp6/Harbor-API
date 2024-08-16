@@ -70,6 +70,7 @@ public class ClienteController {
     }
 
 
+
     @PutMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ClienteListagemDto> atualizarCliente(

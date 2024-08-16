@@ -1,0 +1,63 @@
+package gp6.harbor.harborapi.domain.pilha;
+
+public class PilhaObj<T> {
+    // 01) Atributos
+    private T[] pilha;
+    private int topo;
+
+    // 02) Construtor
+    public PilhaObj(int capacidade) {
+        this.pilha = (T[]) new Object[capacidade];
+        this.topo = -1;
+    }
+
+    // 03) Método isEmpty
+    public Boolean isEmpty() {
+        return topo == -1;
+    }
+
+    // 04) Método isFull
+    public Boolean isFull() {
+        return pilha.length == topo + 1;
+    }
+
+    // 05) Método push
+    public void push(T info) {
+        if (!isFull()) {
+            pilha[++topo] = info;
+        } else {
+            throw new IllegalStateException("Pilha cheia!");
+        }
+    }
+
+    // 06) Método pop
+    public T pop() {
+        if (!isEmpty()) {
+            return pilha[topo--];
+        }
+        return null;
+    }
+
+    // 07) Método peek
+    public T peek() {
+        if (!isEmpty()) {
+            return pilha[topo];
+        }
+        return null;
+    }
+
+    // 08) Método exibe
+    public void exibe() {
+        if (!isEmpty()) {
+            for (int i = 0; i <= topo; i++) {
+                System.out.println(pilha[i]);
+            }
+        }
+    }
+
+
+    //Getters & Setters (manter)
+    public int getTopo() {
+        return topo;
+    }
+}

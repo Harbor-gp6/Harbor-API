@@ -29,6 +29,13 @@ public class PrestadorService {
         }
         return prestadorRepository.save(prestador);
     }
+
+    public Prestador criarFuncionario(Prestador prestador) {
+        if (prestadorRepository.existsById(prestador.getId())) {
+            throw new ConflitoException("Prestador Id");
+        }
+        return prestadorRepository.save(prestador);
+    }
     
     public List<Prestador> listar() {
         return prestadorRepository.findAll();

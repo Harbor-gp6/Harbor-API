@@ -30,4 +30,9 @@ public class EnderecoService {
     public List<Endereco> listar() {
         return enderecoRepository.findAll();
     }
+
+    //validar endereco
+    public boolean validarEndereco(Endereco endereco) {
+        return endereco.getEstado() != null && endereco.getCidade() != null && endereco.getBairro() != null && endereco.getLogradouro() != null && endereco.getNumero() != null && endereco.getCep() != null;
+    }
 }

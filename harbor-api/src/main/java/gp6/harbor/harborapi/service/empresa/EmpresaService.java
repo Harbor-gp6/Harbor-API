@@ -1,12 +1,24 @@
 package gp6.harbor.harborapi.service.empresa;
 
+import gp6.harbor.harborapi.api.enums.CargoEnum;
 import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
+import gp6.harbor.harborapi.domain.endereco.Endereco;
+import gp6.harbor.harborapi.domain.endereco.repository.EnderecoRepository;
+import gp6.harbor.harborapi.domain.prestador.Prestador;
+import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
+import gp6.harbor.harborapi.dto.empresa.dto.EmpresaCriacaoDto;
+import gp6.harbor.harborapi.dto.empresa.dto.EmpresaListagemDto;
+import gp6.harbor.harborapi.dto.empresa.dto.EmpresaMapperStruct;
+import gp6.harbor.harborapi.dto.endereco.dto.EnderecoCriacaoDto;
 import gp6.harbor.harborapi.exception.ConflitoException;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
+import gp6.harbor.harborapi.service.endereco.EnderecoService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,7 +30,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EmpresaService {
 
+    private final PrestadorRepository prestadorRepository;
     private final EmpresaRepository empresaRepository;
+    private final EnderecoRepository enderecoRepository;
+    private final EnderecoService enderecoService;
+    private final EmpresaMapperStruct empresaMapperStruct;
 
     public Empresa cadastrar(Empresa empresa) {
         if (existePorCnpj(empresa.getCnpj())) {
@@ -54,5 +70,69 @@ public class EmpresaService {
         Empresa empresa = buscarPorId(id);
         empresa.setDataInativacao(LocalDate.now());
         empresaRepository.save(empresa);
+    }
+
+    public EmpresaListagemDto atualizarEmpresa(EmpresaCriacaoDto empresaDto, String cnpj) {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+
+        if (prestadorLogado == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "O usuário precisa estar logado");
+        }
+
+        if (prestadorLogado.getCargo() != CargoEnum.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Apenas administradores podem atualizar empresas");
+        }
+
+        if (!prestadorLogado.getEmpresa().getCnpj().equals(cnpj)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Apenas é permitido atualizar a própria empresa");
+        }
+
+        Empresa empresa = prestadorLogado.getEmpresa();
+
+        if (empresa.getHorarioAbertura().isAfter(empresa.getHorarioFechamento())) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        //buscar endereco da empresa e atribuir o novo endereco
+        Endereco endereco = enderecoService.buscarPorId(empresa.getEndereco().getId());
+
+        EnderecoCriacaoDto enderecoAtualizado = empresaDto.getEndereco();
+        endereco.setCep(enderecoAtualizado.getCep());
+        endereco.setLogradouro(enderecoAtualizado.getLogradouro());
+        endereco.setNumero(enderecoAtualizado.getNumero());
+        endereco.setComplemento(enderecoAtualizado.getComplemento());
+        endereco.setBairro(enderecoAtualizado.getBairro());
+        endereco.setCidade(enderecoAtualizado.getCidade());
+        endereco.setEstado(enderecoAtualizado.getEstado());
+
+        empresa.setEndereco(endereco);
+        empresa.setRazaoSocial(empresaDto.getRazaoSocial());
+        empresa.setNomeFantasia(empresaDto.getNomeFantasia());
+        empresa.setCnpj(empresaDto.getCnpj());
+        empresa.setHorarioAbertura(empresaDto.getHorarioAbertura());
+        empresa.setHorarioFechamento(empresaDto.getHorarioFechamento());
+
+        if (validar(empresa) && enderecoService.validarEndereco(endereco)) {
+            empresaRepository.save(empresa);
+            enderecoRepository.save(endereco);
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dados inválidos, verifique os campos e tente novamente.");
+        }
+
+        return empresaMapperStruct.toDtoListagem(empresa);
+    }
+
+    public boolean validar(Empresa empresa){
+        return empresa.getRazaoSocial() != null && empresa.getCnpj() != null && empresa.getHorarioAbertura() != null && empresa.getHorarioFechamento() != null && empresa.getEndereco() != null;
+    }
+
+    @Transactional
+    public void setFoto(Integer id, byte[] novaFoto) {
+        empresaRepository.setFoto(id, novaFoto);
+    }
+
+    public byte[] getFoto(Integer id) {
+        return empresaRepository.getFoto(id);
     }
 }

@@ -1,16 +1,23 @@
 package gp6.harbor.harborapi.service.prestador;
 
+import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.pedido.Pedido;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
+import gp6.harbor.harborapi.dto.prestador.dto.PrestadorFuncionarioCriacao;
+import gp6.harbor.harborapi.dto.prestador.dto.PrestadorListagemDto;
+import gp6.harbor.harborapi.dto.prestador.dto.PrestadorMapperStruct;
 import gp6.harbor.harborapi.exception.ConflitoException;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
 import gp6.harbor.harborapi.service.pedido.PedidoService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -22,6 +29,7 @@ public class PrestadorService {
 
     private final PrestadorRepository prestadorRepository;
     private final PedidoRepository pedidoRepository;
+    private final PrestadorMapperStruct prestadorMapperStruct;
 
     public Prestador criar(Prestador prestador) {
         if (prestadorRepository.existsById(prestador.getId())) {
@@ -29,9 +37,35 @@ public class PrestadorService {
         }
         return prestadorRepository.save(prestador);
     }
+
+    public Prestador criarFuncionario(Prestador prestador) {
+        if (prestadorRepository.existsById(prestador.getId())) {
+            throw new ConflitoException("Prestador Id");
+        }
+        return prestadorRepository.save(prestador);
+    }
     
-    public List<Prestador> listar() {
-        return prestadorRepository.findAll();
+    public List<PrestadorFuncionarioCriacao> listar() {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        //se não achar o prestadorLogado crie uma excetion com uma mensagem de que precisa fazer o login
+        Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        if (prestadorLogado == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "O usuário precisa estar logado");
+        }
+
+        Empresa empresa = prestadorLogado.getEmpresa();
+
+        List<Prestador> prestadores = prestadorRepository.findByEmpresa(empresa);
+
+        List<PrestadorFuncionarioCriacao> prestadoresDto = new ArrayList<>();
+
+        //converta todos os prestadores da lista em PrestadorListagemDto
+        for (Prestador prestador : prestadores) {
+            PrestadorFuncionarioCriacao prestadorListagemDto = prestadorMapperStruct.toDto(prestador);
+            prestadoresDto.add(prestadorListagemDto);
+        }
+
+        return prestadoresDto;
     }
 
     public Prestador buscarPorId(Long id) {

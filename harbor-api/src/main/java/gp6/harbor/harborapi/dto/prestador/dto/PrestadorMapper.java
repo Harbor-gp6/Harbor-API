@@ -49,4 +49,5 @@ public class PrestadorMapper {
     public static List<PrestadorListagemDto> toDto(List<Prestador> entities){
         return entities.stream().map(PrestadorMapper::toDto).toList();
     }
+
 }

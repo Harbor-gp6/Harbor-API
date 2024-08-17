@@ -8,14 +8,22 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import gp6.harbor.harborapi.domain.cliente.Cliente;
+import gp6.harbor.harborapi.domain.cliente.repository.ClienteRepository;
+import gp6.harbor.harborapi.domain.empresa.Empresa;
+import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
+import gp6.harbor.harborapi.domain.pedido.*;
+import gp6.harbor.harborapi.domain.pedido.repository.HorarioOcupado;
+import gp6.harbor.harborapi.domain.pedido.repository.PedidoV2Repository;
+import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
+import gp6.harbor.harborapi.service.cliente.ClienteService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import gp6.harbor.harborapi.api.controller.pedido.PedidoController;
-import gp6.harbor.harborapi.domain.pedido.Pedido;
-import gp6.harbor.harborapi.domain.pedido.PedidoProduto;
-import gp6.harbor.harborapi.domain.pedido.PedidoServico;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.produto.Produto;
@@ -34,14 +42,102 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PedidoService {
 
+    private final PrestadorRepository prestadorRepository;
+    private final PedidoV2Repository pedidoV2Repository;
+    private final ClienteRepository clienteRepository;
     private final PedidoRepository pedidoRepository;
-    private final ProdutoService produtoService;
-    private final PedidoProdutoService pedidoProdutoService;
+    private final EmpresaRepository empresaRepository;
     private final PedidoServicoService pedidoServicoService;
-    private final ServicoService servicoService;
+    private final PedidoProdutoService pedidoProdutoService;
     private final PrestadorService prestadorService;
+    private final ProdutoService produtoService;
+    private final ServicoService servicoService;
     private final EmailService emailService;
+    private final ClienteService clienteService;
 
+
+    @Transactional
+    public PedidoV2 criarPedidoV2(PedidoV2 pedido) {
+        // Verifica e salva cliente
+        if (pedido.getCliente().getCpf() != null) {
+            Cliente cliente = clienteRepository.findByCpf(pedido.getCliente().getCpf()).orElse(null);
+            if (cliente == null) {
+                cliente = clienteRepository.save(pedido.getCliente());
+            }
+            if (clienteService.validarCliente(cliente)) {
+                pedido.setCliente(cliente);
+            }
+        }
+
+        // Verifica e salva empresa
+        String cnpjEmpresa = pedido.getEmpresa().getCnpj();
+        if (cnpjEmpresa != null) {
+            Empresa empresa = empresaRepository.findByCnpj(cnpjEmpresa).orElse(null);
+            if (empresa == null) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+            pedido.setEmpresa(empresa);
+        }
+
+        // Busca e atribui serviços ao PedidoPrestador
+        for (PedidoPrestador pedidoPrestador : pedido.getPedidoPrestador()) {
+            Servico servico = servicoService.buscaPorId(pedidoPrestador.getServico().getId());
+            if (servico == null || servico.getTempoMedioEmMinutos() == null) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "O serviço ou seu tempo médio está inválido.");
+            }
+            pedidoPrestador.setServico(servico);
+        }
+
+        // Hora inicial do primeiro serviço
+        LocalDateTime horarioAtual = pedido.getDataAgendamento();  // Supondo que pedido tenha um campo dataAgendamento
+
+        // Associa cada PedidoPrestador ao Pedido e calcula os horários
+        for (PedidoPrestador pedidoPrestador : pedido.getPedidoPrestador()) {
+            pedidoPrestador.setPedido(pedido);
+
+            // Define a data de início e fim do serviço para o prestador
+            HorarioOcupado horarioOcupado = new HorarioOcupado();
+            horarioOcupado.setDataInicio(horarioAtual);
+            horarioOcupado.setDataFim(horarioAtual.plusMinutes(pedidoPrestador.getServico().getTempoMedioEmMinutos()));
+
+            // Associa o prestador ao HorarioOcupado
+            Prestador prestador = prestadorService.buscarPorId(pedidoPrestador.getPrestador().getId());
+            horarioOcupado.setPrestador(prestador);
+
+            // Adiciona o horário ocupado na lista de horários do prestador
+            if (!prestador.adicionarHorarioOcupado(horarioOcupado)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Horário conflita com outro agendamento.");
+            }
+
+            // Atualiza o horário atual para o próximo serviço
+            horarioAtual = horarioOcupado.getDataFim();
+        }
+
+        // Valida o pedido
+        if (!validarPedidoV2(pedido)) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        // Salva o pedido e os horários ocupados do prestador
+        PedidoV2 pedidoSalvo = pedidoV2Repository.save(pedido);
+        for (PedidoPrestador pedidoPrestador : pedido.getPedidoPrestador()) {
+            Prestador prestador = prestadorService.buscarPorId(pedidoPrestador.getPrestador().getId());
+            prestadorRepository.save(prestador);  // Salva o prestador com a lista atualizada de horários ocupados
+        }
+
+        return pedidoSalvo;
+    }
+
+
+    public PedidoV2 finalizarPedidoV2(Integer pedidoId) {
+        PedidoV2 pedidoEncontrado = pedidoV2Repository.findById(pedidoId).orElseThrow(() -> new NaoEncontradoException("Pedido"));
+
+        //verificar se o pedido pertence a empresa que o prestador está vinculado para poder finalizar
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        pedidoEncontrado.setFinalizado(true);
+        return pedidoV2Repository.save(pedidoEncontrado);
+    }
     public Pedido criarPedido(Pedido novoPedido, List<Integer> servicosIds) {
         if (novoPedido.getDataAgendamento().getHour() < novoPedido.getPrestador().getEmpresa().getHorarioAbertura().getHour() || novoPedido.getDataAgendamento().getHour() > novoPedido.getPrestador().getEmpresa().getHorarioFechamento().getHour()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
@@ -128,16 +224,24 @@ public class PedidoService {
         return pedidoRepository.save(pedidoEncontrado);
     }
 
+    public List<PedidoV2> listarPedidosV2() {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        Empresa empresa = prestador.getEmpresa();
+        return pedidoV2Repository.findByEmpresa(empresa);
+    }
+
+    //listar por cpf
+    public List<PedidoV2> listarPorCpf(String cpf) {
+        return pedidoV2Repository.findByPedidoPrestadorPrestadorCpf(cpf);
+    }
+
     public List<Pedido> listarPedidos() {
         return pedidoRepository.findAll();
     }
 
     public List<Pedido> listarPorPrestador(Long prestadorId) {
         return pedidoRepository.findAllByPrestadorId(prestadorId);
-    }
-
-    public void deletar (Integer prestadorId) {
-        pedidoRepository.deleteById(prestadorId);
     }
 
     public Double somarValorFaturado(LocalDate dataInicio, LocalDate dataFim, Long prestadorId) {
@@ -182,6 +286,16 @@ public class PedidoService {
         if (!(prestador.getCargo().getCargo().equalsIgnoreCase("ADMIN"))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    //validar pedidoV2
+    public boolean validarPedidoV2(PedidoV2 pedidoV2){
+        //validar se todos os atributos do pedidoV2 são validos
+        if (!clienteService.validarCliente(pedidoV2.getCliente())) {
+            return false;
+        }
+
+        return true;
     }
 
 }

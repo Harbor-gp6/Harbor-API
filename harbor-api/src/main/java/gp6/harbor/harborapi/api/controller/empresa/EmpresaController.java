@@ -10,6 +10,7 @@ import gp6.harbor.harborapi.dto.empresa.dto.EmpresaListagemDto;
 import gp6.harbor.harborapi.dto.empresa.dto.EmpresaMapper;
 import gp6.harbor.harborapi.service.empresa.EmpresaService;
 import gp6.harbor.harborapi.service.endereco.EnderecoService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,6 +33,7 @@ public class EmpresaController {
 
     private EnderecoService enderecoService;
 
+    @Hidden
     @PostMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<EmpresaListagemDto> cadastrar(@RequestBody @Valid EmpresaCriacaoDto novaEmpresaDto){
@@ -59,6 +62,7 @@ public class EmpresaController {
         return ResponseEntity.status(201).body(listagemDto);
     }
 
+    @Hidden
     @GetMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<EmpresaListagemDto>> listar(){
@@ -71,7 +75,7 @@ public class EmpresaController {
         List<EmpresaListagemDto> listaAuxiliar = EmpresaMapper.toDto(empresas);
         return ResponseEntity.status(200).body(listaAuxiliar);
     }
-
+    @Hidden
     @GetMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<EmpresaListagemDto> buscarPorId(@PathVariable Integer id){
@@ -82,7 +86,7 @@ public class EmpresaController {
         EmpresaListagemDto listaAuxiliar = EmpresaMapper.toDto(empresa);
         return ResponseEntity.status(200).body(listaAuxiliar);
     }
-
+    @Hidden
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> inativarEmpresa(@PathVariable @Valid int id) {

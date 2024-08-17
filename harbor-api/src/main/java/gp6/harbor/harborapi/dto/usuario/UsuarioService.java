@@ -55,6 +55,19 @@ public class UsuarioService {
         this.prestadorRepository.save(novoUsuario);
     }
 
+    public void criarFuncionario(Prestador novoPrestador) {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        Empresa empresa = prestador.getEmpresa();
+
+        novoPrestador.setEmpresa(empresa);
+
+        String senhaCriptografada = passwordEncoder.encode(novoPrestador.getSenha());
+        novoPrestador.setSenha(senhaCriptografada);
+
+        this.prestadorRepository.save(novoPrestador);
+    }
+
     public UsuarioTokenDto autenticar(UsuarioLoginDto usuarioLoginDto) {
 
         final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(

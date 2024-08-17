@@ -1,5 +1,6 @@
 package gp6.harbor.harborapi.domain.cliente;
 
+import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.interfaces.IEntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -33,4 +34,8 @@ public class Cliente implements IEntityBase {
     private String cpf;
     @CreationTimestamp
     private LocalDate dataCriacao;
+
+    @ManyToOne
+    @JoinColumn(name = "id_empresa")
+    private Empresa empresa;
 }

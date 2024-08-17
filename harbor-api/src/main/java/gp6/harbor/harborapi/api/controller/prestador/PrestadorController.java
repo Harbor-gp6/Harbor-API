@@ -3,8 +3,10 @@ package gp6.harbor.harborapi.api.controller.prestador;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import gp6.harbor.harborapi.arquivoCsv.Gravacao;
@@ -31,6 +33,7 @@ public class PrestadorController {
     private final UsuarioService usuarioService;
     private final PrestadorService prestadorService;
     private final EmpresaService empresaService;
+    private final PrestadorRepository prestadorRepository;
 
     @PostMapping
     public ResponseEntity<Void> criar(@RequestBody @Valid PrestadorCriacaoDto usuarioCriacaoDto) {
@@ -42,6 +45,20 @@ public class PrestadorController {
 
         return ResponseEntity.status(201).build();
     }
+
+    @PostMapping("criar-funcionario")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> criarFuncionario(@RequestBody Prestador novoPrestador) {
+        if (existePorCpf(novoPrestador.getCpf())) {
+            return ResponseEntity.status(409).build();
+        }
+
+        usuarioService.criarFuncionario(novoPrestador);
+
+        return ResponseEntity.status(201).build();
+    }
+
+
 
     @PostMapping("/login")
     public ResponseEntity<UsuarioTokenDto> login(@RequestBody UsuarioLoginDto usuarioLoginDto) {

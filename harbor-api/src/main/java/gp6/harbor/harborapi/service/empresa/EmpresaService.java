@@ -5,6 +5,7 @@ import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
 import gp6.harbor.harborapi.exception.ConflitoException;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -54,5 +55,14 @@ public class EmpresaService {
         Empresa empresa = buscarPorId(id);
         empresa.setDataInativacao(LocalDate.now());
         empresaRepository.save(empresa);
+    }
+
+    @Transactional
+    public void setFoto(Integer id, byte[] novaFoto) {
+        empresaRepository.setFoto(id, novaFoto);
+    }
+
+    public byte[] getFoto(Integer id) {
+        return empresaRepository.getFoto(id);
     }
 }

@@ -5,6 +5,7 @@ import gp6.harbor.harborapi.domain.servico.Servico;
 import gp6.harbor.harborapi.domain.servico.repository.ServicoRepository;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
 import gp6.harbor.harborapi.service.empresa.EmpresaService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +38,10 @@ public class ServicoService {
         return servicoRepository.findAll();
     }
 
+    public boolean existePorId(Integer id) {
+        return servicoRepository.existsById(id);
+    }
+
     public List<Servico> buscaTodosPorIds(List<Integer> ids) {
         return servicoRepository.findByIdIn(ids);
     }
@@ -49,5 +54,12 @@ public class ServicoService {
         buscaPorId(id);
         servicoRepository.deleteById(id);
     }
+    @Transactional
+    public void setFoto(Integer id, byte[] novaFoto) {
+        servicoRepository.setFoto(id, novaFoto);
+    }
 
+    public byte[] getFoto(Integer id) {
+        return servicoRepository.getFoto(id);
+    }
 }

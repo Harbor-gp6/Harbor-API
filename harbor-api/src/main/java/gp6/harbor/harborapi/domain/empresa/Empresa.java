@@ -1,5 +1,6 @@
 package gp6.harbor.harborapi.domain.empresa;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gp6.harbor.harborapi.domain.endereco.Endereco;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -22,23 +23,19 @@ public class Empresa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_empresa")
     private Integer id;
+    @JsonIgnore
+    @Column(length = 50 * 1024 * 1024)
+    private byte[] foto;
     private String razaoSocial;
-
     private String nomeFantasia;
-
     private String cnpj;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_endereco")
     private Endereco endereco;
-
     @CreationTimestamp
     private LocalDate dataCriacao = LocalDate.now();
-
     private LocalTime horarioAbertura;
-
     private LocalTime horarioFechamento;
-
     private LocalDate dataInativacao;
 
 }

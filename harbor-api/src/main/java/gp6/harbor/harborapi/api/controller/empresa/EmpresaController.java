@@ -102,6 +102,20 @@ public class EmpresaController {
     }
 
 
+    //criar um endpoint para atualizar os dados da empresa
+    @PutMapping("atualizar")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<EmpresaListagemDto> atualizarEmpresa(@RequestBody @Valid EmpresaCriacaoDto empresaDto){
+        Empresa empresa = empresaService.buscarPorCnpj(empresaDto.getCnpj());
+
+        if (empresa == null){
+            return ResponseEntity.status(404).build();
+        }
+
+        EmpresaListagemDto empresaSalva = empresaService.atualizarEmpresa(empresaDto, empresaDto.getCnpj());
+
+        return ResponseEntity.status(200).body(empresaSalva);
+    }
 
     // TODO: Criar metodo de busca por CNPJ
     // TODO: Criar metodo de busca por id

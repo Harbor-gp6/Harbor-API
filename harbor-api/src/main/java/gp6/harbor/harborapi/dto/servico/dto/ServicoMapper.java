@@ -46,6 +46,7 @@ public class ServicoMapper {
         listagemDto.setServicoEspecial(entity.getServicoEspecial());
         listagemDto.setTempoMedioEmMinutos(entity.getTempoMedioEmMinutos());
         listagemDto.setValorServico(entity.getValorServico());
+        listagemDto.setFoto(entity.getFoto());
 
         return listagemDto;
     }

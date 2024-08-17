@@ -15,6 +15,7 @@ import gp6.harbor.harborapi.dto.endereco.dto.EnderecoCriacaoDto;
 import gp6.harbor.harborapi.exception.ConflitoException;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
 import gp6.harbor.harborapi.service.endereco.EnderecoService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -79,7 +80,7 @@ public class EmpresaService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "O usuário precisa estar logado");
         }
 
-        if (prestadorLogado.getCargo() != CargoEnum.valueOf("ADMIN")) {
+        if (prestadorLogado.getCargo() != CargoEnum.ADMIN) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Apenas administradores podem atualizar empresas");
         }
 
@@ -112,7 +113,6 @@ public class EmpresaService {
         empresa.setHorarioAbertura(empresaDto.getHorarioAbertura());
         empresa.setHorarioFechamento(empresaDto.getHorarioFechamento());
 
-
         if (validar(empresa) && enderecoService.validarEndereco(endereco)) {
             empresaRepository.save(empresa);
             enderecoRepository.save(endereco);
@@ -125,5 +125,14 @@ public class EmpresaService {
 
     public boolean validar(Empresa empresa){
         return empresa.getRazaoSocial() != null && empresa.getCnpj() != null && empresa.getHorarioAbertura() != null && empresa.getHorarioFechamento() != null && empresa.getEndereco() != null;
+    }
+
+    @Transactional
+    public void setFoto(Integer id, byte[] novaFoto) {
+        empresaRepository.setFoto(id, novaFoto);
+    }
+
+    public byte[] getFoto(Integer id) {
+        return empresaRepository.getFoto(id);
     }
 }

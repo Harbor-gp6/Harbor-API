@@ -23,20 +23,14 @@ public class EmpresaCriacaoDto {
     @NotBlank(message = "A razão social não pode estar em branco")
     @Size(min = 2, max = 300, message = "A razão social deve ter entre 2 e 300 caracteres")
     private String razaoSocial;
-
     @Size(max = 255)
     private String nomeFantasia;
-
     @CNPJ
     private String cnpj;
-
     @NotNull
     private EnderecoCriacaoDto endereco;
-
     @NotNull
     private LocalTime horarioAbertura;
-
     @NotNull
     private LocalTime horarioFechamento;
-
 }

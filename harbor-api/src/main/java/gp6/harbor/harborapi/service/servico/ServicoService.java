@@ -55,6 +55,10 @@ public class ServicoService {
         return servicoRepository.existsById(id);
     }
 
+    public boolean existePorId(Integer id) {
+        return servicoRepository.existsById(id);
+    }
+
     public List<Servico> buscaTodosPorIds(List<Integer> ids) {
         return servicoRepository.findByIdIn(ids);
     }

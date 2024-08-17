@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -101,7 +102,30 @@ public class EmpresaController {
         return existePorCnpj(cnpj);
     }
 
+    @CrossOrigin("*")
+    @PatchMapping(value = "/foto/{id}", consumes = {"image/jpeg", "image/png"})
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> patchFoto(@PathVariable Integer id,
+                                          @RequestBody byte[] novaFoto) {
+        if (!empresaService.existePorId(id)) {
+            return ResponseEntity.status(404).build();
+        }
 
+        empresaService.setFoto(id, novaFoto);
+        return ResponseEntity.status(200).build();
+    }
+    @GetMapping(value = "/foto/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<byte[]> getFoto(@PathVariable Integer id) {
+        if (!empresaService.existePorId(id)) {
+            return ResponseEntity.status(404).build();
+        }
+
+        byte[] foto = empresaService.getFoto(id);
+
+        return ResponseEntity.status(200).header("content-disposition",
+                "attachment; filename=\"foto-empresa.jpg\"").body(foto);
+    }
 
     // TODO: Criar metodo de busca por CNPJ
     // TODO: Criar metodo de busca por id

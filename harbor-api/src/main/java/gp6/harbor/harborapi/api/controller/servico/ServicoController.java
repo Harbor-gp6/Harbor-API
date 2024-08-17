@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import gp6.harbor.harborapi.dto.servico.dto.ServicoAtualizacaoDto;
 import gp6.harbor.harborapi.service.empresa.EmpresaService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -87,5 +88,30 @@ public class ServicoController {
     public ResponseEntity<Void> deletar(@PathVariable int id) {
         servicoService.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @CrossOrigin("*")
+    @PatchMapping(value = "/foto/{id}", consumes = {"image/jpeg", "image/png"})
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> patchFoto(@PathVariable Integer id,
+                                          @RequestBody byte[] novaFoto) {
+        if (!servicoService.existePorId(id)) {
+            return ResponseEntity.status(404).build();
+        }
+
+        servicoService.setFoto(id, novaFoto);
+        return ResponseEntity.status(200).build();
+    }
+    @GetMapping(value = "/foto/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<byte[]> getFoto(@PathVariable Integer id) {
+        if (!servicoService.existePorId(id)) {
+            return ResponseEntity.status(404).build();
+        }
+
+        byte[] foto = servicoService.getFoto(id);
+
+        return ResponseEntity.status(200).header("content-disposition",
+                "attachment; filename=\"foto-servico.jpg\"").body(foto);
     }
 }

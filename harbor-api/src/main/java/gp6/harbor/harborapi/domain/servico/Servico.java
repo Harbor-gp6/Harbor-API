@@ -1,5 +1,6 @@
 package gp6.harbor.harborapi.domain.servico;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +15,9 @@ public class Servico {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_servico")
     private Integer id;
+    @JsonIgnore
+    @Column(length = 50 * 1024 * 1024)
+    private byte[] foto;
     private String descricaoServico;
     private Boolean servicoEspecial;
     private Integer tempoMedioEmMinutos;
@@ -21,5 +25,4 @@ public class Servico {
     @ManyToOne
     @JoinColumn(name = "id_empresa")
     private Empresa empresa;
-
 }

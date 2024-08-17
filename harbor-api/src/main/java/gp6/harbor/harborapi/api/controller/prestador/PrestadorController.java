@@ -190,7 +190,7 @@ public class PrestadorController {
         byte[] foto = prestadorService.getFoto(id);
 
         return ResponseEntity.status(200).header("content-disposition",
-                "attachment; filename=\"foto-cliente.jpg\"").body(foto);
+                "attachment; filename=\"foto-prestador.jpg\"").body(foto);
     }
 
     public boolean existePorCpf(String cpf){

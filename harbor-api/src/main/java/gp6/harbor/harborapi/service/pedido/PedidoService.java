@@ -58,17 +58,6 @@ public class PedidoService {
 
     @Transactional
     public PedidoV2 criarPedidoV2(PedidoV2 pedido) {
-        // Verifica e salva cliente
-        if (pedido.getCliente().getCpf() != null) {
-            Cliente cliente = clienteRepository.findByCpf(pedido.getCliente().getCpf()).orElse(null);
-            if (cliente == null) {
-                cliente = clienteRepository.save(pedido.getCliente());
-            }
-            if (clienteService.validarCliente(cliente)) {
-                pedido.setCliente(cliente);
-            }
-        }
-
         // Verifica e salva empresa
         String cnpjEmpresa = pedido.getEmpresa().getCnpj();
         if (cnpjEmpresa != null) {
@@ -77,6 +66,20 @@ public class PedidoService {
                 throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
             }
             pedido.setEmpresa(empresa);
+        }
+
+        //busca a empresa do prestaador e salva a empresa no pedido do prestador
+
+
+
+        // Verifica e salva cliente
+        if (pedido.getCliente().getCpf() != null) {
+            Cliente cliente = clienteRepository.findByCpf(pedido.getCliente().getCpf()).orElse(null);
+            if (cliente == null && clienteService.validarCliente(cliente)) {
+                cliente.setEmpresa(pedido.getEmpresa());
+                cliente = clienteRepository.save(pedido.getCliente());
+                pedido.setCliente(cliente);
+            }
         }
 
         // Busca e atribui serviços ao PedidoPrestador

@@ -65,7 +65,6 @@ public class ClienteService {
     }
 
     public boolean validarCliente(Cliente cliente){
-        //validar se todos os atributos do cliente são validos
         if (cliente.getNome() == null || cliente.getNome().isEmpty()) {
             return false;
         }

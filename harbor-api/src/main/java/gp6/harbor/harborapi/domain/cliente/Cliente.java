@@ -23,18 +23,26 @@ public class Cliente implements IEntityBase {
     @Column(name = "id_cliente")
     private Integer id;
 
+    @NotBlank
     private String nome;
 
+    @NotBlank
     private String sobrenome;
 
+    @NotBlank
     private String email;
 
+    @NotBlank
     private String telefone;
 
+    @NotBlank
+    @CPF
     private String cpf;
+
     @CreationTimestamp
     private LocalDate dataCriacao;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "id_empresa")
     private Empresa empresa;

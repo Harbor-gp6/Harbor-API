@@ -44,7 +44,7 @@ public class PedidoV2 {
     @CreationTimestamp
     private LocalDateTime dataCriacao;
 
-    private Boolean finalizado = false  ;
+    private Boolean finalizado = false;
 
     private LocalDateTime dataAgendamento;
 

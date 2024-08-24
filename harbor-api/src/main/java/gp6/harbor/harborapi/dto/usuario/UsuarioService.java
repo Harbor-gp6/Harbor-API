@@ -104,7 +104,7 @@ public class UsuarioService {
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Você precisa estar logado para criar funcionários"));
 
-        if (!"ADMIN".equals(prestador.getCargo())) {
+        if (prestador.getCargo().name() != "ADMIN") {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não tem permissão para criar funcionários");
         }
 

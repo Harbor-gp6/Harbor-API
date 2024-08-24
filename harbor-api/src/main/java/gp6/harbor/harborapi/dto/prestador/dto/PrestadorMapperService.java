@@ -20,6 +20,10 @@ public class PrestadorMapperService {
         return modelMapper.map(prestador, PrestadorFuncionarioCriacao.class);
     }
 
+    public FuncionarioListagemDto convertToFuncionarioListagemDto(Prestador prestador) {
+        return modelMapper.map(prestador, FuncionarioListagemDto.class);
+    }
+
     public Prestador convertToEntity(PrestadorFuncionarioCriacao prestadorDto) {
         return modelMapper.map(prestadorDto, Prestador.class);
     }

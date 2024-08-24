@@ -2,10 +2,7 @@ package gp6.harbor.harborapi.api.controller.prestador;
 
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
-import gp6.harbor.harborapi.dto.prestador.dto.PrestadorCriacaoDto;
-import gp6.harbor.harborapi.dto.prestador.dto.PrestadorFuncionarioCriacao;
-import gp6.harbor.harborapi.dto.prestador.dto.PrestadorListagemDto;
-import gp6.harbor.harborapi.dto.prestador.dto.PrestadorMapper;
+import gp6.harbor.harborapi.dto.prestador.dto.*;
 import gp6.harbor.harborapi.dto.usuario.UsuarioService;
 import gp6.harbor.harborapi.dto.usuario.autenticacao.dto.UsuarioLoginDto;
 import gp6.harbor.harborapi.dto.usuario.autenticacao.dto.UsuarioTokenDto;
@@ -54,6 +51,19 @@ public class PrestadorController {
 
         return ResponseEntity.status(201).build();
     }
+
+    @GetMapping("obter-funcionarios")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<FuncionarioListagemDto>> listarFuncionarios(){
+        List<FuncionarioListagemDto> funcionarios = prestadorService.listarFuncionarios();
+
+        if (funcionarios.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(funcionarios);
+    }
+
 
 
 

@@ -6,6 +6,7 @@ import gp6.harbor.harborapi.domain.pedido.Pedido;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
+import gp6.harbor.harborapi.dto.prestador.dto.FuncionarioListagemDto;
 import gp6.harbor.harborapi.dto.prestador.dto.PrestadorFuncionarioCriacao;
 import gp6.harbor.harborapi.dto.prestador.dto.PrestadorListagemDto;
 import gp6.harbor.harborapi.dto.prestador.dto.PrestadorMapperStruct;
@@ -44,6 +45,7 @@ public class PrestadorService {
         }
         return prestadorRepository.save(prestador);
     }
+
     
     public List<PrestadorFuncionarioCriacao> listar() {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -66,6 +68,29 @@ public class PrestadorService {
         }
 
         return prestadoresDto;
+    }
+
+    //listar funcionarios
+    public List<FuncionarioListagemDto> listarFuncionarios() {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        if (prestadorLogado == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "O usuário precisa estar logado");
+        }
+
+        Empresa empresa = prestadorLogado.getEmpresa();
+
+        List<Prestador> prestadores = prestadorRepository.findByEmpresa(empresa);
+
+        List<FuncionarioListagemDto> funcionarios = new ArrayList<>();
+
+        for (Prestador prestador : prestadores) {
+            FuncionarioListagemDto prestadorListagemDto = prestadorMapperStruct.toFuncionarioListagemDto(prestador);
+            funcionarios.add(prestadorListagemDto);
+        }
+
+        return funcionarios;
     }
 
     public Prestador buscarPorId(Long id) {

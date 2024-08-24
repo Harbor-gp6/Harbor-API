@@ -10,6 +10,9 @@ public interface PrestadorMapperStruct {
     // Mapeia de Prestador para PrestadorFuncionarioCriacao
     PrestadorFuncionarioCriacao toDto(Prestador prestador);
 
+    FuncionarioListagemDto toFuncionarioListagemDto(Prestador prestador);
+
+
     // Mapeia de PrestadorFuncionarioCriacao para Prestador
     @Mapping(target = "id", ignore = true)  // Ignora o campo id
     @Mapping(target = "empresa", ignore = true)  // Ignora o campo empresa

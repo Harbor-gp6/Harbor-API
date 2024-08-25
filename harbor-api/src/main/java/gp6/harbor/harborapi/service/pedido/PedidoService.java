@@ -80,6 +80,7 @@ public class PedidoService {
         if (pedido.getCliente() != null && pedido.getCliente().getCpf() != null) {
             Cliente cliente = clienteRepository.findByCpf(pedido.getCliente().getCpf()).orElse(null);
             if (cliente == null && clienteService.validarCliente(pedido.getCliente())) {
+                pedido.getCliente().setEmpresa(pedido.getEmpresa());
                 cliente = clienteRepository.save(pedido.getCliente());
             }
             pedido.setCliente(cliente);
@@ -170,6 +171,11 @@ public class PedidoService {
         //verificar se o pedido pertence a empresa que o prestador está vinculado para poder finalizar
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+
+        if (pedidoEncontrado.getEmpresa().getId() != prestador.getEmpresa().getId()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Pedido não pertence a empresa do prestador");
+        }
+
         pedidoEncontrado.setFinalizado(true);
         return pedidoV2Repository.save(pedidoEncontrado);
     }
@@ -266,6 +272,16 @@ public class PedidoService {
         return pedidoV2Repository.findByEmpresa(empresa);
     }
 
+    public List<PedidoV2> listarPedidosV2Abertos() {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        Empresa empresa = prestador.getEmpresa();
+        if (emailUsuario == null || prestador == null || empresa == null) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Você Precisa estar logado.");
+        }
+        return pedidoV2Repository.findByEmpresaAndFinalizado(prestador.getEmpresa(), false);
+    }
+
     //listar por cpf
     public List<PedidoV2> listarPorCpf(String cpf) {
         return pedidoV2Repository.findByPedidoPrestadorPrestadorCpf(cpf);
@@ -274,6 +290,8 @@ public class PedidoService {
     public List<Pedido> listarPedidos() {
         return pedidoRepository.findAll();
     }
+
+
 
     public List<Pedido> listarPorPrestador(Long prestadorId) {
         return pedidoRepository.findAllByPrestadorId(prestadorId);

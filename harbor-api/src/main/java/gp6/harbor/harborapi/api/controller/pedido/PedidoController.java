@@ -71,6 +71,18 @@ public class PedidoController {
         return ResponseEntity.status(200).body(PedidoMapper.toDto(pedidos));
     }
 
+    @GetMapping("/pedidosAbertos")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<PedidoV2>> listarPedidosAbertos() {
+        List<PedidoV2> pedidos = pedidoService.listarPedidosV2Abertos();
+
+        if (pedidos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.status(200).body(pedidos);
+    }
+
     @GetMapping("/pedidosV2")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PedidoV2>> listarPedidosV2() {
@@ -110,6 +122,14 @@ public class PedidoController {
        Pedido pedidoAtualizado = pedidoService.atualizarStatus(pedidoId, status);
 
        return ResponseEntity.ok(PedidoMapper.toDto(pedidoAtualizado));
+    }
+
+    @PostMapping("/finalizarPedido/{pedidoId}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<PedidoV2> atualizarStatus(@PathVariable Integer pedidoId) {
+        PedidoV2 pedidoFinalizado = pedidoService.finalizarPedidoV2(pedidoId);
+
+        return ResponseEntity.ok(pedidoFinalizado);
     }
 
 }

@@ -1,5 +1,6 @@
 package gp6.harbor.harborapi.domain.pedido.repository;
 
+import gp6.harbor.harborapi.domain.pedido.PedidoV2;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -21,6 +22,11 @@ public class HorarioOcupado {
     @ManyToOne
     @JoinColumn(name = "id_prestador")
     private Prestador prestador;
+
+    //adiciona o pedido que esse hrário pertence
+    @ManyToOne
+    @JoinColumn(name = "id_pedido")
+    private PedidoV2 pedido;
 
     private LocalDateTime dataInicio;
     private LocalDateTime dataFim;

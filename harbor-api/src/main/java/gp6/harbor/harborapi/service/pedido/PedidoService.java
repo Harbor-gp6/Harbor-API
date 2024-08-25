@@ -163,7 +163,122 @@ public class PedidoService {
     }
 
 
+    //atualizar um PedidoV2 recebendo o idPedido
+    @Transactional
+    public PedidoV2 atualizarPedidoV2(Integer idPedido, PedidoV2CriacaoDto pedidoDto) {
+        // Encontra o PedidoV2 existente no banco de dados
+        PedidoV2 pedidoEncontrado = pedidoV2Repository.findById(idPedido)
+                .orElseThrow(() -> new NaoEncontradoException("Pedido"));
 
+        // Verifica se o pedido pertence à empresa do prestador logado
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Prestador não encontrado."));
+
+        //ver se o pedidoEncontrado está fechado
+        if (pedidoEncontrado.getFinalizado() == true) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido já finalizado.");
+        }
+
+        if (!pedidoEncontrado.getEmpresa().getId().equals(prestadorLogado.getEmpresa().getId())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Pedido não pertence à empresa do prestador.");
+        }
+
+        // Atualiza manualmente os campos do pedido encontrado com as informações do DTO
+        pedidoEncontrado.setDataAgendamento(pedidoDto.getDataAgendamento());
+
+        // Verifica e associa a empresa
+        if (pedidoDto.getCnpjEmpresa() != null) {
+            Empresa empresa = empresaRepository.findByCnpj(pedidoDto.getCnpjEmpresa())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Empresa não encontrada."));
+            pedidoEncontrado.setEmpresa(empresa);
+        }
+
+        // Verifica e associa o cliente
+        if (pedidoDto.getCliente() != null && pedidoDto.getCliente().getCpf() != null) {
+            Cliente cliente = clienteRepository.findByCpf(pedidoDto.getCliente().getCpf())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Cliente não encontrado."));
+            cliente.setNome(pedidoDto.getCliente().getNome());
+            cliente.setSobrenome(pedidoDto.getCliente().getSobrenome());
+            cliente.setEmail(pedidoDto.getCliente().getEmail());
+            cliente.setTelefone(pedidoDto.getCliente().getTelefone());
+
+            pedidoEncontrado.setCliente(cliente);
+        }
+
+        LocalDateTime horarioAtual = pedidoEncontrado.getDataAgendamento();
+
+        // Limpa a lista atual de PedidoPrestador antes de adicionar os novos
+        pedidoEncontrado.getPedidoPrestador().clear();
+        // Atualiza os PedidoPrestador relacionados
+        for (PedidoPrestadorDto pedidoPrestadorDto : pedidoDto.getPedidoPrestador()) {
+            Prestador prestador = prestadorService.buscarPorId(pedidoPrestadorDto.getPrestadorId());
+            Servico servico = servicoService.buscaPorId(pedidoPrestadorDto.getServicoId());
+
+            PedidoPrestador pedidoPrestador = pedidoV2Mapper.toPedidoPrestadorEntity(pedidoPrestadorDto);
+            pedidoPrestador.setPrestador(prestador);
+            pedidoPrestador.setServico(servico);
+            pedidoPrestador.setPedido(pedidoEncontrado);
+            pedidoPrestador.setDataInicio(horarioAtual);
+            pedidoPrestador.setDataFim(horarioAtual.plusMinutes(servico.getTempoMedioEmMinutos()));
+
+            // Verifica se o horário já está ocupado pelo mesmo pedido
+            HorarioOcupado horarioExistente = prestador.getHorariosOcupados().stream()
+                    .filter(h -> h.getDataInicio().equals(pedidoPrestador.getDataInicio()) &&
+                            h.getDataFim().equals(pedidoPrestador.getDataFim()) &&
+                            h.getPrestador().equals(prestador))
+                    .findFirst()
+                    .orElse(null);
+
+            // Remove os horários existentes que encontrou acima
+            if (horarioExistente != null) {
+                prestador.getHorariosOcupados().remove(horarioExistente);
+            }
+
+            if (horarioExistente != null) {
+                // Atualiza o horário existente
+                horarioExistente.setDataInicio(pedidoPrestador.getDataInicio());
+                horarioExistente.setDataFim(pedidoPrestador.getDataFim());
+            } else {
+                // Valida e adiciona novo horário ocupado para o prestador
+                HorarioOcupado novoHorarioOcupado = new HorarioOcupado();
+                novoHorarioOcupado.setDataInicio(pedidoPrestador.getDataInicio());
+                novoHorarioOcupado.setDataFim(pedidoPrestador.getDataFim());
+                novoHorarioOcupado.setPrestador(prestador);
+
+                if (!prestador.adicionarHorarioOcupado(novoHorarioOcupado)) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Horário conflita com outro agendamento.");
+                }
+            }
+            pedidoEncontrado.getPedidoPrestador().add(pedidoPrestador);
+            horarioAtual = pedidoPrestador.getDataFim();
+        }
+
+        // Limpa a lista atual de PedidoProdutos antes de adicionar os novos
+        pedidoEncontrado.getPedidoProdutos().clear();
+        // Atualiza os PedidoProdutos relacionados
+        for (PedidoProdutoV2Dto pedidoProdutoDto : pedidoDto.getPedidoProdutos()) {
+            Produto produto = produtoService.buscarPorId(pedidoProdutoDto.getId());
+            if (produto == null) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Produto não encontrado.");
+            }
+
+            PedidoProdutoV2 pedidoProduto = new PedidoProdutoV2();
+            pedidoProduto.setPedido(pedidoEncontrado);
+            pedidoProduto.setProduto(produto);
+            pedidoProduto.setQuantidade(pedidoProdutoDto.getQuantidade());
+
+            pedidoEncontrado.getPedidoProdutos().add(pedidoProduto);
+        }
+
+        // Valida o pedido atualizado
+        if (!validarPedidoV2(pedidoEncontrado)) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido inválido.");
+        }
+
+        // Salva as alterações no banco de dados
+        return pedidoV2Repository.save(pedidoEncontrado);
+    }
 
     public PedidoV2 finalizarPedidoV2(Integer pedidoId) {
         PedidoV2 pedidoEncontrado = pedidoV2Repository.findById(pedidoId).orElseThrow(() -> new NaoEncontradoException("Pedido"));

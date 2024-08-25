@@ -33,8 +33,7 @@ public class PedidoController {
 
     @PostMapping("criarPedidoV2")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<PedidoV2> criarPedido(@RequestBody PedidoV2 pedido) {
-        pedido.setId(0);
+    public ResponseEntity<PedidoV2CriacaoDto> criarPedido(@RequestBody PedidoV2CriacaoDto pedido) {
         pedidoService.criarPedidoV2(pedido);
         return ResponseEntity.ok(pedido);
     }

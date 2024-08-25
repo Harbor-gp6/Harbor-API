@@ -4,6 +4,8 @@ import gp6.harbor.harborapi.api.enums.FormaPagamentoEnum;
 import gp6.harbor.harborapi.domain.pedido.PedidoPrestador;
 import gp6.harbor.harborapi.domain.pedido.PedidoProdutoV2;
 import gp6.harbor.harborapi.dto.cliente.dto.ClienteCriacaoDto;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -19,15 +21,19 @@ public class PedidoV2CriacaoDto {
     @NotNull
     private ClienteCriacaoDto cliente;
 
+    @CNPJ
     @NotNull
-    private List<PedidoPrestador> pedidoPrestador;
-
-    private List<PedidoProdutoV2> pedidoProdutos;
-
-    @CNPJ
-    @CNPJ
     private String cnpjEmpresa;
 
     @NotNull
-    private Enum<FormaPagamentoEnum> formaPagamento;
+    private List<PedidoPrestadorDto> pedidoPrestador;
+
+    private List<PedidoProdutoV2Dto> pedidoProdutos;
+
+    //data de agendamento
+    @Future
+    private LocalDateTime dataAgendamento;
+
+    @Enumerated(EnumType.STRING)
+    private FormaPagamentoEnum formaPagamentoEnum;
 }

@@ -38,6 +38,13 @@ public class PedidoController {
         return ResponseEntity.ok(pedido);
     }
 
+    @PatchMapping("atualizarPedidoV2")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<PedidoV2CriacaoDto> atualizarPedidoV2(@RequestBody PedidoV2CriacaoDto pedido, @RequestParam Integer idPedido) {
+        pedidoService.atualizarPedidoV2(idPedido, pedido);
+        return ResponseEntity.ok(pedido);
+    }
+
     @Hidden
     @PostMapping
     @SecurityRequirement(name = "Bearer")
@@ -131,5 +138,6 @@ public class PedidoController {
 
         return ResponseEntity.ok(pedidoFinalizado);
     }
+
 
 }

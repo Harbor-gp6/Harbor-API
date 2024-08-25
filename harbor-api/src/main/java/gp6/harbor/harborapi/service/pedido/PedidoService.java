@@ -16,6 +16,7 @@ import gp6.harbor.harborapi.domain.pedido.*;
 import gp6.harbor.harborapi.domain.pedido.repository.HorarioOcupado;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoV2Repository;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
+import gp6.harbor.harborapi.dto.pedido.dto.*;
 import gp6.harbor.harborapi.service.cliente.ClienteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,8 +29,6 @@ import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.produto.Produto;
 import gp6.harbor.harborapi.domain.servico.Servico;
-import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoProdutoDto;
-import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoStatusDto;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
 import gp6.harbor.harborapi.exception.PedidoCapacidadeExcedidoException;
 import gp6.harbor.harborapi.service.email.EmailService;
@@ -54,57 +53,68 @@ public class PedidoService {
     private final ServicoService servicoService;
     private final EmailService emailService;
     private final ClienteService clienteService;
-
+    private final PedidoV2Mapper pedidoV2Mapper;
 
     @Transactional
-    public PedidoV2 criarPedidoV2(PedidoV2 pedido) {
-        // Verifica e salva empresa
-        String cnpjEmpresa = pedido.getEmpresa().getCnpj();
-        if (cnpjEmpresa != null) {
-            Empresa empresa = empresaRepository.findByCnpj(cnpjEmpresa).orElse(null);
+    public PedidoV2 criarPedidoV2(PedidoV2CriacaoDto pedidoDto) {
+        // Converte PedidoV2CriacaoDto para PedidoV2
+        PedidoV2 pedido = pedidoV2Mapper.toEntity(pedidoDto);
+
+        // Converte e associa entidades aninhadas
+        List<PedidoPrestador> pedidoPrestadores = pedidoV2Mapper.toPedidoPrestadorEntityList(pedidoDto.getPedidoPrestador());
+        List<PedidoProdutoV2> pedidoProdutos = pedidoV2Mapper.toPedidoProdutoV2EntityList(pedidoDto.getPedidoProdutos());
+
+        pedido.setPedidoPrestador(pedidoPrestadores);
+        pedido.setPedidoProdutos(pedidoProdutos);
+
+        // Verifica e associa a empresa
+        if (pedido.getEmpresa() == null && pedidoDto.getCnpjEmpresa() != null) {
+            Empresa empresa = empresaRepository.findByCnpj(pedidoDto.getCnpjEmpresa()).orElse(null);
             if (empresa == null) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Empresa não encontrada.");
             }
             pedido.setEmpresa(empresa);
         }
 
-        //busca a empresa do prestaador e salva a empresa no pedido do prestador
-
-
-
-        // Verifica e salva cliente
-        if (pedido.getCliente().getCpf() != null) {
+        // Verifica e associa o cliente
+        if (pedido.getCliente() != null && pedido.getCliente().getCpf() != null) {
             Cliente cliente = clienteRepository.findByCpf(pedido.getCliente().getCpf()).orElse(null);
-            if (cliente == null && clienteService.validarCliente(cliente)) {
-                cliente.setEmpresa(pedido.getEmpresa());
+            if (cliente == null && clienteService.validarCliente(pedido.getCliente())) {
                 cliente = clienteRepository.save(pedido.getCliente());
-                pedido.setCliente(cliente);
             }
+            pedido.setCliente(cliente);
         }
 
-        // Busca e atribui serviços ao PedidoPrestador
-        for (PedidoPrestador pedidoPrestador : pedido.getPedidoPrestador()) {
-            Servico servico = servicoService.buscaPorId(pedidoPrestador.getServico().getId());
+        // Atribui serviços aos PedidoPrestador
+        LocalDateTime horarioAtual = pedido.getDataAgendamento();
+        List<PedidoPrestador> pedidoPrestadorList = new ArrayList<>();
+        for (PedidoPrestadorDto pedidoPrestador : pedidoDto.getPedidoPrestador()) {
+            if (pedidoPrestador.getPrestadorId() == null || pedidoPrestador.getServicoId() == null) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Prestador ou Serviço não encontrado no PedidoPrestador.");
+            }
+
+            Servico servico = servicoService.buscaPorId(pedidoPrestador.getServicoId());
             if (servico == null || servico.getTempoMedioEmMinutos() == null) {
                 throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "O serviço ou seu tempo médio está inválido.");
             }
-            pedidoPrestador.setServico(servico);
-        }
+            //procura o prestador pelo id
+            Prestador prestador = prestadorService.buscarPorId(pedidoPrestador.getPrestadorId());
+            if (prestador == null) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Prestador não encontrado.");
+            }
 
-        // Hora inicial do primeiro serviço
-        LocalDateTime horarioAtual = pedido.getDataAgendamento();  // Supondo que pedido tenha um campo dataAgendamento
-
-        // Associa cada PedidoPrestador ao Pedido e calcula os horários
-        for (PedidoPrestador pedidoPrestador : pedido.getPedidoPrestador()) {
-            pedidoPrestador.setPedido(pedido);
+            //adiciona o serviço ao pedido
+            PedidoPrestador pedidoPrestadorNovo = pedidoV2Mapper.toPedidoPrestadorEntity(pedidoPrestador);
+            pedidoPrestadorNovo.setPrestador(prestador);
+            pedidoPrestadorNovo.setServico(servico);
+            pedidoPrestadorNovo.setPedido(pedido);
+            pedidoPrestadorNovo.setDataInicio(horarioAtual);
+            pedidoPrestadorNovo.calcularDataFim();
 
             // Define a data de início e fim do serviço para o prestador
             HorarioOcupado horarioOcupado = new HorarioOcupado();
             horarioOcupado.setDataInicio(horarioAtual);
-            horarioOcupado.setDataFim(horarioAtual.plusMinutes(pedidoPrestador.getServico().getTempoMedioEmMinutos()));
-
-            // Associa o prestador ao HorarioOcupado
-            Prestador prestador = prestadorService.buscarPorId(pedidoPrestador.getPrestador().getId());
+            horarioOcupado.setDataFim(horarioAtual.plusMinutes(servico.getTempoMedioEmMinutos()));
             horarioOcupado.setPrestador(prestador);
 
             // Adiciona o horário ocupado na lista de horários do prestador
@@ -114,14 +124,34 @@ public class PedidoService {
 
             // Atualiza o horário atual para o próximo serviço
             horarioAtual = horarioOcupado.getDataFim();
+
+            pedidoPrestadorList.add(pedidoPrestadorNovo);
         }
+        pedido.setPedidoPrestador(pedidoPrestadorList);
+
+        List<PedidoProdutoV2> pedidoProdutoList = new ArrayList<>();
+        for (PedidoProdutoV2Dto pedidoProdutoDto : pedidoDto.getPedidoProdutos()) {
+            Produto produto = produtoService.buscarPorId(pedidoProdutoDto.getId());
+            if (produto == null) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Produto não encontrado.");
+            }
+
+            PedidoProdutoV2 pedidoProduto = new PedidoProdutoV2();
+            pedidoProduto.setPedido(pedido);
+            pedidoProduto.setProduto(produto);
+            pedidoProduto.setQuantidade(pedidoProdutoDto.getQuantidade());
+
+            pedidoProdutoList.add(pedidoProduto);
+
+        }
+        pedido.setPedidoProdutos(pedidoProdutoList);
 
         // Valida o pedido
         if (!validarPedidoV2(pedido)) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido inválido.");
         }
 
-        // Salva o pedido e os horários ocupados do prestador
+        // Salva o pedido e atualiza os horários ocupados do prestador
         PedidoV2 pedidoSalvo = pedidoV2Repository.save(pedido);
         for (PedidoPrestador pedidoPrestador : pedido.getPedidoPrestador()) {
             Prestador prestador = prestadorService.buscarPorId(pedidoPrestador.getPrestador().getId());
@@ -130,6 +160,8 @@ public class PedidoService {
 
         return pedidoSalvo;
     }
+
+
 
 
     public PedidoV2 finalizarPedidoV2(Integer pedidoId) {

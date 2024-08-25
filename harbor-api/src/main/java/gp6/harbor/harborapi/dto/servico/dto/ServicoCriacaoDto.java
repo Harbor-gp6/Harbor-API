@@ -20,6 +20,4 @@ public class ServicoCriacaoDto {
     private Integer tempoMedioEmMinutos;
     @NotNull
     private Double valorServico;
-    @NotNull
-    private String cnpjEmpresa;
 }

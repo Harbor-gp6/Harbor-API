@@ -30,9 +30,7 @@ public class ProdutoController {
     @PostMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ProdutoListagemDto> cadastrar(@RequestBody @Valid ProdutoCriacaoDto novoProduto) {
-        Empresa empresa = empresaService.buscarPorId(novoProduto.getEmpresaId());
         Produto produto = ProdutoMapper.toEntity(novoProduto);
-        produto.setEmpresa(empresa);
         Produto produtoSalvo = produtoService.cadastrar(produto);
         ProdutoListagemDto listagemDto = ProdutoMapper.toDto(produtoSalvo);
 

@@ -29,6 +29,10 @@ public class ServicoService {
     }
 
     public Servico salvar(Servico servico) {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElseThrow(() -> new NaoEncontradoException("Prestador"));
+        Empresa empresa = prestador.getEmpresa();
+        servico.setEmpresa(empresa);
         return servicoRepository.save(servico);
     }
 

@@ -22,6 +22,11 @@ public class ProdutoService {
     private final PrestadorRepository prestadorRepository;
 
     public Produto cadastrar(Produto novoProduto) {
+        //pegar o email do usuario logado, depois a empresa e colocar no produto
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElseThrow(() -> new NaoEncontradoException("Prestador"));
+        Empresa empresa = prestador.getEmpresa();
+        novoProduto.setEmpresa(empresa);
         return produtoRepository.save(novoProduto);
     }
 

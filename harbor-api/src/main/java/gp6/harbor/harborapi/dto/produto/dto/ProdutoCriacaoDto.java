@@ -17,6 +17,4 @@ public class ProdutoCriacaoDto {
     private Double precoCompra;
     @NotNull
     private Double precoVenda;
-    @NotNull
-    private Integer empresaId;
 }

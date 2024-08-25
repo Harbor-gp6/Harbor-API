@@ -32,11 +32,7 @@ public class ServicoController {
     @PostMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ServicoListagemDto> cadastrar(@RequestBody @Valid ServicoCriacaoDto novoServico) {
-
-        Empresa empresa = empresaService.buscarPorCnpj(novoServico.getCnpjEmpresa());
-
         Servico servico = ServicoMapper.toEntity(novoServico);
-        servico.setEmpresa(empresa);
 
         Servico servicoSalvo = servicoService.salvar(servico);
 

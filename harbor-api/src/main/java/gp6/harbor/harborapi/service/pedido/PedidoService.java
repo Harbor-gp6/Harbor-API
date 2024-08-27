@@ -6,8 +6,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
+import gp6.harbor.harborapi.api.enums.StatusPedidoEnum;
 import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.cliente.repository.ClienteRepository;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
@@ -59,7 +61,9 @@ public class PedidoService {
     public PedidoV2 criarPedidoV2(PedidoV2CriacaoDto pedidoDto) {
         // Converte PedidoV2CriacaoDto para PedidoV2
         PedidoV2 pedido = pedidoV2Mapper.toEntity(pedidoDto);
+        UUID codigoPedido = UUID.randomUUID();
 
+        pedido.setCodigoPedido(codigoPedido);
         // Converte e associa entidades aninhadas
         List<PedidoPrestador> pedidoPrestadores = pedidoV2Mapper.toPedidoPrestadorEntityList(pedidoDto.getPedidoPrestador());
         List<PedidoProdutoV2> pedidoProdutos = pedidoV2Mapper.toPedidoProdutoV2EntityList(pedidoDto.getPedidoProdutos());
@@ -117,6 +121,7 @@ public class PedidoService {
             horarioOcupado.setDataInicio(horarioAtual);
             horarioOcupado.setDataFim(horarioAtual.plusMinutes(servico.getTempoMedioEmMinutos()));
             horarioOcupado.setPrestador(prestador);
+            horarioOcupado.setCodigoPedido(codigoPedido);
 
             // Adiciona o horário ocupado na lista de horários do prestador
             if (!prestador.adicionarHorarioOcupado(horarioOcupado)) {
@@ -151,6 +156,7 @@ public class PedidoService {
         if (!validarPedidoV2(pedido)) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido inválido.");
         }
+        pedido.calcularTotalPedido();
 
         // Salva o pedido e atualiza os horários ocupados do prestador
         PedidoV2 pedidoSalvo = pedidoV2Repository.save(pedido);
@@ -176,8 +182,11 @@ public class PedidoService {
                 new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Prestador não encontrado."));
 
         //ver se o pedidoEncontrado está fechado
-        if (pedidoEncontrado.getFinalizado() == true) {
+        if (pedidoEncontrado.getStatusPedidoEnum() == StatusPedidoEnum.FINALIZADO) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido já finalizado.");
+        }
+        if (pedidoEncontrado.getStatusPedidoEnum() == StatusPedidoEnum.CANCELADO) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido cancelado.");
         }
 
         if (!pedidoEncontrado.getEmpresa().getId().equals(prestadorLogado.getEmpresa().getId())) {
@@ -186,7 +195,7 @@ public class PedidoService {
 
         // Atualiza manualmente os campos do pedido encontrado com as informações do DTO
         pedidoEncontrado.setDataAgendamento(pedidoDto.getDataAgendamento());
-
+        UUID codigoPedido = pedidoEncontrado.getCodigoPedido();
         // Verifica e associa a empresa
         if (pedidoDto.getCnpjEmpresa() != null) {
             Empresa empresa = empresaRepository.findByCnpj(pedidoDto.getCnpjEmpresa())
@@ -245,6 +254,7 @@ public class PedidoService {
                 novoHorarioOcupado.setDataInicio(pedidoPrestador.getDataInicio());
                 novoHorarioOcupado.setDataFim(pedidoPrestador.getDataFim());
                 novoHorarioOcupado.setPrestador(prestador);
+                novoHorarioOcupado.setCodigoPedido(codigoPedido);
 
                 if (!prestador.adicionarHorarioOcupado(novoHorarioOcupado)) {
                     throw new ResponseStatusException(HttpStatus.CONFLICT, "Horário conflita com outro agendamento.");
@@ -275,6 +285,7 @@ public class PedidoService {
         if (!validarPedidoV2(pedidoEncontrado)) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido inválido.");
         }
+        pedidoEncontrado.calcularTotalPedido();
 
         // Salva as alterações no banco de dados
         return pedidoV2Repository.save(pedidoEncontrado);
@@ -291,7 +302,19 @@ public class PedidoService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Pedido não pertence a empresa do prestador");
         }
 
-        pedidoEncontrado.setFinalizado(true);
+        if (pedidoEncontrado.getStatusPedidoEnum() == StatusPedidoEnum.FINALIZADO) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido já finalizado.");
+        }
+        if (pedidoEncontrado.getStatusPedidoEnum() == StatusPedidoEnum.CANCELADO) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido cancelado.");
+        }
+
+        //busca todos os horarios ocupados de todos os prestadores das pedidosPrestador do pedido e deleta se o codigoPedido do horarioOcupado for igual ao do pedidoV2
+        pedidoEncontrado.getPedidoPrestador().forEach(pedidoPrestador -> {
+            pedidoPrestador.getPrestador().getHorariosOcupados().removeIf(horarioOcupado -> horarioOcupado.getCodigoPedido().equals(pedidoEncontrado.getCodigoPedido()));
+        });
+
+        pedidoEncontrado.setStatusPedidoEnum(StatusPedidoEnum.FINALIZADO);
         return pedidoV2Repository.save(pedidoEncontrado);
     }
     public Pedido criarPedido(Pedido novoPedido, List<Integer> servicosIds) {
@@ -394,7 +417,7 @@ public class PedidoService {
         if (emailUsuario == null || prestador == null || empresa == null) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Você Precisa estar logado.");
         }
-        return pedidoV2Repository.findByEmpresaAndFinalizado(prestador.getEmpresa(), false);
+        return pedidoV2Repository.findByEmpresaAndStatusPedidoEnum(prestador.getEmpresa(), StatusPedidoEnum.ABERTO);
     }
 
     //listar por cpf

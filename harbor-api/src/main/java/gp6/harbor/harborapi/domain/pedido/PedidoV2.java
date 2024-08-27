@@ -2,6 +2,7 @@ package gp6.harbor.harborapi.domain.pedido;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import gp6.harbor.harborapi.api.enums.FormaPagamentoEnum;
+import gp6.harbor.harborapi.api.enums.StatusPedidoEnum;
 import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
@@ -14,6 +15,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -44,12 +46,29 @@ public class PedidoV2 {
     @CreationTimestamp
     private LocalDateTime dataCriacao;
 
-    private Boolean finalizado = false;
+    @Enumerated(EnumType.STRING)
+    private StatusPedidoEnum statusPedidoEnum = StatusPedidoEnum.ABERTO;
 
     private LocalDateTime dataAgendamento;
 
     @Enumerated(EnumType.STRING)
     private FormaPagamentoEnum formaPagamentoEnum;
+
+    private UUID codigoPedido;
+
+    private Double totalPedido;
+
+    //calcular o total do pedido percorrendo todos os precosVenda dos produtos na pedidoProdutos, somando-os e percorrendo todos os valores dos servicos na pedidoPrestador, somando-os
+    //o total tem que ser double
+    public void calcularTotalPedido() {
+        this.totalPedido = 0.0;
+        for (PedidoProdutoV2 pedidoProduto : pedidoProdutos) {
+            this.totalPedido += pedidoProduto.getProduto().getPrecoVenda();
+        }
+        for (PedidoPrestador pedidoPrestador : pedidoPrestador) {
+            this.totalPedido += pedidoPrestador.getServico().getValorServico();
+        }
+    }
 
 
 }

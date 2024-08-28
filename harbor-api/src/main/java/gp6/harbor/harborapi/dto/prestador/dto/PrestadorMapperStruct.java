@@ -10,6 +10,8 @@ public interface PrestadorMapperStruct {
     // Mapeia de Prestador para PrestadorFuncionarioCriacao
     PrestadorFuncionarioCriacao toDto(Prestador prestador);
 
+    @Mapping(target = "estrelas", source = "prestador.estrelas")
+    @Mapping(target = "qtdAvaliacoes", expression = "java(prestador.getAvaliacoes().size())")
     FuncionarioListagemDto toFuncionarioListagemDto(Prestador prestador);
 
 

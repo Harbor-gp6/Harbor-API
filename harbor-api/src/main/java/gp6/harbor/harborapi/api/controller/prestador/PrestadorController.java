@@ -7,6 +7,7 @@ import gp6.harbor.harborapi.dto.usuario.UsuarioService;
 import gp6.harbor.harborapi.dto.usuario.autenticacao.dto.UsuarioLoginDto;
 import gp6.harbor.harborapi.dto.usuario.autenticacao.dto.UsuarioTokenDto;
 import gp6.harbor.harborapi.service.empresa.EmpresaService;
+import gp6.harbor.harborapi.service.prestador.AvaliacaoPrestadorService;
 import gp6.harbor.harborapi.service.prestador.PrestadorService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -27,7 +29,7 @@ public class PrestadorController {
     private final EmpresaService empresaService;
     private final UsuarioService usuarioService;
     private final PrestadorService prestadorService;
-
+    private final AvaliacaoPrestadorService avaliacaoPrestadorService;
     @PostMapping
     public ResponseEntity<Void> criar(@RequestBody @Valid PrestadorCriacaoDto usuarioCriacaoDto) {
         if (existePorCpf(usuarioCriacaoDto.getCpf())) {
@@ -187,6 +189,13 @@ public class PrestadorController {
 
         return ResponseEntity.status(200).header("content-disposition",
                 "attachment; filename=\"foto-prestador.jpg\"").body(foto);
+    }
+
+    //endpoint para avaliar o prestador
+    @PostMapping("/avaliar")
+    public ResponseEntity<Void> avaliarPrestador(UUID codigoPedido, Long idPrestador, Double estrelas, String comentario, Integer idCliente){
+        avaliacaoPrestadorService.criarAvaliacaoPrestador(codigoPedido, idPrestador, estrelas, comentario, idCliente);
+        return ResponseEntity.status(201).build();
     }
 
     public boolean existePorCpf(String cpf){

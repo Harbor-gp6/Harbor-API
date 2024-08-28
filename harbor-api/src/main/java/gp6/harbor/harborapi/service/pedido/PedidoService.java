@@ -17,6 +17,8 @@ import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
 import gp6.harbor.harborapi.domain.pedido.*;
 import gp6.harbor.harborapi.domain.pedido.repository.HorarioOcupado;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoV2Repository;
+import gp6.harbor.harborapi.domain.prestador.AvaliacaoPrestador;
+import gp6.harbor.harborapi.domain.prestador.repository.AvaliacaoRepository;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.dto.pedido.dto.*;
 import gp6.harbor.harborapi.service.cliente.ClienteService;
@@ -488,5 +490,18 @@ public class PedidoService {
 
         return true;
     }
+
+    //criar verificação de pedido finalizado por id verificando se aquele pedido é da empresa do prestador
+    public boolean pedidoFinalizado(Integer idPedido) {
+        PedidoV2 pedido = pedidoV2Repository.findById(idPedido).orElseThrow(() -> new NaoEncontradoException("Pedido"));
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        if (pedido.getEmpresa().getId() != prestador.getEmpresa().getId()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Pedido não pertence a empresa do prestador");
+        }
+        return pedido.getStatusPedidoEnum() == StatusPedidoEnum.FINALIZADO;
+    }
+
+    //criar avaliacao de prestador
 
 }

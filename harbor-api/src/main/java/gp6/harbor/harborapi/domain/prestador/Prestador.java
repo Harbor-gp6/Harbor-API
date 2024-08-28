@@ -39,6 +39,12 @@ public class Prestador {
 
     @OneToMany(mappedBy = "prestador", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    private List<AvaliacaoPrestador> avaliacoes = new ArrayList<>();
+
+    private Double estrelas;
+
+    @OneToMany(mappedBy = "prestador", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<HorarioOcupado> horariosOcupados = new ArrayList<>();
 
     public boolean adicionarHorarioOcupado(HorarioOcupado horarioOcupado) {
@@ -56,5 +62,21 @@ public class Prestador {
     private boolean colide(HorarioOcupado ocupado, HorarioOcupado novo) {
         return novo.getDataInicio().isBefore(ocupado.getDataFim()) &&
                 novo.getDataFim().isAfter(ocupado.getDataInicio());
+    }
+
+    //atualizar estrelas do prestador
+    public void atualizarEstrelas(Prestador prestador, Double estrelas) {
+        Double totalEstrelas = 0.0;
+        int quantidadeAvaliacoes = prestador.getAvaliacoes().size();
+
+        for (AvaliacaoPrestador avaliacaoPrestador : prestador.getAvaliacoes()) {
+            totalEstrelas += avaliacaoPrestador.getEstrelas();
+        }
+
+        totalEstrelas += estrelas;
+        quantidadeAvaliacoes++; // Adiciona a nova avaliação
+
+        Double mediaEstrelas = totalEstrelas / quantidadeAvaliacoes;
+        prestador.setEstrelas(mediaEstrelas);
     }
 }

@@ -1,10 +1,14 @@
 package gp6.harbor.harborapi.service.prestador;
 
+import gp6.harbor.harborapi.api.enums.StatusPedidoEnum;
 import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.pedido.Pedido;
+import gp6.harbor.harborapi.domain.pedido.PedidoV2;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
+import gp6.harbor.harborapi.domain.prestador.AvaliacaoPrestador;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
+import gp6.harbor.harborapi.domain.prestador.repository.AvaliacaoRepository;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.dto.prestador.dto.FuncionarioListagemDto;
 import gp6.harbor.harborapi.dto.prestador.dto.PrestadorFuncionarioCriacao;
@@ -31,6 +35,7 @@ public class PrestadorService {
     private final PrestadorRepository prestadorRepository;
     private final PedidoRepository pedidoRepository;
     private final PrestadorMapperStruct prestadorMapperStruct;
+    private final AvaliacaoRepository avaliacaoRepository;
 
     public Prestador criar(Prestador prestador) {
         if (prestadorRepository.existsById(prestador.getId())) {
@@ -156,5 +161,20 @@ public class PrestadorService {
 
         return horarios;
     }
+
+    public AvaliacaoPrestador criarAvaliacaoPrestador(PedidoV2 pedido, Prestador prestador, Double estrelas, String comentario, Cliente cliente) {
+        if (pedido.getCliente().getId() != cliente.getId() || pedido.getStatusPedidoEnum() != StatusPedidoEnum.FINALIZADO || pedido.getPedidoPrestador().stream().noneMatch(p -> p.getPrestador().getId().equals(prestador.getId()))) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido não finalizado ou não pertence ao cliente ou prestador");
+        }
+        AvaliacaoPrestador avaliacaoPrestador = new AvaliacaoPrestador();
+        avaliacaoPrestador.setPrestador(prestador);
+        avaliacaoPrestador.setCliente(cliente);
+        avaliacaoPrestador.setCodigoPedido(pedido.getCodigoPedido());
+        avaliacaoPrestador.setEstrelas(estrelas);
+        avaliacaoPrestador.setComentario(comentario);
+        avaliacaoPrestador.setCnpjEmpresa(prestador.getEmpresa().getCnpj());
+        return avaliacaoRepository.save(avaliacaoPrestador);
+    }
+
 
 }

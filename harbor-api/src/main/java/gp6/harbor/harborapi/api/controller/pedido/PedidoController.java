@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/pedidos")
@@ -129,6 +130,14 @@ public class PedidoController {
        Pedido pedidoAtualizado = pedidoService.atualizarStatus(pedidoId, status);
 
        return ResponseEntity.ok(PedidoMapper.toDto(pedidoAtualizado));
+    }
+
+    //end point para buscar por uuid codigoPedido
+    @GetMapping("/{codigoPedido}")
+    public ResponseEntity<PedidoV2> buscarPorCodigoPedido(@PathVariable UUID codigoPedido) {
+        PedidoV2 pedido = pedidoService.buscarPorCodigoPedido(codigoPedido);
+
+        return ResponseEntity.ok(pedido);
     }
 
     @PostMapping("/finalizarPedido/{pedidoId}")

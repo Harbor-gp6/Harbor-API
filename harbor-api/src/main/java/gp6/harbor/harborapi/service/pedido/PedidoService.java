@@ -502,6 +502,8 @@ public class PedidoService {
         return pedido.getStatusPedidoEnum() == StatusPedidoEnum.FINALIZADO;
     }
 
-    //criar avaliacao de prestador
+    public PedidoV2 buscarPorCodigoPedido(UUID codigoPedido) {
+        return pedidoV2Repository.findByCodigoPedido(codigoPedido).orElseThrow(() -> new NaoEncontradoException("Pedido"));
+    }
 
 }

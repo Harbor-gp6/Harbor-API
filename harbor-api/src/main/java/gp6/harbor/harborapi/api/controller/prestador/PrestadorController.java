@@ -191,13 +191,6 @@ public class PrestadorController {
                 "attachment; filename=\"foto-prestador.jpg\"").body(foto);
     }
 
-    //endpoint para avaliar o prestador
-    @PostMapping("/avaliar")
-    public ResponseEntity<Void> avaliarPrestador(@RequestBody @Valid AvaliacaoPrestadorDto avaliacaoPrestadorDto){
-        avaliacaoPrestadorService.criarAvaliacaoPrestador(avaliacaoPrestadorDto);
-        return ResponseEntity.status(201).build();
-    }
-
     public boolean existePorCpf(String cpf){
         return prestadorService.existePorCpf(cpf);
     }

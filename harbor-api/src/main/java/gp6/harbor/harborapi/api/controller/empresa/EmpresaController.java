@@ -67,9 +67,7 @@ public class EmpresaController {
         return ResponseEntity.status(200).body(listaAuxiliar);
     }
 
-    @Hidden
     @GetMapping("/{id}")
-    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<EmpresaListagemDto> buscarPorId(@PathVariable Integer id){
         Empresa empresa = empresaService.buscarPorId(id);
         if (empresa == null){

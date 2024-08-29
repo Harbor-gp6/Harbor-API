@@ -82,4 +82,8 @@ public class ClienteService {
         }
         return true;
     }
+
+    public Cliente buscarPorCpf(String cpfCliente){
+        return clienteRepository.findByCpf(cpfCliente).orElseThrow(() -> new NaoEncontradoException("Cliente"));
+    }
 }

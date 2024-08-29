@@ -193,8 +193,8 @@ public class PrestadorController {
 
     //endpoint para avaliar o prestador
     @PostMapping("/avaliar")
-    public ResponseEntity<Void> avaliarPrestador(UUID codigoPedido, Long idPrestador, Double estrelas, String comentario, Integer idCliente){
-        avaliacaoPrestadorService.criarAvaliacaoPrestador(codigoPedido, idPrestador, estrelas, comentario, idCliente);
+    public ResponseEntity<Void> avaliarPrestador(@RequestBody @Valid AvaliacaoPrestadorDto avaliacaoPrestadorDto){
+        avaliacaoPrestadorService.criarAvaliacaoPrestador(avaliacaoPrestadorDto);
         return ResponseEntity.status(201).build();
     }
 

@@ -5,6 +5,7 @@ public class UsuarioTokenDto {
     private Long userId;
     private String nome;
     private String email;
+    private Integer idEmpresa;
     private String token;
 
     public Long getUserId() {
@@ -37,5 +38,13 @@ public class UsuarioTokenDto {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public Integer getIdEmpresa() {
+        return idEmpresa;
+    }
+
+    public void setIdEmpresa(Integer idEmpresa) {
+        this.idEmpresa = idEmpresa;
     }
 }

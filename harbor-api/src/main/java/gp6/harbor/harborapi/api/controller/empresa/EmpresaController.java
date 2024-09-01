@@ -26,9 +26,7 @@ public class EmpresaController {
     private final EmpresaService empresaService;
     private final EnderecoService enderecoService;
 
-    @Hidden
     @PostMapping
-    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<EmpresaListagemDto> cadastrar(@RequestBody @Valid EmpresaCriacaoDto novaEmpresaDto){
         // Mapear DTO para entidade
         Empresa novaEmpresa = EmpresaMapper.toEntity(novaEmpresaDto);

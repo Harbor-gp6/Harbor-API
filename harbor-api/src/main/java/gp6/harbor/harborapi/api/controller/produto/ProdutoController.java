@@ -43,6 +43,12 @@ public class ProdutoController {
         ProdutoListagemDto dto = ProdutoMapper.toDto(produto);
         return ResponseEntity.status(200).body(dto);
     }
+    @GetMapping("/empresa/{empresaId}")
+    public ResponseEntity<List<ProdutoListagemDto>> buscarPeloEmpresaId(@PathVariable int empresaId){
+        List<Produto> produtos = produtoService.listarClientSide(empresaId);
+        List<ProdutoListagemDto> dto = ProdutoMapper.toDto(produtos);
+        return ResponseEntity.status(200).body(dto);
+    }
     @GetMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ProdutoListagemDto>> buscar(){

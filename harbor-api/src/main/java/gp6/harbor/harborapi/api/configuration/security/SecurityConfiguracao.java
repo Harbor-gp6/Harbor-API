@@ -60,6 +60,7 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/enderecos/cep"),
             new AntPathRequestMatcher("/cargos/**"),
             new AntPathRequestMatcher("/empresas/**"),
+            new AntPathRequestMatcher("/servicos/**"),
             new AntPathRequestMatcher("/clientes", HttpMethod.POST.toString()),
             new AntPathRequestMatcher("/pedidos/criarPedidoV2"),
             new AntPathRequestMatcher("/pedidos/{codigoPedido}")

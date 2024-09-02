@@ -166,6 +166,8 @@ public class PedidoService {
             Prestador prestador = prestadorService.buscarPorId(pedidoPrestador.getPrestador().getId());
             prestadorRepository.save(prestador);  // Salva o prestador com a lista atualizada de horários ocupados
         }
+        //dar detalhes do pedido no email
+        emailService.sendEmail(pedido.getCliente().getEmail(), "Seu agendamento foi realizado", "O seu agendamento foi realizado com sucesso, o código do seu pedido é: " + pedido.getCodigoPedido() + "e está marcado para o dia " + pedido.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + pedido.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")));
 
         return pedidoSalvo;
     }

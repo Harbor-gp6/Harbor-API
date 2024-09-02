@@ -1,6 +1,7 @@
 package gp6.harbor.harborapi.service.email;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -11,12 +12,13 @@ import lombok.RequiredArgsConstructor;
 
         private final JavaMailSender mailSender;
 
-        public void sendEmail(String toEmail, String subject, String body) {
+        @Async
+        public void sendEmail(String to, String subject, String text) {
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(toEmail);
+            message.setTo(to);
             message.setSubject(subject);
-            message.setText(body);
-            message.setFrom("leonardo.souza@sptech.school");
+            message.setText(text);
+            message.setFrom("harborApi@outlook.com");
 
             mailSender.send(message);
         }

@@ -1,6 +1,7 @@
 package gp6.harbor.harborapi.service.produto;
 
 import gp6.harbor.harborapi.domain.empresa.Empresa;
+import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.domain.produto.Produto;
@@ -20,6 +21,7 @@ public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
     private final PrestadorRepository prestadorRepository;
+    private final EmpresaRepository empresaRepository;
 
     public Produto cadastrar(Produto novoProduto) {
         //pegar o email do usuario logado, depois a empresa e colocar no produto
@@ -42,6 +44,12 @@ public class ProdutoService {
         Empresa empresa = prestador.getEmpresa();
 
         return produtoRepository.findByEmpresa(empresa);
+    }
+
+    public List<Produto> listarClientSide(int empresaId) {
+        Optional<Empresa> empresa = empresaRepository.findById(empresaId);
+
+        return produtoRepository.findByEmpresa(empresa.get());
     }
 
     public List<Produto> buscarMaiorParaMenor() {

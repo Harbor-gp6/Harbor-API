@@ -167,7 +167,8 @@ public class PedidoService {
             prestadorRepository.save(prestador);  // Salva o prestador com a lista atualizada de horários ocupados
         }
         //dar detalhes do pedido no email
-        emailService.sendEmail(pedido.getCliente().getEmail(), "Seu agendamento foi realizado", "O seu agendamento foi realizado com sucesso, o código do seu pedido é: " + pedido.getCodigoPedido() + "e está marcado para o dia " + pedido.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + pedido.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")));
+        String emailFormatado = emailService.formatarEmail(pedido.getCliente().getEmail(), "AGENDAMENTO REALIZADO COM SUCESSO", pedidoSalvo);
+        emailService.sendEmail(pedido.getCliente().getEmail(), "Agendamento realizado", emailFormatado);
 
         return pedidoSalvo;
     }
@@ -319,6 +320,10 @@ public class PedidoService {
         });
 
         pedidoEncontrado.setStatusPedidoEnum(StatusPedidoEnum.FINALIZADO);
+
+        String emailFormatado = emailService.formatarEmailPedidoFinalizado(pedidoEncontrado);
+        emailService.sendEmail(pedidoEncontrado.getCliente().getEmail(), "Agendamento finalizado", emailFormatado);
+
         return pedidoV2Repository.save(pedidoEncontrado);
     }
     public Pedido criarPedido(Pedido novoPedido, List<Integer> servicosIds) {

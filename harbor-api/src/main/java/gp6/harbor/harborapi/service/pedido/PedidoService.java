@@ -61,19 +61,16 @@ public class PedidoService {
 
     @Transactional
     public PedidoV2 criarPedidoV2(PedidoV2CriacaoDto pedidoDto) {
-        // Converte PedidoV2CriacaoDto para PedidoV2
         PedidoV2 pedido = pedidoV2Mapper.toEntity(pedidoDto);
         UUID codigoPedido = UUID.randomUUID();
 
         pedido.setCodigoPedido(codigoPedido);
-        // Converte e associa entidades aninhadas
         List<PedidoPrestador> pedidoPrestadores = pedidoV2Mapper.toPedidoPrestadorEntityList(pedidoDto.getPedidoPrestador());
         List<PedidoProdutoV2> pedidoProdutos = pedidoV2Mapper.toPedidoProdutoV2EntityList(pedidoDto.getPedidoProdutos());
 
         pedido.setPedidoPrestador(pedidoPrestadores);
         pedido.setPedidoProdutos(pedidoProdutos);
 
-        // Verifica e associa a empresa
         if (pedido.getEmpresa() == null && pedidoDto.getCnpjEmpresa() != null) {
             Empresa empresa = empresaRepository.findByCnpj(pedidoDto.getCnpjEmpresa()).orElse(null);
             if (empresa == null) {
@@ -82,7 +79,6 @@ public class PedidoService {
             pedido.setEmpresa(empresa);
         }
 
-        // Verifica e associa o cliente
         if (pedido.getCliente() != null && pedido.getCliente().getCpf() != null) {
             Cliente cliente = clienteRepository.findByCpf(pedido.getCliente().getCpf()).orElse(null);
             if (cliente == null && clienteService.validarCliente(pedido.getCliente())) {
@@ -174,19 +170,15 @@ public class PedidoService {
     }
 
 
-    //atualizar um PedidoV2 recebendo o idPedido
     @Transactional
     public PedidoV2 atualizarPedidoV2(Integer idPedido, PedidoV2CriacaoDto pedidoDto) {
-        // Encontra o PedidoV2 existente no banco de dados
         PedidoV2 pedidoEncontrado = pedidoV2Repository.findById(idPedido)
                 .orElseThrow(() -> new NaoEncontradoException("Pedido"));
 
-        // Verifica se o pedido pertence à empresa do prestador logado
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Prestador não encontrado."));
 
-        //ver se o pedidoEncontrado está fechado
         if (pedidoEncontrado.getStatusPedidoEnum() == StatusPedidoEnum.FINALIZADO) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido já finalizado.");
         }
@@ -198,17 +190,14 @@ public class PedidoService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Pedido não pertence à empresa do prestador.");
         }
 
-        // Atualiza manualmente os campos do pedido encontrado com as informações do DTO
         pedidoEncontrado.setDataAgendamento(pedidoDto.getDataAgendamento());
         UUID codigoPedido = pedidoEncontrado.getCodigoPedido();
-        // Verifica e associa a empresa
         if (pedidoDto.getCnpjEmpresa() != null) {
             Empresa empresa = empresaRepository.findByCnpj(pedidoDto.getCnpjEmpresa())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Empresa não encontrada."));
             pedidoEncontrado.setEmpresa(empresa);
         }
 
-        // Verifica e associa o cliente
         if (pedidoDto.getCliente() != null && pedidoDto.getCliente().getCpf() != null) {
             Cliente cliente = clienteRepository.findByCpf(pedidoDto.getCliente().getCpf())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Cliente não encontrado."));
@@ -224,7 +213,6 @@ public class PedidoService {
 
         // Limpa a lista atual de PedidoPrestador antes de adicionar os novos
         pedidoEncontrado.getPedidoPrestador().clear();
-        // Atualiza os PedidoPrestador relacionados
         for (PedidoPrestadorDto pedidoPrestadorDto : pedidoDto.getPedidoPrestador()) {
             Prestador prestador = prestadorService.buscarPorId(pedidoPrestadorDto.getPrestadorId());
             Servico servico = servicoService.buscaPorId(pedidoPrestadorDto.getServicoId());
@@ -269,9 +257,7 @@ public class PedidoService {
             horarioAtual = pedidoPrestador.getDataFim();
         }
 
-        // Limpa a lista atual de PedidoProdutos antes de adicionar os novos
         pedidoEncontrado.getPedidoProdutos().clear();
-        // Atualiza os PedidoProdutos relacionados
         for (PedidoProdutoV2Dto pedidoProdutoDto : pedidoDto.getPedidoProdutos()) {
             Produto produto = produtoService.buscarPorId(pedidoProdutoDto.getId());
             if (produto == null) {
@@ -286,20 +272,17 @@ public class PedidoService {
             pedidoEncontrado.getPedidoProdutos().add(pedidoProduto);
         }
 
-        // Valida o pedido atualizado
         if (!validarPedidoV2(pedidoEncontrado)) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido inválido.");
         }
         pedidoEncontrado.calcularTotalPedido();
 
-        // Salva as alterações no banco de dados
         return pedidoV2Repository.save(pedidoEncontrado);
     }
 
     public PedidoV2 finalizarPedidoV2(Integer pedidoId) {
         PedidoV2 pedidoEncontrado = pedidoV2Repository.findById(pedidoId).orElseThrow(() -> new NaoEncontradoException("Pedido"));
 
-        //verificar se o pedido pertence a empresa que o prestador está vinculado para poder finalizar
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
 
@@ -314,7 +297,6 @@ public class PedidoService {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido cancelado.");
         }
 
-        //busca todos os horarios ocupados de todos os prestadores das pedidosPrestador do pedido e deleta se o codigoPedido do horarioOcupado for igual ao do pedidoV2
         pedidoEncontrado.getPedidoPrestador().forEach(pedidoPrestador -> {
             pedidoPrestador.getPrestador().getHorariosOcupados().removeIf(horarioOcupado -> horarioOcupado.getCodigoPedido().equals(pedidoEncontrado.getCodigoPedido()));
         });
@@ -429,7 +411,6 @@ public class PedidoService {
         return pedidoV2Repository.findByEmpresaAndStatusPedidoEnum(prestador.getEmpresa(), StatusPedidoEnum.ABERTO);
     }
 
-    //listar por cpf
     public List<PedidoV2> listarPorCpf(String cpf) {
         return pedidoV2Repository.findByPedidoPrestadorPrestadorCpf(cpf);
     }
@@ -488,17 +469,23 @@ public class PedidoService {
         }
     }
 
-    //validar pedidoV2
     public boolean validarPedidoV2(PedidoV2 pedidoV2){
-        //validar se todos os atributos do pedidoV2 são validos
         if (!clienteService.validarCliente(pedidoV2.getCliente())) {
+            return false;
+        }
+        if (pedidoV2.getFormaPagamentoEnum() == null) {
+            return false;
+        }
+        if (pedidoV2.getDataAgendamento() == null) {
+            return false;
+        }
+        if (pedidoV2.getPedidoPrestador().isEmpty()) {
             return false;
         }
 
         return true;
     }
 
-    //criar verificação de pedido finalizado por id verificando se aquele pedido é da empresa do prestador
     public boolean pedidoFinalizado(Integer idPedido) {
         PedidoV2 pedido = pedidoV2Repository.findById(idPedido).orElseThrow(() -> new NaoEncontradoException("Pedido"));
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();

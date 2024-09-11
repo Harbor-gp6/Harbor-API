@@ -33,6 +33,11 @@ public class ServicoService {
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElseThrow(() -> new NaoEncontradoException("Prestador"));
         Empresa empresa = prestador.getEmpresa();
         servico.setEmpresa(empresa);
+
+        if (existe(servico)) {
+            throw new IllegalArgumentException("Serviço já cadastrado");
+        }
+
         return servicoRepository.save(servico);
     }
 
@@ -54,6 +59,12 @@ public class ServicoService {
         //return servicoRepository.findAll();
         return servicoRepository.findByEmpresa(empresa);
     }
+
+    //buscar servico por objeto servico, ver se ja tem um servico igual aquele, com mesmo nome e empresa
+    public boolean existe(Servico servico) {
+        return servicoRepository.existsByDescricaoServicoAndEmpresa(servico.getDescricaoServico(), servico.getEmpresa());
+    }
+
 
     public boolean existePorId(Integer id) {
         return servicoRepository.existsById(id);

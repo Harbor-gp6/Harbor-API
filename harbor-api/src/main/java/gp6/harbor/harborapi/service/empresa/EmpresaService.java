@@ -47,6 +47,19 @@ public class EmpresaService {
 
         return empresaRepository.save(empresa);
     }
+    public Empresa cadastrar(EmpresaCriacaoDto empresa) {
+        if (existePorCnpj(empresa.getCnpj())) {
+            throw new ConflitoException("Empresa");
+        }
+
+        if (empresa.getHorarioAbertura().isAfter(empresa.getHorarioFechamento())) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        Empresa empresaCriacao = empresaMapperStruct.toEntity(empresa);
+
+        return empresaRepository.save(empresaCriacao);
+    }
 
     public List<Empresa> listar() { return empresaRepository.findAll(); }
 

@@ -8,6 +8,7 @@ import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.produto.Produto;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.FutureOrPresent;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -49,6 +50,7 @@ public class PedidoV2 {
     @Enumerated(EnumType.STRING)
     private StatusPedidoEnum statusPedidoEnum = StatusPedidoEnum.ABERTO;
 
+    @FutureOrPresent
     private LocalDateTime dataAgendamento;
 
     @Enumerated(EnumType.STRING)
@@ -58,8 +60,6 @@ public class PedidoV2 {
 
     private Double totalPedido;
 
-    //calcular o total do pedido percorrendo todos os precosVenda dos produtos na pedidoProdutos, somando-os e percorrendo todos os valores dos servicos na pedidoPrestador, somando-os
-    //o total tem que ser double
     public void calcularTotalPedido() {
         this.totalPedido = 0.0;
         for (PedidoProdutoV2 pedidoProduto : pedidoProdutos) {

@@ -7,6 +7,7 @@ import gp6.harbor.harborapi.dto.prestador.dto.PrestadorCriacaoDto;
 import gp6.harbor.harborapi.dto.prestador.dto.PrestadorFuncionarioCriacao;
 import gp6.harbor.harborapi.dto.prestador.dto.PrestadorMapper;
 import gp6.harbor.harborapi.dto.prestador.dto.PrestadorMapperStruct;
+import gp6.harbor.harborapi.exception.ConflitoException;
 import gp6.harbor.harborapi.service.empresa.EmpresaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,11 +49,23 @@ public class UsuarioService {
     @Autowired
     private PrestadorMapperStruct prestadorMapperStruct;
 
+
     public void criar(PrestadorCriacaoDto usuarioCriacaoDto) {
         final Prestador novoUsuario = PrestadorMapper.toEntity(usuarioCriacaoDto);
+
         if (usuarioCriacaoDto.getEmpresaId() != null) {
             Empresa empresa = empresaService.buscarPorId(usuarioCriacaoDto.getEmpresaId());
+            if (empresa == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
+            }
             novoUsuario.setEmpresa(empresa);
+        }else {
+            if (empresaService.existePorCnpj(usuarioCriacaoDto.getEmpresa().getCnpj())) {
+                novoUsuario.setEmpresa(empresaService.buscarPorCnpj(usuarioCriacaoDto.getEmpresa().getCnpj()));
+            }else{
+                Empresa empresa = empresaService.cadastrar(usuarioCriacaoDto.getEmpresa());
+                novoUsuario.setEmpresa(empresa);
+            }
         }
 
         String senhaCriptografada = passwordEncoder.encode(novoUsuario.getSenha());

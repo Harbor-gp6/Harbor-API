@@ -1,6 +1,8 @@
 package gp6.harbor.harborapi.api.controller.prestador;
 
 import gp6.harbor.harborapi.domain.empresa.Empresa;
+import gp6.harbor.harborapi.domain.pedido.HorarioOcupadoDTO;
+import gp6.harbor.harborapi.domain.pedido.repository.HorarioOcupado;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.dto.prestador.dto.*;
 import gp6.harbor.harborapi.dto.usuario.UsuarioService;
@@ -30,6 +32,18 @@ public class PrestadorController {
     private final UsuarioService usuarioService;
     private final PrestadorService prestadorService;
     private final AvaliacaoPrestadorService avaliacaoPrestadorService;
+
+    @GetMapping("/horariosOcupados/{prestadorId}")
+    public ResponseEntity<List<HorarioOcupadoDTO>> listarHorariosOcupadosPrestador(@PathVariable Long prestadorId) {
+
+        List<HorarioOcupadoDTO> horariosOcupados = prestadorService.listarHorariosOcupadosPrestador(prestadorId);
+        if (horariosOcupados.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(horariosOcupados);
+    }
+
     @PostMapping
     public ResponseEntity<Void> criar(@RequestBody @Valid PrestadorCriacaoDto usuarioCriacaoDto) {
         if (existePorCpf(usuarioCriacaoDto.getCpf())) {
@@ -124,18 +138,6 @@ public class PrestadorController {
         List<PrestadorListagemDto> dtos = PrestadorMapper.toDto(prestadores);
 
         return ResponseEntity.status(200).body(dtos);
-    }
-
-    @GetMapping("/horarios/{prestadorId}")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<LocalDateTime>> listarHorariosOcupados(@PathVariable Long prestadorId) {
-        List<LocalDateTime> horarios = prestadorService.listarHorariosOcupados(prestadorId);
-
-        if (horarios.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.ok(horarios);
     }
 
     @GetMapping("empresa/{empresaId}")

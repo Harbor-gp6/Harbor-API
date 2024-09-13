@@ -25,6 +25,7 @@ public interface PrestadorRepository extends JpaRepository<Prestador, Long> {
 
     List<Prestador> findByEmpresa(Empresa empresa);
 
+    //BUSCAR HORARIOSOCUPADOS QUE
 
 
     @Modifying

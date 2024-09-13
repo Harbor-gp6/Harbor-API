@@ -3,17 +3,16 @@ package gp6.harbor.harborapi.service.prestador;
 import gp6.harbor.harborapi.api.enums.StatusPedidoEnum;
 import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
+import gp6.harbor.harborapi.domain.pedido.HorarioOcupadoDTO;
 import gp6.harbor.harborapi.domain.pedido.Pedido;
 import gp6.harbor.harborapi.domain.pedido.PedidoV2;
+import gp6.harbor.harborapi.domain.pedido.repository.HorarioOcupado;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
 import gp6.harbor.harborapi.domain.prestador.AvaliacaoPrestador;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.prestador.repository.AvaliacaoRepository;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
-import gp6.harbor.harborapi.dto.prestador.dto.FuncionarioListagemDto;
-import gp6.harbor.harborapi.dto.prestador.dto.PrestadorFuncionarioCriacao;
-import gp6.harbor.harborapi.dto.prestador.dto.PrestadorListagemDto;
-import gp6.harbor.harborapi.dto.prestador.dto.PrestadorMapperStruct;
+import gp6.harbor.harborapi.dto.prestador.dto.*;
 import gp6.harbor.harborapi.exception.ConflitoException;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
 import gp6.harbor.harborapi.service.pedido.PedidoService;
@@ -36,6 +35,7 @@ public class PrestadorService {
     private final PedidoRepository pedidoRepository;
     private final PrestadorMapperStruct prestadorMapperStruct;
     private final AvaliacaoRepository avaliacaoRepository;
+    private final HorarioOcupadoMapper horarioOcupadoMapper;
 
     public Prestador criar(Prestador prestador) {
         if (prestadorRepository.existsById(prestador.getId())) {
@@ -136,6 +136,24 @@ public class PrestadorService {
     public byte[] getFoto(Long id) {
         return prestadorRepository.getFoto(id);
     }
+
+    //listar horarios ocupados por prestadorid
+    public List<HorarioOcupadoDTO> listarHorariosOcupadosPrestador(Long prestadorId){
+        Prestador prestador = buscarPorId(prestadorId);
+
+
+        List<HorarioOcupado> horariosOcupados = prestador.getHorariosOcupados();
+
+        //converter horariosOcupados em horariosOcupadosDTO
+        List<HorarioOcupadoDTO> horariosOcupadosDTO = new ArrayList<>();
+
+        for (HorarioOcupado horarioOcupado : horariosOcupados) {
+            HorarioOcupadoDTO horarioOcupadoDTO = horarioOcupadoMapper.toDto(horarioOcupado);
+            horariosOcupadosDTO.add(horarioOcupadoDTO);
+        }
+        return horariosOcupadosDTO;
+    }
+
 
     public List<LocalDateTime> listarHorariosOcupados(Long prestadorId) {
         buscarPorId(prestadorId);

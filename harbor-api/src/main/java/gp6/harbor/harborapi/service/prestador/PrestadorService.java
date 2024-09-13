@@ -5,8 +5,10 @@ import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.pedido.HorarioOcupadoDTO;
 import gp6.harbor.harborapi.domain.pedido.Pedido;
+import gp6.harbor.harborapi.domain.pedido.PedidoPrestador;
 import gp6.harbor.harborapi.domain.pedido.PedidoV2;
 import gp6.harbor.harborapi.domain.pedido.repository.HorarioOcupado;
+import gp6.harbor.harborapi.domain.pedido.repository.PedidoPrestadorRepository;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
 import gp6.harbor.harborapi.domain.prestador.AvaliacaoPrestador;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
@@ -36,6 +38,14 @@ public class PrestadorService {
     private final PrestadorMapperStruct prestadorMapperStruct;
     private final AvaliacaoRepository avaliacaoRepository;
     private final HorarioOcupadoMapper horarioOcupadoMapper;
+    private final PedidoPrestadorRepository pedidoPrestadorRepository;
+
+
+    //buscarPedidosAtendidosPorPrestador(prestador)
+    public List<PedidoPrestador> buscarPedidosAtendidosPorPrestador(Long idPrestador) {
+
+        return pedidoPrestadorRepository.findAllByPrestadorId(idPrestador);
+    }
 
     public Prestador criar(Prestador prestador) {
         if (prestadorRepository.existsById(prestador.getId())) {
@@ -140,7 +150,6 @@ public class PrestadorService {
     //listar horarios ocupados por prestadorid
     public List<HorarioOcupadoDTO> listarHorariosOcupadosPrestador(Long prestadorId){
         Prestador prestador = buscarPorId(prestadorId);
-
 
         List<HorarioOcupado> horariosOcupados = prestador.getHorariosOcupados();
 

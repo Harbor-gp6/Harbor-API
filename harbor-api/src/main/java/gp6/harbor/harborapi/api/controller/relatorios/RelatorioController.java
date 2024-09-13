@@ -5,6 +5,7 @@ import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.service.empresa.EmpresaService;
 import gp6.harbor.harborapi.service.pedido.PedidoService;
 import gp6.harbor.harborapi.service.pedido.PedidoServicoService;
+import gp6.harbor.harborapi.service.relatorio.RelatorioService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.ByteArrayInputStream;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,6 +32,7 @@ public class RelatorioController {
     private final PedidoService pedidoService;
     private final PedidoServicoService pedidoServicoService;
     private final EmpresaService empresaService;
+    private final RelatorioService relatorioService;
 
     private List<String> gerarListaDeMeses(LocalDate dataInicio, LocalDate dataFim) {
         List<String> meses = new ArrayList<>();
@@ -146,6 +152,22 @@ public class RelatorioController {
             throw new RuntimeException("Erro ao gravar o arquivo", erro);
         }
     }
+
+    @GetMapping("/download/relatorio")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<byte[]> downloadRelatorio( @RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim) {
+        ByteArrayInputStream bis = relatorioService.gerarRelatorioPedidosAtendidosPorPrestador(dataInicio, dataFim);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=FaturamentoEPedidosPorPrestador.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(bis.readAllBytes());
+    }
+
 
 
 }

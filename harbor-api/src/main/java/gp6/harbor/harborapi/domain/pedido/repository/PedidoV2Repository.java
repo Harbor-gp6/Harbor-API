@@ -19,4 +19,6 @@ public interface PedidoV2Repository extends JpaRepository<PedidoV2, Integer> {
     List<PedidoV2> findByPedidoPrestadorPrestadorCpfAndStatusPedidoEnum(String cpf, StatusPedidoEnum statusPedidoEnum);
     Optional<PedidoV2> findByCodigoPedido(UUID codigoPedido);
 
+
+
 }

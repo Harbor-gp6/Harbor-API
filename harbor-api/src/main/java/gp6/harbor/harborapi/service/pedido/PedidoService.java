@@ -448,6 +448,20 @@ public class PedidoService {
         return pedidoRepository.somarFaturamentoBruto(inicio, fim) / pedidoRepository.contarPedidosPorPeriodo(inicio, fim);
     }
 
+    //somarValorFaturadoPorPrestadorPorPeriodo
+    public Double somarValorFaturadoPorPrestadorPorPeriodo(LocalDate dataInicio, LocalDate dataFim, Long prestadorId) {
+
+        verificarPrestadorAdmin(prestadorId);
+
+        LocalDateTime inicio = dataInicio.atTime(0, 0);
+        LocalDateTime fim = dataFim.atTime(23, 59);
+
+        Double faturamentoBruto = pedidoRepository.somarFaturamentoBrutoPorPrestador(inicio, fim, prestadorId);
+
+        return Objects.requireNonNullElse(faturamentoBruto, 0.0);
+
+    }
+
     public Double somarValorFaturadoPorPrestador(LocalDate dataInicio, LocalDate dataFim, Long prestadorId, Long prestadorBuscadoId) {
 
         verificarPrestadorAdmin(prestadorId);

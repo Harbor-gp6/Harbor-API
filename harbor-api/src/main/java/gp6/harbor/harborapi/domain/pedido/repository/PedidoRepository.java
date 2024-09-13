@@ -1,5 +1,6 @@
 package gp6.harbor.harborapi.domain.pedido.repository;
 
+import gp6.harbor.harborapi.api.enums.StatusPedidoEnum;
 import gp6.harbor.harborapi.domain.pedido.Pedido;
 import gp6.harbor.harborapi.domain.pedido.PedidoV2;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,5 +26,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
     Integer contarPedidosPorPeriodo(LocalDateTime dataInicio, LocalDateTime dataFim);
 
     List<Pedido> findAllByPrestadorId(Long prestadorId);
+
+
 
 }

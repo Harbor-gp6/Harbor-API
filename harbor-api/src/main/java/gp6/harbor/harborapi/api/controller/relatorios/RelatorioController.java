@@ -6,6 +6,7 @@ import gp6.harbor.harborapi.service.empresa.EmpresaService;
 import gp6.harbor.harborapi.service.pedido.PedidoService;
 import gp6.harbor.harborapi.service.pedido.PedidoServicoService;
 import gp6.harbor.harborapi.service.relatorio.RelatorioService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -33,7 +34,7 @@ public class RelatorioController {
     private final PedidoServicoService pedidoServicoService;
     private final EmpresaService empresaService;
     private final RelatorioService relatorioService;
-
+    @Hidden
     private List<String> gerarListaDeMeses(LocalDate dataInicio, LocalDate dataFim) {
         List<String> meses = new ArrayList<>();
         LocalDate dataAtual = dataInicio.withDayOfMonth(1);
@@ -46,7 +47,7 @@ public class RelatorioController {
 
         return meses;
     }
-
+    @Hidden
     @GetMapping("/servicos-por-prestador/{empresaId}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Map<String, Map<String, Integer>>> getServicosPorPrestador(@PathVariable Integer empresaId, @RequestParam LocalDate dtInicio, @RequestParam LocalDate dtFim) {
@@ -54,7 +55,7 @@ public class RelatorioController {
         Map<String, Map<String, Integer>> matriz = pedidoServicoService.criarMatrizDeServicos(empresa);
         return ResponseEntity.ok(matriz);
     }
-
+    @Hidden
     @GetMapping("/servicos-por-prestador/csv/{empresaId}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<byte[]> getServicosPorPrestadorCSV(@PathVariable Integer empresaId,
@@ -75,14 +76,14 @@ public class RelatorioController {
 
         return new ResponseEntity<>(outputStream.toByteArray(), headers, HttpStatus.OK);
     }
-
+    @Hidden
     @GetMapping("/faturamento-bruto/{prestadorId}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Double> calcularFaturamentoBruto(@RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim, @PathVariable Long prestadorId) {
         Double faturamento = pedidoService.somarValorFaturado(dataInicio, dataFim, prestadorId);
         return ResponseEntity.ok(faturamento);
     }
-
+    @Hidden
     @GetMapping("/faturamento-bruto/csv/{prestadorId}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<String> calcularFaturamentoBrutoCSV(@RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim, @PathVariable Long prestadorId) {
@@ -91,7 +92,7 @@ public class RelatorioController {
         return ResponseEntity.ok("CSV gerado com sucesso");
     }
 
-
+    @Hidden
     @GetMapping("/ticket-medio/{prestadorId}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Double> calcularTicketMedio(@RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim, @PathVariable Long prestadorId) {
@@ -99,6 +100,7 @@ public class RelatorioController {
         return ResponseEntity.ok(ticketMedio);
     }
 
+    @Hidden
     @GetMapping("/ticket-medio/csv/{prestadorId}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<String> calcularTicketMedioCSV(@RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim, @PathVariable Long prestadorId) {
@@ -106,7 +108,7 @@ public class RelatorioController {
         Gravacao.gravaArquivoCsvTicketMedio(ticketMedio, "ticket_medio");
         return ResponseEntity.ok("CSV gerado com sucesso");
     }
-
+    @Hidden
     @GetMapping("/faturamento-prestador/{prestadorId}/{prestadorBuscadoId}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Double> calcularFaturamentoPorPrestador(@RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim, @PathVariable Long prestadorId, @PathVariable Long prestadorBuscadoId) {
@@ -114,6 +116,7 @@ public class RelatorioController {
         return ResponseEntity.ok(faturamentoPorPrestador);
     }
 
+    @Hidden
     @GetMapping("/faturamento-prestador/csv/{prestadorId}/{prestadorBuscadoId}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<String> calcularFaturamentoPorPrestadorCSV(@RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim, @PathVariable Long prestadorId, @PathVariable Long prestadorBuscadoId) {
@@ -122,7 +125,7 @@ public class RelatorioController {
         return ResponseEntity.ok("CSV gerado com sucesso");
     }
 
-
+    @Hidden
     private void gravaArquivosCsvMatriz(Map<String, Map<String, Integer>> matriz, List<String> meses, ByteArrayOutputStream outputStream, String nomeEmpresa, String cnpj, String outrosDados) {
         try (Formatter saida = new Formatter(outputStream)) {
             // Escreve informações da empresa
@@ -153,13 +156,13 @@ public class RelatorioController {
         }
     }
 
-    @GetMapping("/download/relatorio")
+    @GetMapping("/PDF/pedidos-atendidos-por-prestador")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<byte[]> downloadRelatorio( @RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim) {
         ByteArrayInputStream bis = relatorioService.gerarRelatorioPedidosAtendidosPorPrestador(dataInicio, dataFim);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=FaturamentoEPedidosPorPrestador.pdf");
+        headers.add("Content-Disposition", "attachment; filename=Pedidos atendidos por prestador.pdf");
 
         return ResponseEntity
                 .ok()
@@ -168,6 +171,35 @@ public class RelatorioController {
                 .body(bis.readAllBytes());
     }
 
+    @GetMapping("/PDF/avaliacao-por-prestador")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<byte[]> downloadRelatorioDeAvaliacaoPorPrestador() {
+        ByteArrayInputStream bis = relatorioService.gerarRelatorioDeAvaliacaoPorPrestador();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=Avaliacao por prestador.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(bis.readAllBytes());
+    }
+
+    @GetMapping("/PDF/produtos-mais-consumidos")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<byte[]> downloadRelatorioProdutosMaisConsumidos(@RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim) {
+        ByteArrayInputStream bis = relatorioService.gerarRelatorioProdutosMaisConsumidos(dataInicio, dataFim);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=Produtos mais consumidos.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(bis.readAllBytes());
+    }
 
 
 }

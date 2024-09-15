@@ -124,6 +124,7 @@ public class SecurityConfiguracao {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuracao = new CorsConfiguration();
         configuracao.applyPermitDefaultValues();
+        configuracao.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         configuracao.setAllowedMethods(
                 Arrays.asList(
                         HttpMethod.GET.name(),

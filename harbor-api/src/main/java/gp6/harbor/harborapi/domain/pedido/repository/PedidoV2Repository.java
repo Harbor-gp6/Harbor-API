@@ -24,7 +24,8 @@ public interface PedidoV2Repository extends JpaRepository<PedidoV2, Integer> {
 // //somar faturamento bruto por empresa
 //    @Query("SELECT SUM(p.total) from Pedido p WHERE p.dataAgendamento >= :dataInicio AND p.dataAgendamento <= :dataFim AND p.prestador.empresa.id = :empresaId")
 //    Double somarFaturamentoBrutoPorEmpresa(LocalDateTime dataInicio, LocalDateTime dataFim, Integer empresaId);
-    @Query("SELECT SUM(p.totalPedido) from PedidoV2 p WHERE p.dataAgendamento >= :dataInicio AND p.dataAgendamento <= :dataFim AND p.empresa.id = :empresaId")
+    //some somente de pedidosv2 com que o status seja finalizado StatusPedidoEnum.FINALIZADO
+    @Query("SELECT SUM(p.totalPedido) from PedidoV2 p WHERE p.dataAgendamento >= :dataInicio AND p.dataAgendamento <= :dataFim AND p.empresa.id = :empresaId AND p.statusPedidoEnum = 'FINALIZADO'")
     Double somarFaturamentoBrutoPorEmpresa(LocalDateTime dataInicio, LocalDateTime dataFim, Integer empresaId);
 
     //countByDataAgendamentoBetweenAndEmpresaIdAndFormaPagamentoEnum

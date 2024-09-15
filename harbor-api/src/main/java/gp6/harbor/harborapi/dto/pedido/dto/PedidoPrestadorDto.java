@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class PedidoPrestadorDto {
     @NotNull
-    private Long prestadorId;
+    private Long prestadorId; // Certifique-se que o tipo está correto
     @NotNull
     private Integer servicoId;
 }

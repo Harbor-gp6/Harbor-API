@@ -16,9 +16,9 @@ public class PedidoPrestador {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_prestador", nullable = false)
     private Prestador prestador;
 

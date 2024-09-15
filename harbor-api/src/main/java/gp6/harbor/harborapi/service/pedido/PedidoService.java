@@ -401,14 +401,17 @@ public class PedidoService {
         return pedidoV2Repository.findByEmpresa(empresa);
     }
 
-    public List<PedidoV2> listarPedidosV2Abertos() {
+    public List<PedidoV2ListagemDto> listarPedidosV2Abertos() {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
         Empresa empresa = prestador.getEmpresa();
         if (emailUsuario == null || prestador == null || empresa == null) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Você Precisa estar logado.");
         }
-        return pedidoV2Repository.findByEmpresaAndStatusPedidoEnum(prestador.getEmpresa(), StatusPedidoEnum.ABERTO);
+
+        List<PedidoV2> pedidos = pedidoV2Repository.findByEmpresaAndStatusPedidoEnum(prestador.getEmpresa(), StatusPedidoEnum.ABERTO);
+
+        return pedidoV2Mapper.toDto(pedidos);
     }
 
     public List<PedidoV2> listarPorCpf(String cpf) {

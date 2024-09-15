@@ -5,8 +5,7 @@ import gp6.harbor.harborapi.dto.cliente.dto.ClienteCriacaoDto;
 import gp6.harbor.harborapi.dto.prestador.dto.PrestadorListagemDto;
 import gp6.harbor.harborapi.dto.produto.dto.ProdutoListagemDto;
 import gp6.harbor.harborapi.dto.servico.dto.ServicoListagemDto;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -16,12 +15,16 @@ import org.hibernate.validator.constraints.br.CNPJ;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
 public class PedidoV2ListagemDto {
+
+    private Integer id; // Ajuste para refletir o nome correto do campo
+
     @NotNull
-    private Integer Idcliente;
+    private Integer idcliente; // Nome correto do campo deve ser idcliente
 
     @CNPJ
     @NotNull
@@ -32,10 +35,14 @@ public class PedidoV2ListagemDto {
 
     private List<PedidoProdutoV2Dto> pedidoProdutos;
 
-    //data de agendamento
+    // data de agendamento
     @Future
     private LocalDateTime dataAgendamento;
 
     @Enumerated(EnumType.STRING)
     private FormaPagamentoEnum formaPagamentoEnum;
+
+    private UUID codigoPedido;
+
+    private Double totalPedido;
 }

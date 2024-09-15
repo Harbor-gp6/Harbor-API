@@ -11,9 +11,13 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface PedidoV2Mapper {
+    @Mapping(source = "cliente.id", target = "idcliente")
+    @Mapping(source = "empresa.cnpj", target = "cnpjEmpresa")
+    @Mapping(source = "pedidoPrestador", target = "pedidoPrestador") // Mapeia usando PedidoPrestadorMapper
+    @Mapping(source = "pedidoProdutos", target = "pedidoProdutos")   // Mapeia usando PedidoProdutoV2Mapper
+    PedidoV2ListagemDto toDto(PedidoV2 pedido);
 
-    // Mapeia de PedidoV2 para PedidoV2CriacaoDto
-    PedidoV2CriacaoDto toDto(PedidoV2 pedido);
+    List<PedidoV2ListagemDto> toDto(List<PedidoV2> pedidoList);
 
     // Mapeia de PedidoV2CriacaoDto para PedidoV2
     @Mapping(target = "id", ignore = true) // Ignora o campo id

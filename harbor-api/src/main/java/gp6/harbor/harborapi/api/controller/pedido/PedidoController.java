@@ -89,6 +89,18 @@ public class PedidoController {
         return ResponseEntity.status(200).body(pedidos);
     }
 
+    @GetMapping("/pedidosFinalizados")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<PedidoV2ListagemDto>> listarPedidosFinalizados() {
+        List<PedidoV2ListagemDto> pedidos = pedidoService.listarPedidosV2Finalizados();
+
+        if (pedidos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.status(200).body(pedidos);
+    }
+
     @GetMapping("/pedidosV2")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PedidoV2>> listarPedidosV2() {

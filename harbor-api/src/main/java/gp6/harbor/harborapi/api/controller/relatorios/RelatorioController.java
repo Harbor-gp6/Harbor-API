@@ -108,13 +108,7 @@ public class RelatorioController {
         Gravacao.gravaArquivoCsvTicketMedio(ticketMedio, "ticket_medio");
         return ResponseEntity.ok("CSV gerado com sucesso");
     }
-    @Hidden
-    @GetMapping("/faturamento-prestador/{prestadorId}/{prestadorBuscadoId}")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Double> calcularFaturamentoPorPrestador(@RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim, @PathVariable Long prestadorId, @PathVariable Long prestadorBuscadoId) {
-        Double faturamentoPorPrestador = pedidoService.somarValorFaturadoPorPrestador(dataInicio, dataFim, prestadorId, prestadorBuscadoId);
-        return ResponseEntity.ok(faturamentoPorPrestador);
-    }
+
 
     @Hidden
     @GetMapping("/faturamento-prestador/csv/{prestadorId}/{prestadorBuscadoId}")
@@ -201,5 +195,11 @@ public class RelatorioController {
                 .body(bis.readAllBytes());
     }
 
+    @GetMapping("/faturamento-empresa")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Double> calcularFaturamentoEmpresa(@RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim) {
+        Double faturamentoPorEmpresa = pedidoService.somarValorFaturado(dataInicio, dataFim);
+        return ResponseEntity.ok(faturamentoPorEmpresa);
+    }
 
 }

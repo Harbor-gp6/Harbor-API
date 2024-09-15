@@ -414,6 +414,19 @@ public class PedidoService {
         return pedidoV2Mapper.toDto(pedidos);
     }
 
+    public List<PedidoV2ListagemDto> listarPedidosV2Finalizados() {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        Empresa empresa = prestador.getEmpresa();
+        if (emailUsuario == null || prestador == null || empresa == null) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Você Precisa estar logado.");
+        }
+
+        List<PedidoV2> pedidos = pedidoV2Repository.findByEmpresaAndStatusPedidoEnum(prestador.getEmpresa(), StatusPedidoEnum.FINALIZADO);
+
+        return pedidoV2Mapper.toDto(pedidos);
+    }
+
     public List<PedidoV2> listarPorCpf(String cpf) {
         return pedidoV2Repository.findByPedidoPrestadorPrestadorCpf(cpf);
     }
@@ -473,6 +486,22 @@ public class PedidoService {
         LocalDateTime fim = dataFim.atTime(23, 59);
 
         Double faturamentoBruto = pedidoRepository.somarFaturamentoBrutoPorPrestador(inicio, fim, prestadorBuscadoId);
+
+        return Objects.requireNonNullElse(faturamentoBruto, 0.0);
+
+    }
+
+    public Double somarValorFaturado(LocalDate dataInicio, LocalDate dataFim) {
+        //pegar email do prestador logado
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestador = prestadorService.ObterPrestadorLogado(emailUsuario);
+
+        verificarPrestadorAdmin(prestador.getId());
+
+        LocalDateTime inicio = dataInicio.atTime(0, 0);
+        LocalDateTime fim = dataFim.atTime(23, 59);
+
+        Double faturamentoBruto = pedidoV2Repository.somarFaturamentoBrutoPorEmpresa(inicio, fim, prestador.getEmpresa().getId());
 
         return Objects.requireNonNullElse(faturamentoBruto, 0.0);
 

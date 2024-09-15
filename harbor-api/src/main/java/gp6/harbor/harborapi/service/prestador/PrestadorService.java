@@ -203,5 +203,13 @@ public class PrestadorService {
         return avaliacaoRepository.save(avaliacaoPrestador);
     }
 
+    public Prestador ObterPrestadorLogado(String emailUsuario) {
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        if (prestador == null) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Você Precisa estar logado.");
+        }
+        return prestador;
+    }
+
 
 }

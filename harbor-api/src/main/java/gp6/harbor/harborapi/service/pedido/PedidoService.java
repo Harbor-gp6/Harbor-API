@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
+import gp6.harbor.harborapi.api.enums.FormaPagamentoEnum;
 import gp6.harbor.harborapi.api.enums.StatusPedidoEnum;
 import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.cliente.repository.ClienteRepository;
@@ -17,8 +18,6 @@ import gp6.harbor.harborapi.domain.empresa.repository.EmpresaRepository;
 import gp6.harbor.harborapi.domain.pedido.*;
 import gp6.harbor.harborapi.domain.pedido.repository.HorarioOcupado;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoV2Repository;
-import gp6.harbor.harborapi.domain.prestador.AvaliacaoPrestador;
-import gp6.harbor.harborapi.domain.prestador.repository.AvaliacaoRepository;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.dto.pedido.dto.*;
 import gp6.harbor.harborapi.service.cliente.ClienteService;
@@ -505,6 +504,18 @@ public class PedidoService {
 
         return Objects.requireNonNullElse(faturamentoBruto, 0.0);
 
+    }
+
+    //qtsdePedidosV2PorFormaPagamento
+    public List<Object[]> PedidosPorFormaPagamento(LocalDate dataInicio, LocalDate dataFim) {
+        Prestador usuarioLogado = prestadorService.ObterPrestadorLogado(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        verificarPrestadorAdmin(usuarioLogado.getId());
+
+        LocalDateTime inicio = dataInicio.atTime(0, 0);
+        LocalDateTime fim = dataFim.atTime(23, 59);
+
+        return pedidoV2Repository.countByDataAgendamentoBetweenAndEmpresaIdAndFormaPagamentoEnum(inicio, fim, usuarioLogado.getEmpresa().getId());
     }
 
     private void verificarPrestadorAdmin (Long prestadorId) {

@@ -27,4 +27,9 @@ public interface PedidoV2Repository extends JpaRepository<PedidoV2, Integer> {
     @Query("SELECT SUM(p.totalPedido) from PedidoV2 p WHERE p.dataAgendamento >= :dataInicio AND p.dataAgendamento <= :dataFim AND p.empresa.id = :empresaId")
     Double somarFaturamentoBrutoPorEmpresa(LocalDateTime dataInicio, LocalDateTime dataFim, Integer empresaId);
 
+    //countByDataAgendamentoBetweenAndEmpresaIdAndFormaPagamentoEnum
+    //quero que traga uma lista de forma de pagamento e a quantidade de pedidos que tem nessa forma de pagamento
+    //Quero que conte somente os pedidos que o status seja finalizado StatusPedidoEnum.FINALIZADO
+    @Query("SELECT p.formaPagamentoEnum, COUNT(p) FROM PedidoV2 p WHERE p.dataAgendamento >= :dataInicio AND p.dataAgendamento <= :dataFim AND p.empresa.id = :empresaId AND p.statusPedidoEnum = 'FINALIZADO' GROUP BY p.formaPagamentoEnum")
+    List<Object[]> countByDataAgendamentoBetweenAndEmpresaIdAndFormaPagamentoEnum(LocalDateTime dataInicio, LocalDateTime dataFim, Integer empresaId);
 }

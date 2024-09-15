@@ -201,5 +201,12 @@ public class RelatorioController {
         Double faturamentoPorEmpresa = pedidoService.somarValorFaturado(dataInicio, dataFim);
         return ResponseEntity.ok(faturamentoPorEmpresa);
     }
+    //pedidos por forma de pagamento
+    @GetMapping("/pedidos-por-forma-pagamento")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<Object[]>> listarPedidosPorFormaPagamento(@RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim) {
+        List<Object[]> pedidosPorFormaPagamento =  pedidoService.PedidosPorFormaPagamento(dataInicio, dataFim);
+        return ResponseEntity.ok(pedidosPorFormaPagamento);
+    }
 
 }

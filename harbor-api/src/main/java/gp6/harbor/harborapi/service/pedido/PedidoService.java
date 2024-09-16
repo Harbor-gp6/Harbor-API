@@ -150,9 +150,9 @@ public class PedidoService {
         pedido.setPedidoProdutos(pedidoProdutoList);
 
         // Valida o pedido
-        if (!validarPedidoV2(pedido)) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido inválido.");
-        }
+//        if (!validarPedidoV2(pedido)) {
+//            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido inválido.");
+//        }
         pedido.calcularTotalPedido();
 
         // Salva o pedido e atualiza os horários ocupados do prestador

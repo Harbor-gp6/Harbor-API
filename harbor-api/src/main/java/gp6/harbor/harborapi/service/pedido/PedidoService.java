@@ -150,9 +150,9 @@ public class PedidoService {
         pedido.setPedidoProdutos(pedidoProdutoList);
 
         // Valida o pedido
-//        if (!validarPedidoV2(pedido)) {
-//            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido inválido.");
-//        }
+       if (!validarPedidoV2(pedido)) {
+           throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido inválido.");
+       }
         pedido.calcularTotalPedido();
 
         // Salva o pedido e atualiza os horários ocupados do prestador
@@ -168,15 +168,14 @@ public class PedidoService {
         return pedidoSalvo;
     }
 
-
     @Transactional
     public PedidoV2 atualizarPedidoV2(Integer idPedido, PedidoV2CriacaoDto pedidoDto) {
         PedidoV2 pedidoEncontrado = pedidoV2Repository.findById(idPedido)
                 .orElseThrow(() -> new NaoEncontradoException("Pedido"));
 
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
-        Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Prestador não encontrado."));
+        Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Prestador não encontrado."));
 
         if (pedidoEncontrado.getStatusPedidoEnum() == StatusPedidoEnum.FINALIZADO) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido já finalizado.");
@@ -193,13 +192,15 @@ public class PedidoService {
         UUID codigoPedido = pedidoEncontrado.getCodigoPedido();
         if (pedidoDto.getCnpjEmpresa() != null) {
             Empresa empresa = empresaRepository.findByCnpj(pedidoDto.getCnpjEmpresa())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Empresa não encontrada."));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                            "Empresa não encontrada."));
             pedidoEncontrado.setEmpresa(empresa);
         }
 
         if (pedidoDto.getCliente() != null && pedidoDto.getCliente().getCpf() != null) {
             Cliente cliente = clienteRepository.findByCpf(pedidoDto.getCliente().getCpf())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Cliente não encontrado."));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                            "Cliente não encontrado."));
             cliente.setNome(pedidoDto.getCliente().getNome());
             cliente.setSobrenome(pedidoDto.getCliente().getSobrenome());
             cliente.setEmail(pedidoDto.getCliente().getEmail());
@@ -280,7 +281,8 @@ public class PedidoService {
     }
 
     public PedidoV2 finalizarPedidoV2(Integer pedidoId) {
-        PedidoV2 pedidoEncontrado = pedidoV2Repository.findById(pedidoId).orElseThrow(() -> new NaoEncontradoException("Pedido"));
+        PedidoV2 pedidoEncontrado = pedidoV2Repository.findById(pedidoId)
+                .orElseThrow(() -> new NaoEncontradoException("Pedido"));
 
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
@@ -297,7 +299,8 @@ public class PedidoService {
         }
 
         pedidoEncontrado.getPedidoPrestador().forEach(pedidoPrestador -> {
-            pedidoPrestador.getPrestador().getHorariosOcupados().removeIf(horarioOcupado -> horarioOcupado.getCodigoPedido().equals(pedidoEncontrado.getCodigoPedido()));
+            pedidoPrestador.getPrestador().getHorariosOcupados().removeIf(
+                    horarioOcupado -> horarioOcupado.getCodigoPedido().equals(pedidoEncontrado.getCodigoPedido()));
         });
 
         pedidoEncontrado.setStatusPedidoEnum(StatusPedidoEnum.FINALIZADO);
@@ -307,15 +310,18 @@ public class PedidoService {
 
         return pedidoV2Repository.save(pedidoEncontrado);
     }
+
     public Pedido criarPedido(Pedido novoPedido, List<Integer> servicosIds) {
-        if (novoPedido.getDataAgendamento().getHour() < novoPedido.getPrestador().getEmpresa().getHorarioAbertura().getHour() || novoPedido.getDataAgendamento().getHour() > novoPedido.getPrestador().getEmpresa().getHorarioFechamento().getHour()) {
+        if (novoPedido.getDataAgendamento().getHour() < novoPedido.getPrestador().getEmpresa().getHorarioAbertura()
+                .getHour()
+                || novoPedido.getDataAgendamento().getHour() > novoPedido.getPrestador().getEmpresa()
+                        .getHorarioFechamento().getHour()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         if (PedidoController.filaPedido.filaCheia()) {
             throw new PedidoCapacidadeExcedidoException("Pedidos demais, aguarde um momento");
         }
-
 
         Pedido pedido = pedidoRepository.save(novoPedido);
 
@@ -324,8 +330,6 @@ public class PedidoService {
         List<Servico> servicosDoBanco = servicoService.buscaTodosPorIds(servicosIds);
 
         List<PedidoServico> listPedidoServico = new ArrayList<>();
-
-
 
         servicosDoBanco.forEach(servico -> {
             PedidoServico pedidoServico = new PedidoServico();
@@ -344,15 +348,21 @@ public class PedidoService {
 
         Pedido pedidoSalvo = pedidoRepository.save(pedido);
 
-         String subject = "AGENDAMENTO REALIZADO COM SUCESSO";
-         String message = "Voce tem um agendamento em " + pedidoSalvo.getPrestador().getEmpresa().getNomeFantasia() + " para dia " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com " + pedidoSalvo.getPrestador().getNome() + " " + pedidoSalvo.getPrestador().getSobrenome();
+        String subject = "AGENDAMENTO REALIZADO COM SUCESSO";
+        String message = "Voce tem um agendamento em " + pedidoSalvo.getPrestador().getEmpresa().getNomeFantasia()
+                + " para dia " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                + " às " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com "
+                + pedidoSalvo.getPrestador().getNome() + " " + pedidoSalvo.getPrestador().getSobrenome();
 
-         emailService.sendEmail(pedidoSalvo.getCliente().getEmail(), subject, message);
+        emailService.sendEmail(pedidoSalvo.getCliente().getEmail(), subject, message);
 
-         subject = "VOCÊ TEM UM NOVO SERVIÇO AGENDADO";
-         message = "Voce tem um serviço agendado para dia " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com cliente " + pedidoSalvo.getCliente().getNome() + " " + pedidoSalvo.getCliente().getSobrenome();
+        subject = "VOCÊ TEM UM NOVO SERVIÇO AGENDADO";
+        message = "Voce tem um serviço agendado para dia "
+                + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às "
+                + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com cliente "
+                + pedidoSalvo.getCliente().getNome() + " " + pedidoSalvo.getCliente().getSobrenome();
 
-         emailService.sendEmail(pedidoSalvo.getPrestador().getEmail(), subject, message);
+        emailService.sendEmail(pedidoSalvo.getPrestador().getEmail(), subject, message);
 
         PedidoController.filaPedido.adicionarPedido(pedidoSalvo);
 
@@ -360,7 +370,8 @@ public class PedidoService {
     }
 
     public Pedido adicionarProduto(Integer pedidoId, PedidoAtualizacaoProdutoDto produtos) {
-        Pedido pedidoEncontrado = pedidoRepository.findById(pedidoId).orElseThrow(() -> new NaoEncontradoException("Pedido"));
+        Pedido pedidoEncontrado = pedidoRepository.findById(pedidoId)
+                .orElseThrow(() -> new NaoEncontradoException("Pedido"));
 
         List<PedidoProduto> pedidoProdutos = new ArrayList<>();
 
@@ -387,7 +398,8 @@ public class PedidoService {
     }
 
     public Pedido atualizarStatus(Integer pedidoId, PedidoAtualizacaoStatusDto status) {
-        Pedido pedidoEncontrado = pedidoRepository.findById(pedidoId).orElseThrow(() -> new NaoEncontradoException("Pedido"));
+        Pedido pedidoEncontrado = pedidoRepository.findById(pedidoId)
+                .orElseThrow(() -> new NaoEncontradoException("Pedido"));
 
         pedidoEncontrado.setFinalizado(status.getFinalizado());
         return pedidoRepository.save(pedidoEncontrado);
@@ -400,7 +412,7 @@ public class PedidoService {
         return pedidoV2Repository.findByEmpresa(empresa);
     }
 
-    public List<PedidoV2ListagemDto> listarPedidosV2Abertos() {
+    public List<PedidoV2> listarPedidosV2Abertos() {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
         Empresa empresa = prestador.getEmpresa();
@@ -408,12 +420,13 @@ public class PedidoService {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Você Precisa estar logado.");
         }
 
-        List<PedidoV2> pedidos = pedidoV2Repository.findByEmpresaAndStatusPedidoEnum(prestador.getEmpresa(), StatusPedidoEnum.ABERTO);
+        List<PedidoV2> pedidos = pedidoV2Repository.findByEmpresaAndStatusPedidoEnum(prestador.getEmpresa(),
+                StatusPedidoEnum.ABERTO);
 
-        return pedidoV2Mapper.toDto(pedidos);
+        return pedidos;
     }
 
-    public List<PedidoV2ListagemDto> listarPedidosV2Finalizados() {
+    public List<PedidoV2> listarPedidosV2Finalizados() {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
         Empresa empresa = prestador.getEmpresa();
@@ -421,9 +434,10 @@ public class PedidoService {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Você Precisa estar logado.");
         }
 
-        List<PedidoV2> pedidos = pedidoV2Repository.findByEmpresaAndStatusPedidoEnum(prestador.getEmpresa(), StatusPedidoEnum.FINALIZADO);
+        List<PedidoV2> pedidos = pedidoV2Repository.findByEmpresaAndStatusPedidoEnum(prestador.getEmpresa(),
+                StatusPedidoEnum.FINALIZADO);
 
-        return pedidoV2Mapper.toDto(pedidos);
+        return pedidos;
     }
 
     public List<PedidoV2> listarPorCpf(String cpf) {
@@ -433,8 +447,6 @@ public class PedidoService {
     public List<Pedido> listarPedidos() {
         return pedidoRepository.findAll();
     }
-
-
 
     public List<Pedido> listarPorPrestador(Long prestadorId) {
         return pedidoRepository.findAllByPrestadorId(prestadorId);
@@ -460,10 +472,11 @@ public class PedidoService {
         LocalDateTime inicio = dataInicio.atTime(0, 0);
         LocalDateTime fim = dataFim.atTime(23, 59);
 
-        return pedidoRepository.somarFaturamentoBruto(inicio, fim) / pedidoRepository.contarPedidosPorPeriodo(inicio, fim);
+        return pedidoRepository.somarFaturamentoBruto(inicio, fim)
+                / pedidoRepository.contarPedidosPorPeriodo(inicio, fim);
     }
 
-    //somarValorFaturadoPorPrestadorPorPeriodo
+    // somarValorFaturadoPorPrestadorPorPeriodo
     public Double somarValorFaturadoPorPrestadorPorPeriodo(LocalDate dataInicio, LocalDate dataFim, Long prestadorId) {
 
         verificarPrestadorAdmin(prestadorId);
@@ -477,7 +490,8 @@ public class PedidoService {
 
     }
 
-    public Double somarValorFaturadoPorPrestador(LocalDate dataInicio, LocalDate dataFim, Long prestadorId, Long prestadorBuscadoId) {
+    public Double somarValorFaturadoPorPrestador(LocalDate dataInicio, LocalDate dataFim, Long prestadorId,
+            Long prestadorBuscadoId) {
 
         verificarPrestadorAdmin(prestadorId);
 
@@ -491,7 +505,7 @@ public class PedidoService {
     }
 
     public Double somarValorFaturado(LocalDate dataInicio, LocalDate dataFim) {
-        //pegar email do prestador logado
+        // pegar email do prestador logado
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorService.ObterPrestadorLogado(emailUsuario);
 
@@ -500,25 +514,28 @@ public class PedidoService {
         LocalDateTime inicio = dataInicio.atTime(0, 0);
         LocalDateTime fim = dataFim.atTime(23, 59);
 
-        Double faturamentoBruto = pedidoV2Repository.somarFaturamentoBrutoPorEmpresa(inicio, fim, prestador.getEmpresa().getId());
+        Double faturamentoBruto = pedidoV2Repository.somarFaturamentoBrutoPorEmpresa(inicio, fim,
+                prestador.getEmpresa().getId());
 
         return Objects.requireNonNullElse(faturamentoBruto, 0.0);
 
     }
 
-    //qtsdePedidosV2PorFormaPagamento
+    // qtsdePedidosV2PorFormaPagamento
     public List<Object[]> PedidosPorFormaPagamento(LocalDate dataInicio, LocalDate dataFim) {
-        Prestador usuarioLogado = prestadorService.ObterPrestadorLogado(SecurityContextHolder.getContext().getAuthentication().getName());
+        Prestador usuarioLogado = prestadorService
+                .ObterPrestadorLogado(SecurityContextHolder.getContext().getAuthentication().getName());
 
         verificarPrestadorAdmin(usuarioLogado.getId());
 
         LocalDateTime inicio = dataInicio.atTime(0, 0);
         LocalDateTime fim = dataFim.atTime(23, 59);
 
-        return pedidoV2Repository.countByDataAgendamentoBetweenAndEmpresaIdAndFormaPagamentoEnum(inicio, fim, usuarioLogado.getEmpresa().getId());
+        return pedidoV2Repository.countByDataAgendamentoBetweenAndEmpresaIdAndFormaPagamentoEnum(inicio, fim,
+                usuarioLogado.getEmpresa().getId());
     }
 
-    private void verificarPrestadorAdmin (Long prestadorId) {
+    private void verificarPrestadorAdmin(Long prestadorId) {
         Prestador prestador = prestadorService.buscarPorId(prestadorId);
 
         if (!(prestador.getCargo().getCargo().equalsIgnoreCase("ADMIN"))) {
@@ -526,7 +543,7 @@ public class PedidoService {
         }
     }
 
-    public boolean validarPedidoV2(PedidoV2 pedidoV2){
+    public boolean validarPedidoV2(PedidoV2 pedidoV2) {
         if (!clienteService.validarCliente(pedidoV2.getCliente())) {
             return false;
         }
@@ -554,7 +571,8 @@ public class PedidoService {
     }
 
     public PedidoV2 buscarPorCodigoPedido(UUID codigoPedido) {
-        return pedidoV2Repository.findByCodigoPedido(codigoPedido).orElseThrow(() -> new NaoEncontradoException("Pedido"));
+        return pedidoV2Repository.findByCodigoPedido(codigoPedido)
+                .orElseThrow(() -> new NaoEncontradoException("Pedido"));
     }
 
 }

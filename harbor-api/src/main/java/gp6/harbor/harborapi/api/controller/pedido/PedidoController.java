@@ -79,8 +79,8 @@ public class PedidoController {
 
     @GetMapping("/pedidosAbertos")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<PedidoV2ListagemDto>> listarPedidosAbertos() {
-        List<PedidoV2ListagemDto> pedidos = pedidoService.listarPedidosV2Abertos();
+    public ResponseEntity<List<PedidoV2>> listarPedidosAbertos() {
+        List<PedidoV2> pedidos = pedidoService.listarPedidosV2Abertos();
 
         if (pedidos.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -91,8 +91,8 @@ public class PedidoController {
 
     @GetMapping("/pedidosFinalizados")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<PedidoV2ListagemDto>> listarPedidosFinalizados() {
-        List<PedidoV2ListagemDto> pedidos = pedidoService.listarPedidosV2Finalizados();
+    public ResponseEntity<List<PedidoV2>> listarPedidosFinalizados() {
+        List<PedidoV2> pedidos = pedidoService.listarPedidosV2Finalizados();
 
         if (pedidos.isEmpty()) {
             return ResponseEntity.noContent().build();

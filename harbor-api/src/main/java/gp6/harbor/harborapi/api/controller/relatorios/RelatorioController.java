@@ -1,29 +1,27 @@
 package gp6.harbor.harborapi.api.controller.relatorios;
 
-import gp6.harbor.harborapi.arquivoCsv.Gravacao;
-import gp6.harbor.harborapi.domain.empresa.Empresa;
-import gp6.harbor.harborapi.service.empresa.EmpresaService;
-import gp6.harbor.harborapi.service.pedido.PedidoService;
-import gp6.harbor.harborapi.service.pedido.PedidoServicoService;
-import gp6.harbor.harborapi.service.relatorio.RelatorioService;
-import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.io.ByteArrayInputStream;
-
-import java.io.ByteArrayOutputStream;
+import java.util.*;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
-import java.util.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import java.io.ByteArrayInputStream;
+import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.Hidden;
+import gp6.harbor.harborapi.domain.empresa.Empresa;
+import gp6.harbor.harborapi.arquivoCsv.Gravacao;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import gp6.harbor.harborapi.service.empresa.EmpresaService;
+import gp6.harbor.harborapi.service.pedido.PedidoService;
+import gp6.harbor.harborapi.service.relatorio.RelatorioService;
+import org.springframework.web.bind.annotation.RestController;
+import gp6.harbor.harborapi.service.pedido.PedidoServicoService;
+import java.io.ByteArrayOutputStream;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/relatorios")
@@ -31,9 +29,9 @@ import java.util.*;
 public class RelatorioController {
 
     private final PedidoService pedidoService;
-    private final PedidoServicoService pedidoServicoService;
     private final EmpresaService empresaService;
     private final RelatorioService relatorioService;
+    private final PedidoServicoService pedidoServicoService;
     @Hidden
     private List<String> gerarListaDeMeses(LocalDate dataInicio, LocalDate dataFim) {
         List<String> meses = new ArrayList<>();
@@ -122,17 +120,14 @@ public class RelatorioController {
     @Hidden
     private void gravaArquivosCsvMatriz(Map<String, Map<String, Integer>> matriz, List<String> meses, ByteArrayOutputStream outputStream, String nomeEmpresa, String cnpj, String outrosDados) {
         try (Formatter saida = new Formatter(outputStream)) {
-            // Escreve informações da empresa
             saida.format("Empresa:;%s\nCNPJ:;%s\n%s\n", nomeEmpresa, cnpj, outrosDados);
 
-            // Escreve os meses na segunda linha
             saida.format(";"); // célula vazia para a primeira coluna (para os nomes dos funcionários)
             for (String mes : meses) {
                 saida.format("%s;", mes);
             }
             saida.format("\n");
 
-            // Escreve os dados
             for (Map.Entry<String, Map<String, Integer>> entry : matriz.entrySet()) {
                 String funcionario = entry.getKey();
                 Map<String, Integer> mapaMes = entry.getValue();
@@ -201,7 +196,6 @@ public class RelatorioController {
         Double faturamentoPorEmpresa = pedidoService.somarValorFaturado(dataInicio, dataFim);
         return ResponseEntity.ok(faturamentoPorEmpresa);
     }
-    //pedidos por forma de pagamento
     @GetMapping("/pedidos-por-forma-pagamento")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<Object[]>> listarPedidosPorFormaPagamento(@RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim) {

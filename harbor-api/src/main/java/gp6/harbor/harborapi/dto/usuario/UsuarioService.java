@@ -1,5 +1,6 @@
 package gp6.harbor.harborapi.dto.usuario;
 
+import gp6.harbor.harborapi.api.enums.CargoEnum;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
@@ -52,6 +53,7 @@ public class UsuarioService {
 
     public void criar(PrestadorCriacaoDto usuarioCriacaoDto) {
         final Prestador novoUsuario = PrestadorMapper.toEntity(usuarioCriacaoDto);
+        novoUsuario.setCargo(CargoEnum.valueOf("ADMIN"));
 
         if (usuarioCriacaoDto.getEmpresaId() != null) {
             Empresa empresa = empresaService.buscarPorId(usuarioCriacaoDto.getEmpresaId());

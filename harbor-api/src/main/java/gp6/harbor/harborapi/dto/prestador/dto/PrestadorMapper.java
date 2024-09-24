@@ -25,7 +25,6 @@ public class PrestadorMapper {
         prestador.setEmail(dto.getEmail());
         prestador.setSenha(dto.getSenha());
         prestador.setFoto(dto.getFoto());
-        prestador.setCargo(dto.getCargo());
 
         return prestador;
     }

@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import gp6.harbor.harborapi.api.enums.FormaPagamentoEnum;
 import gp6.harbor.harborapi.api.enums.StatusPedidoEnum;
+import gp6.harbor.harborapi.domain.AtividadePedido.AtividadePedido;
 import gp6.harbor.harborapi.domain.cliente.Cliente;
 import gp6.harbor.harborapi.domain.cliente.repository.ClienteRepository;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
@@ -20,6 +21,7 @@ import gp6.harbor.harborapi.domain.pedido.repository.HorarioOcupado;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoV2Repository;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.dto.pedido.dto.*;
+import gp6.harbor.harborapi.service.AtividadePedido.AtividadePedidoService;
 import gp6.harbor.harborapi.service.cliente.ClienteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -57,6 +59,7 @@ public class PedidoService {
     private final EmailService emailService;
     private final ClienteService clienteService;
     private final PedidoV2Mapper pedidoV2Mapper;
+    private final AtividadePedidoService atividadePedidoService;
 
     @Transactional
     public PedidoV2 criarPedidoV2(PedidoV2CriacaoDto pedidoDto) {
@@ -164,6 +167,8 @@ public class PedidoService {
         //dar detalhes do pedido no email
         String emailFormatado = emailService.formatarEmail(pedido.getCliente().getEmail(), "AGENDAMENTO REALIZADO COM SUCESSO", pedidoSalvo);
         emailService.sendEmail(pedido.getCliente().getEmail(), "Agendamento realizado", emailFormatado);
+
+        AtividadePedido atividadePedido = atividadePedidoService.criarAtividadePedido(pedidoSalvo);
 
         return pedidoSalvo;
     }
@@ -307,6 +312,9 @@ public class PedidoService {
 
         String emailFormatado = emailService.formatarEmailPedidoFinalizado(pedidoEncontrado);
         emailService.sendEmail(pedidoEncontrado.getCliente().getEmail(), "Agendamento finalizado", emailFormatado);
+
+        AtividadePedido atividadePedido = atividadePedidoService.criarAtividadePedido(pedidoEncontrado);
+
 
         return pedidoV2Repository.save(pedidoEncontrado);
     }

@@ -24,4 +24,12 @@ public interface EmpresaRepository extends JpaRepository<Empresa, Integer> {
 
     @Query("select e.foto from Empresa e where e.id = ?1")
     byte[] getFoto(Integer id);
+
+    @Modifying
+    @Transactional
+    @Query("update Empresa e set e.banner = ?2 where e.id = ?1")
+    void setBanner(Integer id, byte[] banner);
+
+    @Query("select e.banner from Empresa e where e.id = ?1")
+    byte[] getBanner(Integer id);
 }

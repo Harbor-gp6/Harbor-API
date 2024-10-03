@@ -88,29 +88,39 @@ public class EmpresaController {
     }
 
     @CrossOrigin("*")
-    @PatchMapping(value = "/foto/{id}", consumes = {"image/jpeg", "image/png"})
+    @PatchMapping(value = "/foto", consumes = {"image/jpeg", "image/png"})
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Void> patchFoto(@PathVariable Integer id,
-                                          @RequestBody byte[] novaFoto) {
-        if (!empresaService.existePorId(id)) {
-            return ResponseEntity.status(404).build();
-        }
-
-        empresaService.setFoto(id, novaFoto);
+    public ResponseEntity<Void> patchFoto(@RequestBody byte[] novaFoto) {
+        empresaService.setFoto(novaFoto);
         return ResponseEntity.status(200).build();
     }
 
-    @GetMapping(value = "/foto/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/obter-foto", produces = MediaType.IMAGE_JPEG_VALUE)
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<byte[]> getFoto(@PathVariable Integer id) {
-        if (!empresaService.existePorId(id)) {
-            return ResponseEntity.status(404).build();
-        }
+    public ResponseEntity<byte[]> getFoto() {
 
-        byte[] foto = empresaService.getFoto(id);
+        byte[] foto = empresaService.getFoto();
 
         return ResponseEntity.status(200).header("content-disposition",
                 "attachment; filename=\"foto-empresa.jpg\"").body(foto);
+    }
+
+    @CrossOrigin("*")
+    @PatchMapping(value = "/banner", consumes = {"image/jpeg", "image/png"})
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> patchBanner(@RequestBody byte[] novaFoto) {
+        empresaService.setBanner(novaFoto);
+        return ResponseEntity.status(200).build();
+    }
+
+    @GetMapping(value = "/obter-banner", produces = MediaType.IMAGE_JPEG_VALUE)
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<byte[]> getBanner() {
+
+        byte[] foto = empresaService.getBanner();
+
+        return ResponseEntity.status(200).header("content-disposition",
+                "attachment; filename=\"banner-empresa.jpg\"").body(foto);
     }
 
     @Hidden

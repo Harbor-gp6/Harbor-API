@@ -26,6 +26,9 @@ public class Empresa {
     @JsonIgnore
     @Column(length = 50 * 1024 * 1024)
     private byte[] foto;
+    @JsonIgnore
+    @Column(length = 50 * 1024 * 1024)
+    private byte[] banner;
     private String razaoSocial;
     private String nomeFantasia;
     private String cnpj;

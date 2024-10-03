@@ -141,11 +141,57 @@ public class EmpresaService {
     }
 
     @Transactional
-    public void setFoto(Integer id, byte[] novaFoto) {
-        empresaRepository.setFoto(id, novaFoto);
+    public void setFoto(byte[] novaFoto) {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+
+        if (prestadorLogado == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O usuário precisa estar logado");
+        }
+
+        Empresa empresa = prestadorLogado.getEmpresa();
+
+        empresaRepository.setFoto(empresa.getId(), novaFoto);
     }
 
-    public byte[] getFoto(Integer id) {
-        return empresaRepository.getFoto(id);
+    @Transactional
+    public void setBanner(byte[] novaFoto) {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+
+        if (prestadorLogado == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O usuário precisa estar logado");
+        }
+        Empresa empresa = prestadorLogado.getEmpresa();
+
+        empresaRepository.setBanner(empresa.getId(), novaFoto);
+    }
+
+    public byte[] getBanner() {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+
+        if (prestadorLogado == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O usuário precisa estar logado");
+        }
+        Empresa empresa = prestadorLogado.getEmpresa();
+
+        return empresaRepository.getBanner(empresa.getId());
+    }
+
+    public byte[] getFoto() {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+
+        if (prestadorLogado == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O usuário precisa estar logado");
+        }
+        Empresa empresa = prestadorLogado.getEmpresa();
+
+        return empresaRepository.getFoto(empresa.getId());
     }
 }

@@ -175,20 +175,20 @@ public class RelatorioController {
                 .body(bis.readAllBytes());
     }
 
-    @GetMapping("/PDF/produtos-mais-consumidos")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<byte[]> downloadRelatorioProdutosMaisConsumidos(@RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim) {
-        ByteArrayInputStream bis = relatorioService.gerarRelatorioProdutosMaisConsumidos(dataInicio, dataFim);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=Produtos mais consumidos.pdf");
-
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(bis.readAllBytes());
-    }
+//    @GetMapping("/PDF/produtos-mais-consumidos")
+//    @SecurityRequirement(name = "Bearer")
+//    public ResponseEntity<byte[]> downloadRelatorioProdutosMaisConsumidos(@RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim) {
+//        ByteArrayInputStream bis = relatorioService.gerarRelatorioProdutosMaisConsumidos(dataInicio, dataFim);
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Content-Disposition", "attachment; filename=Produtos mais consumidos.pdf");
+//
+//        return ResponseEntity
+//                .ok()
+//                .headers(headers)
+//                .contentType(MediaType.APPLICATION_PDF)
+//                .body(bis.readAllBytes());
+//    }
 
     @GetMapping("/faturamento-empresa")
     @SecurityRequirement(name = "Bearer")

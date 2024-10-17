@@ -140,40 +140,40 @@ public class RelatorioService {
         return gerarRelatorioComEstilo(dados, "Relatório de Avaliação por Prestador", empresa);
     }
 
-    //ver os produtos mais vendidos pela pedido produtos
-    public ByteArrayInputStream gerarRelatorioProdutosMaisConsumidos(LocalDate dataInicio, LocalDate dataFim) {
-        String dados = "Relatório de Produtos mais consumidos";
-        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
-        Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);
-        Empresa empresa = prestadorLogado.getEmpresa();
-
-        if (prestadorLogado == null) {
-            return gerarRelatorioComEstilo("O usuário precisa estar logado", "Relatório de Produtos mais consumidos", empresa);
-        }
-
-        var pedidos = pedidoService.listarPedidosV2();
-        java.util.Map<String, Integer> mapaProdutos = new java.util.HashMap<>();
-
-        for (PedidoV2 pedido : pedidos) {
-            for (PedidoProdutoV2 produtoPedido : pedido.getPedidoProdutos()) {
-                String nomeProduto = produtoPedido.getProduto().getNome();
-                int quantidade = produtoPedido.getQuantidade();
-
-                mapaProdutos.put(nomeProduto, mapaProdutos.getOrDefault(nomeProduto, 0) + quantidade);
-            }
-        }
-
-        java.util.List<java.util.Map.Entry<String, Integer>> listaOrdenada = new java.util.ArrayList<>(mapaProdutos.entrySet());
-        listaOrdenada.sort(java.util.Map.Entry.comparingByValue());
-
-        for (int i = listaOrdenada.size() - 1; i >= 0; i--) {
-            String nomeProduto = listaOrdenada.get(i).getKey();
-            int quantidadeTotal = listaOrdenada.get(i).getValue();
-            dados += "\n\n" + nomeProduto + ": " + quantidadeTotal + " unidades";
-        }
-
-        return gerarRelatorioComEstilo(dados, "Relatório de Produtos mais consumidos", empresa);
-    }
+//    //ver os produtos mais vendidos pela pedido produtos
+//    public ByteArrayInputStream gerarRelatorioProdutosMaisConsumidos(LocalDate dataInicio, LocalDate dataFim) {
+//        String dados = "Relatório de Produtos mais consumidos";
+//        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+//        Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+//        Empresa empresa = prestadorLogado.getEmpresa();
+//
+//        if (prestadorLogado == null) {
+//            return gerarRelatorioComEstilo("O usuário precisa estar logado", "Relatório de Produtos mais consumidos", empresa);
+//        }
+//
+//        var pedidos = pedidoService.listarPedidosV2();
+//        java.util.Map<String, Integer> mapaProdutos = new java.util.HashMap<>();
+//
+//        for (PedidoV2 pedido : pedidos) {
+//            for (PedidoProdutoV2 produtoPedido : pedido.getPedidoProdutos()) {
+//                String nomeProduto = produtoPedido.getProduto().getNome();
+//                int quantidade = produtoPedido.getQuantidade();
+//
+//                mapaProdutos.put(nomeProduto, mapaProdutos.getOrDefault(nomeProduto, 0) + quantidade);
+//            }
+//        }
+//
+//        java.util.List<java.util.Map.Entry<String, Integer>> listaOrdenada = new java.util.ArrayList<>(mapaProdutos.entrySet());
+//        listaOrdenada.sort(java.util.Map.Entry.comparingByValue());
+//
+//        for (int i = listaOrdenada.size() - 1; i >= 0; i--) {
+//            String nomeProduto = listaOrdenada.get(i).getKey();
+//            int quantidadeTotal = listaOrdenada.get(i).getValue();
+//            dados += "\n\n" + nomeProduto + ": " + quantidadeTotal + " unidades";
+//        }
+//
+//        return gerarRelatorioComEstilo(dados, "Relatório de Produtos mais consumidos", empresa);
+//    }
 
 }
 

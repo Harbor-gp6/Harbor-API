@@ -2,6 +2,7 @@ package gp6.harbor.harborapi.api.controller.pedido;
 
 import gp6.harbor.harborapi.domain.pedido.Pedido;
 import gp6.harbor.harborapi.domain.pedido.PedidoV2;
+import gp6.harbor.harborapi.domain.pedido.PedidoV2DTO;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoProdutoDto;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoCriacaoDto;
@@ -65,7 +66,7 @@ public class PedidoController {
     }
 
     @Hidden
-    @GetMapping
+    @GetMapping("/pedidos")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PedidoListagemDto>> listarPedidos() {
         List<Pedido> pedidos = pedidoService.listarPedidos();
@@ -79,38 +80,52 @@ public class PedidoController {
 
     @GetMapping("/pedidosAbertos")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<PedidoV2>> listarPedidosAbertos() {
-        List<PedidoV2> pedidos = pedidoService.listarPedidosV2Abertos();
+    public ResponseEntity<List<PedidoV2DTO>> listarPedidosAbertos() {
+        // Chama o serviço para listar os pedidos abertos
+        List<PedidoV2DTO> pedidosDto = pedidoService.listarPedidosV2Abertos();
 
-        if (pedidos.isEmpty()) {
+        // Verifica se a lista está vazia, retornando 204 No Content se não houver pedidos
+        if (pedidosDto.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.status(200).body(pedidos);
+        // Retorna a lista de pedidos mapeados para DTO com status 200 OK
+        return ResponseEntity.ok(pedidosDto);
     }
 
     @GetMapping("/pedidosFinalizados")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<PedidoV2>> listarPedidosFinalizados() {
-        List<PedidoV2> pedidos = pedidoService.listarPedidosV2Finalizados();
+    public ResponseEntity<List<PedidoV2DTO>> listarPedidosFinalizados() {
+        // Chama o serviço para listar os pedidos abertos
+        List<PedidoV2DTO> pedidosDto = pedidoService.listarPedidosV2Finalizados();
 
-        if (pedidos.isEmpty()) {
+        // Verifica se a lista está vazia, retornando 204 No Content se não houver pedidos
+        if (pedidosDto.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.status(200).body(pedidos);
+        // Retorna a lista de pedidos mapeados para DTO com status 200 OK
+        return ResponseEntity.ok(pedidosDto);
     }
 
-    @GetMapping("/pedidosV2")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<PedidoV2>> listarPedidosV2() {
-        List<PedidoV2> pedidos = pedidoService.listarPedidosV2();
+    //end point para buscar por uuid codigoPedido
+    @GetMapping("/{codigoPedido}")
+    public ResponseEntity<PedidoV2DTO> buscarPorCodigoPedido(@PathVariable UUID codigoPedido) {
+        PedidoV2DTO pedido = pedidoService.buscarPorCodigoPedido(codigoPedido);
 
-        if (pedidos.isEmpty()) {
+        return ResponseEntity.ok(pedido);
+    }
+
+    @GetMapping
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<PedidoV2DTO>> listarPedidosV2() {
+        List<PedidoV2DTO> pedidosDto = pedidoService.listarPedidosV2();
+
+        if (pedidosDto.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.status(200).body(pedidos);
+        return ResponseEntity.status(200).body(pedidosDto);
     }
 
     @Hidden
@@ -142,13 +157,7 @@ public class PedidoController {
        return ResponseEntity.ok(PedidoMapper.toDto(pedidoAtualizado));
     }
 
-    //end point para buscar por uuid codigoPedido
-    @GetMapping("/{codigoPedido}")
-    public ResponseEntity<PedidoV2> buscarPorCodigoPedido(@PathVariable UUID codigoPedido) {
-        PedidoV2 pedido = pedidoService.buscarPorCodigoPedido(codigoPedido);
 
-        return ResponseEntity.ok(pedido);
-    }
 
     @PostMapping("/finalizarPedido/{pedidoId}")
     @SecurityRequirement(name = "Bearer")

@@ -59,6 +59,7 @@ public class PedidoService {
     private final EmailService emailService;
     private final ClienteService clienteService;
     private final PedidoV2Mapper pedidoV2Mapper;
+    private final PedidoV2MapperV2 pedidoV2MapperV2;
     private final AtividadePedidoService atividadePedidoService;
 
     @Transactional
@@ -413,14 +414,17 @@ public class PedidoService {
         return pedidoRepository.save(pedidoEncontrado);
     }
 
-    public List<PedidoV2> listarPedidosV2() {
+    public List<PedidoV2DTO> listarPedidosV2() {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
-        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElseThrow(() -> new RuntimeException("Prestador não encontrado"));
         Empresa empresa = prestador.getEmpresa();
-        return pedidoV2Repository.findByEmpresa(empresa);
+
+        List<PedidoV2> pedidos = pedidoV2Repository.findByEmpresa(empresa);
+        // Mapeando para DTO antes de retornar
+        return pedidoV2MapperV2.toDtoList(pedidos);
     }
 
-    public List<PedidoV2> listarPedidosV2Abertos() {
+    public List<PedidoV2DTO> listarPedidosV2Abertos() {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
         Empresa empresa = prestador.getEmpresa();
@@ -431,10 +435,10 @@ public class PedidoService {
         List<PedidoV2> pedidos = pedidoV2Repository.findByEmpresaAndStatusPedidoEnum(prestador.getEmpresa(),
                 StatusPedidoEnum.ABERTO);
 
-        return pedidos;
+        return pedidoV2MapperV2.toDtoList(pedidos);
     }
 
-    public List<PedidoV2> listarPedidosV2Finalizados() {
+    public List<PedidoV2DTO> listarPedidosV2Finalizados() {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
         Empresa empresa = prestador.getEmpresa();
@@ -445,7 +449,7 @@ public class PedidoService {
         List<PedidoV2> pedidos = pedidoV2Repository.findByEmpresaAndStatusPedidoEnum(prestador.getEmpresa(),
                 StatusPedidoEnum.FINALIZADO);
 
-        return pedidos;
+        return pedidoV2MapperV2.toDtoList(pedidos);
     }
 
     public List<PedidoV2> listarPorCpf(String cpf) {
@@ -578,9 +582,10 @@ public class PedidoService {
         return pedido.getStatusPedidoEnum() == StatusPedidoEnum.FINALIZADO;
     }
 
-    public PedidoV2 buscarPorCodigoPedido(UUID codigoPedido) {
-        return pedidoV2Repository.findByCodigoPedido(codigoPedido)
+    public PedidoV2DTO buscarPorCodigoPedido(UUID codigoPedido) {
+        PedidoV2 pedidos = pedidoV2Repository.findByCodigoPedido(codigoPedido)
                 .orElseThrow(() -> new NaoEncontradoException("Pedido"));
+        return pedidoV2MapperV2.toDto(pedidos);
     }
 
 }

@@ -286,10 +286,8 @@ public class PedidoService {
         return pedidoV2Repository.save(pedidoEncontrado);
     }
 
-    public PedidoV2 finalizarPedidoV2(Integer pedidoId) {
-        PedidoV2 pedidoEncontrado = pedidoV2Repository.findById(pedidoId)
-                .orElseThrow(() -> new NaoEncontradoException("Pedido"));
-
+    public PedidoV2 finalizarPedidoV2(UUID codigoPedido) {
+        PedidoV2 pedidoEncontrado = pedidoV2Repository.findByCodigoPedido(codigoPedido);
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
 
@@ -319,6 +317,39 @@ public class PedidoService {
 
         return pedidoV2Repository.save(pedidoEncontrado);
     }
+
+    public PedidoV2 cancelarPedidoV2(UUID codigoPedido) {
+        PedidoV2 pedidoEncontrado = pedidoV2Repository.findByCodigoPedido(codigoPedido);
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+
+        if (pedidoEncontrado.getEmpresa().getId() != prestador.getEmpresa().getId()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Pedido não pertence a empresa do prestador");
+        }
+
+        if (pedidoEncontrado.getStatusPedidoEnum() == StatusPedidoEnum.FINALIZADO) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido já finalizado.");
+        }
+        if (pedidoEncontrado.getStatusPedidoEnum() == StatusPedidoEnum.CANCELADO) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido cancelado.");
+        }
+
+        pedidoEncontrado.getPedidoPrestador().forEach(pedidoPrestador -> {
+            pedidoPrestador.getPrestador().getHorariosOcupados().removeIf(
+                    horarioOcupado -> horarioOcupado.getCodigoPedido().equals(pedidoEncontrado.getCodigoPedido()));
+        });
+
+        pedidoEncontrado.setStatusPedidoEnum(StatusPedidoEnum.CANCELADO);
+
+        String emailFormatado = "Pedido cancelado :(";
+
+        emailService.sendEmail(pedidoEncontrado.getCliente().getEmail(), "Pedido Cancelado", emailFormatado);
+
+        AtividadePedido atividadePedido = atividadePedidoService.criarAtividadePedido(pedidoEncontrado);
+
+        return pedidoV2Repository.save(pedidoEncontrado);
+    }
+
 
     public Pedido criarPedido(Pedido novoPedido, List<Integer> servicosIds) {
         if (novoPedido.getDataAgendamento().getHour() < novoPedido.getPrestador().getEmpresa().getHorarioAbertura()

@@ -50,7 +50,7 @@ public class PedidoV2 {
     @Enumerated(EnumType.STRING)
     private StatusPedidoEnum statusPedidoEnum = StatusPedidoEnum.ABERTO;
 
-    @FutureOrPresent
+    //@FutureOrPresent
     private LocalDateTime dataAgendamento;
 
     @Enumerated(EnumType.STRING)

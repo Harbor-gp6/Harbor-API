@@ -159,13 +159,22 @@ public class PedidoController {
 
 
 
-    @PostMapping("/finalizarPedido/{pedidoId}")
+    @PostMapping("/finalizarPedido/{codigoPedido}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<PedidoV2> atualizarStatus(@PathVariable Integer pedidoId) {
-        PedidoV2 pedidoFinalizado = pedidoService.finalizarPedidoV2(pedidoId);
+    public ResponseEntity<PedidoV2> finalizarPedido(@PathVariable UUID codigoPedido) {
+        PedidoV2 pedidoFinalizado = pedidoService.finalizarPedidoV2(codigoPedido);
 
         return ResponseEntity.ok(pedidoFinalizado);
     }
+
+    @PostMapping("/cancelarPedido/{codigoPedido}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<PedidoV2> cancelarPedido(@PathVariable UUID codigoPedido) {
+        PedidoV2 pedidoFinalizado = pedidoService.cancelarPedidoV2(codigoPedido);
+
+        return ResponseEntity.ok(pedidoFinalizado);
+    }
+
 
 
 }

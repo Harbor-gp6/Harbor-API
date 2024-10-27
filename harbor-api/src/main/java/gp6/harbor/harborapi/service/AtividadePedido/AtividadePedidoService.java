@@ -38,6 +38,8 @@ public class AtividadePedidoService {
         atividadePedido.setStatusPedidoEnum(pedido.getStatusPedidoEnum());
         atividadePedido.setCnpjEmpresa(pedido.getEmpresa().getCnpj());
         atividadePedido.setCpfs(cpfs);
+        atividadePedido.setNomeCliente(pedido.getCliente().getNome() + " " + pedido.getCliente().getSobrenome());
+        atividadePedido.setServico(pedido.getPedidoPrestador().get(0).getServico().getDescricaoServico());
 
         return atividadePedidoRepository.save(atividadePedido);
     }

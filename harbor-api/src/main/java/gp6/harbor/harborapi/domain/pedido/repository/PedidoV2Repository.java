@@ -21,4 +21,5 @@ public interface PedidoV2Repository extends JpaRepository<PedidoV2, Integer> {
     Double somarFaturamentoBrutoPorEmpresa(LocalDateTime dataInicio, LocalDateTime dataFim, Integer empresaId);
     @Query("SELECT p.formaPagamentoEnum, COUNT(p) FROM PedidoV2 p WHERE p.dataAgendamento >= :dataInicio AND p.dataAgendamento <= :dataFim AND p.empresa.id = :empresaId AND p.statusPedidoEnum = 'FINALIZADO' GROUP BY p.formaPagamentoEnum")
     List<Object[]> countByDataAgendamentoBetweenAndEmpresaIdAndFormaPagamentoEnum(LocalDateTime dataInicio, LocalDateTime dataFim, Integer empresaId);
+
 }

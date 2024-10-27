@@ -82,7 +82,7 @@ public class PedidoController {
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PedidoV2DTO>> listarPedidosAbertos() {
         // Chama o serviço para listar os pedidos abertos
-        List<PedidoV2DTO> pedidosDto = pedidoService.listarPedidosV2Abertos();
+        List<PedidoV2DTO> pedidosDto = pedidoService.listarPedidosV2AbertosPorPrestador();
 
         // Verifica se a lista está vazia, retornando 204 No Content se não houver pedidos
         if (pedidosDto.isEmpty()) {

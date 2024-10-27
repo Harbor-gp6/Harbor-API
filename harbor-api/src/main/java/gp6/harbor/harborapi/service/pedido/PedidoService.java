@@ -438,6 +438,19 @@ public class PedidoService {
         return pedidoV2MapperV2.toDtoList(pedidos);
     }
 
+    public List<PedidoV2DTO> listarPedidosV2AbertosPorPrestador() {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        Empresa empresa = prestador.getEmpresa();
+        if (emailUsuario == null || prestador == null || empresa == null) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Você Precisa estar logado.");
+        }
+
+        List<PedidoV2> pedidos = pedidoV2Repository.findByPedidoPrestadorPrestadorCpf(prestador.getCpf());
+
+        return pedidoV2MapperV2.toDtoList(pedidos);
+    }
+
     public List<PedidoV2DTO> listarPedidosV2Finalizados() {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);

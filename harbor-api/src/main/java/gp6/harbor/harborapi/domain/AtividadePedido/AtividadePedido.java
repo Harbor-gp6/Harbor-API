@@ -27,5 +27,7 @@ public class AtividadePedido {
     private String cnpjEmpresa;
     @ElementCollection
     private List<String> cpfs = new ArrayList<>();
+    private String nomeCliente;
+    private String servico;
 
 }

@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface PedidoV2Repository extends JpaRepository<PedidoV2, Integer> {
@@ -16,7 +15,7 @@ public interface PedidoV2Repository extends JpaRepository<PedidoV2, Integer> {
     List<PedidoV2> findByEmpresaAndStatusPedidoEnum(Empresa empresa , StatusPedidoEnum statusPedidoEnum);
     List<PedidoV2> findByPedidoPrestadorPrestadorCpf(String cpf);
     List<PedidoV2> findByPedidoPrestadorPrestadorCpfAndStatusPedidoEnum(String cpf, StatusPedidoEnum statusPedidoEnum);
-    Optional<PedidoV2> findByCodigoPedido(UUID codigoPedido);
+    PedidoV2 findByCodigoPedido(UUID codigoPedido);
     @Query("SELECT SUM(p.totalPedido) from PedidoV2 p WHERE p.dataAgendamento >= :dataInicio AND p.dataAgendamento <= :dataFim AND p.empresa.id = :empresaId AND p.statusPedidoEnum = 'FINALIZADO'")
     Double somarFaturamentoBrutoPorEmpresa(LocalDateTime dataInicio, LocalDateTime dataFim, Integer empresaId);
     @Query("SELECT p.formaPagamentoEnum, COUNT(p) FROM PedidoV2 p WHERE p.dataAgendamento >= :dataInicio AND p.dataAgendamento <= :dataFim AND p.empresa.id = :empresaId AND p.statusPedidoEnum = 'FINALIZADO' GROUP BY p.formaPagamentoEnum")

@@ -596,8 +596,7 @@ public class PedidoService {
     }
 
     public PedidoV2DTO buscarPorCodigoPedido(UUID codigoPedido) {
-        PedidoV2 pedidos = pedidoV2Repository.findByCodigoPedido(codigoPedido)
-                .orElseThrow(() -> new NaoEncontradoException("Pedido"));
+        PedidoV2 pedidos = pedidoV2Repository.findByCodigoPedido(codigoPedido);
         return pedidoV2MapperV2.toDto(pedidos);
     }
 

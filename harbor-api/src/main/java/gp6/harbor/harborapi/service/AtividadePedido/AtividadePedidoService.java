@@ -5,6 +5,7 @@ import gp6.harbor.harborapi.domain.AtividadePedido.repository.AtividadePedidoRep
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.pedido.PedidoPrestador;
 import gp6.harbor.harborapi.domain.pedido.PedidoV2;
+import gp6.harbor.harborapi.domain.pedido.repository.PedidoV2Repository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -22,6 +24,7 @@ import java.util.UUID;
 public class AtividadePedidoService {
     private final AtividadePedidoRepository atividadePedidoRepository;
     private final PrestadorRepository prestadorRepository;
+    private final PedidoV2Repository pedidoV2Repository;
     public AtividadePedido criarAtividadePedido(PedidoV2 pedido) {
         List<String> cpfs = new ArrayList<>();
         for (PedidoPrestador pedidoPrestador : pedido.getPedidoPrestador()) {
@@ -75,8 +78,13 @@ public class AtividadePedidoService {
         if (!prestador.getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()) && !"ADMIN".equals(prestador.getCargo())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não tem permissão para atualizar funcionários");
         }
+        AtividadePedido atividadePedido = atividadePedidoRepository.findByCpfsContaining(prestador.getCpf());
 
-        AtividadePedido pedido = atividadePedidoRepository.findByCpfsContaining(prestador.getCpf());
-        return pedido;
+        if (atividadePedido != null) {
+            PedidoV2 pedido = pedidoV2Repository.findByCodigoPedido(atividadePedido.getCodigoPedido());
+            atividadePedido.setNomeCliente(pedido.getCliente().getNome() + " " + pedido.getCliente().getSobrenome());
+            atividadePedido.setServico(pedido.getPedidoPrestador().get(0).getServico().getDescricaoServico());
+        }
+        return atividadePedido;
     }
 }

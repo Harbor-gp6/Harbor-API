@@ -38,7 +38,7 @@ public class AvaliacaoPrestadorService {
     //criar avaliação de prestador caso o pedido já esteja finalizado
     public void criarAvaliacaoPrestador(AvaliacaoPrestadorDto avaliacaoPrestadorDto) {
         Cliente cliente = clienteService.buscarPorId(avaliacaoPrestadorDto.getIdCliente());
-        PedidoV2 pedido = pedidoV2Repository.findByCodigoPedido(avaliacaoPrestadorDto.getCodigoPedido()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+        PedidoV2 pedido = pedidoV2Repository.findByCodigoPedido(avaliacaoPrestadorDto.getCodigoPedido());
         List<Prestador> prestadoresAvaliados = new ArrayList<>();
         //preciso percorrer a lista de prestadores do pedido e verificar se o prestador o prestador existe, se ele fez o serviço e se o pedido está finalizado e ai sim criar a avaliação
         //faça um for

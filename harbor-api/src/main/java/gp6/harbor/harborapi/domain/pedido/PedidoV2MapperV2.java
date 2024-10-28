@@ -13,6 +13,7 @@ public interface PedidoV2MapperV2 {
     @Mapping(source = "id", target = "idPedido")
     @Mapping(source = "cliente", target = "nomeCliente", qualifiedByName = "mapNomeCompleto")
     @Mapping(source = "cliente.telefone", target = "telefoneCliente")
+    @Mapping(source = "cliente.id", target = "idCliente")
     @Mapping(source = "cliente.cpf", target = "cpfCliente")
     @Mapping(source = "cliente.email", target = "emailCliente")
     @Mapping(source = "statusPedidoEnum.status", target = "statusPedidoEnum")

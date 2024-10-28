@@ -11,11 +11,12 @@ import java.util.UUID;
 @Setter
 public class PedidoV2DTO {
     private Integer idPedido;
+    private Integer idCliente;
     private String nomeCliente;
     private String telefoneCliente;
     private String cpfCliente;
     private String emailCliente;
-    private List<PedidoPrestadorDTOV2> pedidoPrestador;
+    private List<PedidoPrestador> pedidoPrestador;
     private List<PedidoProdutoDTOV2> pedidoProdutos;
     private LocalDateTime dataCriacao;
     private String statusPedidoEnum;

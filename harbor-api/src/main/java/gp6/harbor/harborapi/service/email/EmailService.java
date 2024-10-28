@@ -121,7 +121,7 @@ import java.util.List;
                     Seu pedido foi finalizado com sucesso!
                     
                     Por gentileza, avalie o pedido em:
-                    http://localhost:8080/avaliacao/%s
+                    http://localhost:3000/avaliacao/%s
                     """, pedidoAgendado.getCliente().getNome(), pedidoAgendado.getCodigoPedido());
             return emailFormatado;
         }

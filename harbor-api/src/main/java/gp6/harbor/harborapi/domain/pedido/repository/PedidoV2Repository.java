@@ -15,6 +15,7 @@ public interface PedidoV2Repository extends JpaRepository<PedidoV2, Integer> {
     List<PedidoV2> findByEmpresa(Empresa empresa);
     List<PedidoV2> findByEmpresaAndStatusPedidoEnum(Empresa empresa , StatusPedidoEnum statusPedidoEnum);
     List<PedidoV2> findByPedidoPrestadorPrestadorCpf(String cpf);
+
     //listar pedido por data e por cpf do prestador
     List<PedidoV2> findByDataAgendamentoBetweenAndPedidoPrestadorPrestadorCpf(LocalDateTime dataInicio, LocalDateTime dataFim, String cpf);
     List<PedidoV2> findByPedidoPrestadorPrestadorCpfAndStatusPedidoEnum(String cpf, StatusPedidoEnum statusPedidoEnum);

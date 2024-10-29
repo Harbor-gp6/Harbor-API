@@ -16,7 +16,7 @@ public class PedidoV2DTO {
     private String telefoneCliente;
     private String cpfCliente;
     private String emailCliente;
-    private List<PedidoPrestador> pedidoPrestador;
+    private List<PedidoPrestadorDTOV2> pedidoPrestador;
     private List<PedidoProdutoDTOV2> pedidoProdutos;
     private LocalDateTime dataCriacao;
     private String statusPedidoEnum;

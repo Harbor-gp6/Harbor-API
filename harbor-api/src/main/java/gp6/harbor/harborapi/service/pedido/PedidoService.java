@@ -477,7 +477,7 @@ public class PedidoService {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Você Precisa estar logado.");
         }
 
-        List<PedidoV2> pedidos = pedidoV2Repository.findByPedidoPrestadorPrestadorCpf(prestador.getCpf());
+        List<PedidoV2> pedidos = pedidoV2Repository.findByPedidoPrestadorPrestadorCpfAndStatusPedidoEnum(prestador.getCpf(), StatusPedidoEnum.ABERTO);
 
         return pedidoV2MapperV2.toDtoList(pedidos);
     }
@@ -512,10 +512,6 @@ public class PedidoService {
                 StatusPedidoEnum.FINALIZADO);
 
         return pedidoV2MapperV2.toDtoList(pedidos);
-    }
-
-    public List<PedidoV2> listarPorCpf(String cpf) {
-        return pedidoV2Repository.findByPedidoPrestadorPrestadorCpf(cpf);
     }
 
     public List<Pedido> listarPedidos() {

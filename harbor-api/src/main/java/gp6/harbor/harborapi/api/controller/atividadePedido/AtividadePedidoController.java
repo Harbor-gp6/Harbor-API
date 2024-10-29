@@ -33,7 +33,7 @@ public class AtividadePedidoController {
 
     @GetMapping("/atividade-pedido-por-prestador")
     @SecurityRequirement(name = "Bearer")
-    public AtividadePedido obterAtividadesPedidoPorPrestador() {
+    public List<AtividadePedido> obterAtividadesPedidoPorPrestador() {
         return atividadePedidoService.atividadePedidoPorUsuarioLogado();
     }
 

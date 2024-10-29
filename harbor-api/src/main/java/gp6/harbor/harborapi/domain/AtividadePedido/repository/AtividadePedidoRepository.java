@@ -12,6 +12,6 @@ public interface AtividadePedidoRepository extends JpaRepository<AtividadePedido
     AtividadePedido findByCodigoPedido(UUID codigoPedido);
     List<AtividadePedido> findByCnpjEmpresa(String cnpjEmpresa);
 
-    AtividadePedido findByCpfsContaining(String cpfPrestador);
+    List<AtividadePedido> findByCpfsContaining(String cpfPrestador);
 
 }

@@ -2,12 +2,11 @@ package gp6.harbor.harborapi.service.prestador;
 
 import gp6.harbor.harborapi.api.enums.StatusPedidoEnum;
 import gp6.harbor.harborapi.domain.cliente.Cliente;
-import gp6.harbor.harborapi.domain.cliente.repository.ClienteRepository;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.pedido.PedidoV2;
-import gp6.harbor.harborapi.domain.pedido.repository.PedidoRepository;
 import gp6.harbor.harborapi.domain.pedido.repository.PedidoV2Repository;
 import gp6.harbor.harborapi.domain.prestador.AvaliacaoPrestador;
+import gp6.harbor.harborapi.domain.prestador.AvaliacaoPrestadorMapper;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.prestador.repository.AvaliacaoRepository;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
@@ -22,8 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +33,7 @@ public class AvaliacaoPrestadorService {
     private final PedidoV2Repository pedidoV2Repository;
     private final ClienteService clienteService;
     private final PrestadorRepository prestadorRepository;
+    private final AvaliacaoPrestadorMapper avaliacaoPrestadorMapper;
 
     //criar avaliação de prestador caso o pedido já esteja finalizado
     public void criarAvaliacaoPrestador(AvaliacaoPrestadorDto avaliacaoPrestadorDto) {
@@ -97,9 +97,25 @@ public class AvaliacaoPrestadorService {
     }
 
 
-    public List<AvaliacaoPrestador> buscarAvaliacaoPrestador(){
+    public List<gp6.harbor.harborapi.domain.prestador.AvaliacaoPrestadorDto> buscarAvaliacaoPrestador() {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
-        return prestador.getAvaliacoes();
+
+        // Verifica se o prestador foi encontrado
+        if (prestador == null) {
+            // Retorna uma lista vazia caso não exista um prestador com o email fornecido
+            return Collections.emptyList();
+        }
+
+        // Converte as avaliações do prestador para DTO usando o mapeador
+        return avaliacaoPrestadorMapper.toDtoList(prestador.getAvaliacoes());
     }
+
+    public Double buscarAvaliacaoMediaPrestador() {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+
+        return prestador.getEstrelas();
+    }
+
 }

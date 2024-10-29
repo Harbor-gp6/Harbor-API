@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -83,6 +85,21 @@ public class PedidoController {
     public ResponseEntity<List<PedidoV2DTO>> listarPedidosAbertos() {
         // Chama o serviço para listar os pedidos abertos
         List<PedidoV2DTO> pedidosDto = pedidoService.listarPedidosV2AbertosPorPrestador();
+
+        // Verifica se a lista está vazia, retornando 204 No Content se não houver pedidos
+        if (pedidosDto.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        // Retorna a lista de pedidos mapeados para DTO com status 200 OK
+        return ResponseEntity.ok(pedidosDto);
+    }
+
+    @GetMapping("/pedidosPorData")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<PedidoV2DTO>> listarPedidoPorData(@RequestParam LocalDate data) {
+        // Chama o serviço para listar os pedidos abertos
+        List<PedidoV2DTO> pedidosDto = pedidoService.listarPedidosV2PorData(data);
 
         // Verifica se a lista está vazia, retornando 204 No Content se não houver pedidos
         if (pedidosDto.isEmpty()) {

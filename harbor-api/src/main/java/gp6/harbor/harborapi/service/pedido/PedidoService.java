@@ -482,6 +482,24 @@ public class PedidoService {
         return pedidoV2MapperV2.toDtoList(pedidos);
     }
 
+    //listarPedidosV2PorData
+    public List<PedidoV2DTO> listarPedidosV2PorData(LocalDate data) {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        Empresa empresa = prestador.getEmpresa();
+        if (emailUsuario == null || prestador == null || empresa == null) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Você Precisa estar logado.");
+        }
+
+        LocalDateTime dataInicio = data.atStartOfDay();
+        LocalDateTime dataFim = data.atTime(23, 59, 59);
+
+        List<PedidoV2> pedidos = pedidoV2Repository.findByDataAgendamentoBetweenAndPedidoPrestadorPrestadorCpf(dataInicio, dataFim, prestador.getCpf());
+
+
+        return pedidoV2MapperV2.toDtoList(pedidos);
+    }
+
     public List<PedidoV2DTO> listarPedidosV2Finalizados() {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);

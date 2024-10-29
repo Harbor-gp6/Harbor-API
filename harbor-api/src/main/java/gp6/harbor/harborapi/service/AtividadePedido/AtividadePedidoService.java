@@ -67,7 +67,7 @@ public class AtividadePedidoService {
         return pedido;
     }
 
-    public AtividadePedido atividadePedidoPorUsuarioLogado() {
+    public List<AtividadePedido> atividadePedidoPorUsuarioLogado() {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);
         if (prestadorLogado == null) {
@@ -80,12 +80,10 @@ public class AtividadePedidoService {
         if (!prestador.getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()) && !"ADMIN".equals(prestador.getCargo())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não tem permissão para atualizar funcionários");
         }
-        AtividadePedido atividadePedido = atividadePedidoRepository.findByCpfsContaining(prestador.getCpf());
+        List<AtividadePedido> atividadePedido = atividadePedidoRepository.findByCpfsContaining(prestador.getCpf());
 
         if (atividadePedido != null) {
-            PedidoV2 pedido = pedidoV2Repository.findByCodigoPedido(atividadePedido.getCodigoPedido());
-            atividadePedido.setNomeCliente(pedido.getCliente().getNome() + " " + pedido.getCliente().getSobrenome());
-            atividadePedido.setServico(pedido.getPedidoPrestador().get(0).getServico().getDescricaoServico());
+            List<AtividadePedido> pedidos = atividadePedidoRepository.findByCnpjEmpresa(empresa.getCnpj());
         }
         return atividadePedido;
     }

@@ -50,11 +50,9 @@ public class Prestador {
     public boolean adicionarHorarioOcupado(HorarioOcupado horarioOcupado) {
         for (HorarioOcupado ocupado : this.horariosOcupados) {
             if (colide(ocupado, horarioOcupado)) {
-                // Existe uma colisão de horários
                 return false;
             }
         }
-        // Se não houver colisão, adiciona o novo horário à lista de horários ocupados
         this.horariosOcupados.add(horarioOcupado);
         return true;
     }
@@ -64,8 +62,8 @@ public class Prestador {
                 novo.getDataFim().isAfter(ocupado.getDataInicio());
     }
 
-    //atualizar estrelas do prestador
     public void atualizarEstrelas(Prestador prestador, Double estrelas) {
+        Double maximoDeEstrelas = 5.0;
         Double totalEstrelas = 0.0;
         int quantidadeAvaliacoes = prestador.getAvaliacoes().size();
 
@@ -76,7 +74,16 @@ public class Prestador {
         totalEstrelas += estrelas;
         quantidadeAvaliacoes++; // Adiciona a nova avaliação
 
-        Double mediaEstrelas = totalEstrelas / quantidadeAvaliacoes;
-        prestador.setEstrelas(mediaEstrelas);
+        Double totalPossivel = maximoDeEstrelas * quantidadeAvaliacoes;
+        Double percentualEstrelasDefinidas = totalEstrelas / totalPossivel;
+
+        if (percentualEstrelasDefinidas > 1.0) {
+            percentualEstrelasDefinidas = 1.0;
+        }
+
+        Double estrelasAvaliador = percentualEstrelasDefinidas * maximoDeEstrelas;
+
+
+        prestador.setEstrelas(estrelasAvaliador);
     }
 }

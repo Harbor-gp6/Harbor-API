@@ -40,7 +40,7 @@ public class AvaliacaoController {
     }
 
 
-    @GetMapping("/avalicoes-prestador")
+    @GetMapping("/avaliacoes-prestador")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<?> buscarAvaliacaoPrestador(){
         return ResponseEntity.ok(avaliacaoPrestadorService.buscarAvaliacaoPrestador());

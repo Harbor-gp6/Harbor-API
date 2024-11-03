@@ -141,7 +141,7 @@ public class EmpresaService {
     }
 
     @Transactional
-    public void setFoto(byte[] novaFoto) {
+    public void setFoto(String novaFoto) {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);
@@ -156,7 +156,7 @@ public class EmpresaService {
     }
 
     @Transactional
-    public void setBanner(byte[] novaFoto) {
+    public void setBanner(String novaFoto) {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);
@@ -169,7 +169,7 @@ public class EmpresaService {
         empresaRepository.setBanner(empresa.getId(), novaFoto);
     }
 
-    public byte[] getBanner() {
+    public String getBanner() {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);
@@ -182,7 +182,7 @@ public class EmpresaService {
         return empresaRepository.getBanner(empresa.getId());
     }
 
-    public byte[] getFoto() {
+    public String getFoto() {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);

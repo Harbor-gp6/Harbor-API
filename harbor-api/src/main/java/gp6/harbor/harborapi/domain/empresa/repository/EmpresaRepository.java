@@ -20,16 +20,16 @@ public interface EmpresaRepository extends JpaRepository<Empresa, Integer> {
     @Modifying
     @Transactional
     @Query("update Empresa e set e.foto = ?2 where e.id = ?1")
-    void setFoto(Integer id, byte[] foto);
+    void setFoto(Integer id, String foto);
 
     @Query("select e.foto from Empresa e where e.id = ?1")
-    byte[] getFoto(Integer id);
+    String getFoto(Integer id);
 
     @Modifying
     @Transactional
     @Query("update Empresa e set e.banner = ?2 where e.id = ?1")
-    void setBanner(Integer id, byte[] banner);
+    void setBanner(Integer id, String banner);
 
     @Query("select e.banner from Empresa e where e.id = ?1")
-    byte[] getBanner(Integer id);
+    String getBanner(Integer id);
 }

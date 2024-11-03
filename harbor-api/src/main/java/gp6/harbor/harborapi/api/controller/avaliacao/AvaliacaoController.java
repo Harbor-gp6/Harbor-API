@@ -51,10 +51,4 @@ public class AvaliacaoController {
     public ResponseEntity<?> buscarAvaliacaoMediaPrestador(){
         return ResponseEntity.ok(avaliacaoPrestadorService.buscarAvaliacaoMediaPrestador());
     }
-
-
-
-
-
-
 }

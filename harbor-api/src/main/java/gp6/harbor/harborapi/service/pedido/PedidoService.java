@@ -157,7 +157,11 @@ public class PedidoService {
        if (!validarPedidoV2(pedido)) {
            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido inválido.");
        }
-        pedido.calcularTotalPedido();
+
+       pedido.calcularTotalProduto();
+       pedido.calcularTotalServico();
+       pedido.calcularTotalPedido();
+
 
         // Salva o pedido e atualiza os horários ocupados do prestador
         PedidoV2 pedidoSalvo = pedidoV2Repository.save(pedido);
@@ -281,6 +285,9 @@ public class PedidoService {
         if (!validarPedidoV2(pedidoEncontrado)) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido inválido.");
         }
+        
+        pedidoEncontrado.calcularTotalProduto();
+        pedidoEncontrado.calcularTotalServico();
         pedidoEncontrado.calcularTotalPedido();
 
         return pedidoV2Repository.save(pedidoEncontrado);

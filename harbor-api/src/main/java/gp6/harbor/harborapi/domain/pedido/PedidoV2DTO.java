@@ -24,4 +24,6 @@ public class PedidoV2DTO {
     private String formaPagamentoEnum;
     private UUID codigoPedido;
     private Double totalPedido;
+    private Double totalServico;
+    private Double totalProduto;
 }

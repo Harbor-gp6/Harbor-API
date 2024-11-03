@@ -59,6 +59,8 @@ public class PedidoV2 {
     private UUID codigoPedido;
 
     private Double totalPedido;
+    private Double totalServico;
+    private Double totalProduto;
 
     public void calcularTotalPedido() {
         this.totalPedido = 0.0;
@@ -70,5 +72,17 @@ public class PedidoV2 {
         }
     }
 
+    public void calcularTotalServico() {
+        this.totalServico = 0.0;
+        for (PedidoPrestador pedidoPrestador : pedidoPrestador) {
+            this.totalServico += pedidoPrestador.getServico().getValorServico();
+        }
+    }
 
+    public void calcularTotalProduto() {
+        this.totalProduto = 0.0;
+        for (PedidoProdutoV2 pedidoProduto : pedidoProdutos) {
+            this.totalProduto += pedidoProduto.getProduto().getPrecoVenda();
+        }
+    }
 }

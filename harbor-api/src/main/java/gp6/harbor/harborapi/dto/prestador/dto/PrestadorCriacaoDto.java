@@ -33,5 +33,5 @@ public class PrestadorCriacaoDto {
     private String senha;
     private EmpresaCriacaoDto empresa;
     private Integer empresaId;
-    private byte[] foto;
+    private String foto;
 }

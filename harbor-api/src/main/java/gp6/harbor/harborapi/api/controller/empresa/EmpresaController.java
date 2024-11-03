@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -88,39 +87,37 @@ public class EmpresaController {
     }
 
     @CrossOrigin("*")
-    @PatchMapping(value = "/foto", consumes = {"image/jpeg", "image/png"})
+    @PatchMapping(value = "/foto")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Void> patchFoto(@RequestBody byte[] novaFoto) {
+    public ResponseEntity<Void> patchFoto(@RequestBody String novaFoto) {
         empresaService.setFoto(novaFoto);
         return ResponseEntity.status(200).build();
     }
 
-    @GetMapping(value = "/obter-foto", produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/obter-foto")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<byte[]> getFoto() {
+    public ResponseEntity<String> getFoto() {
 
-        byte[] foto = empresaService.getFoto();
+        String foto = empresaService.getFoto();
 
-        return ResponseEntity.status(200).header("content-disposition",
-                "attachment; filename=\"foto-empresa.jpg\"").body(foto);
+        return ResponseEntity.status(200).body(foto);
     }
 
     @CrossOrigin("*")
-    @PatchMapping(value = "/banner", consumes = {"image/jpeg", "image/png"})
+    @PatchMapping(value = "/banner")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Void> patchBanner(@RequestBody byte[] novaFoto) {
+    public ResponseEntity<Void> patchBanner(@RequestBody String novaFoto) {
         empresaService.setBanner(novaFoto);
         return ResponseEntity.status(200).build();
     }
 
-    @GetMapping(value = "/obter-banner", produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/obter-banner")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<byte[]> getBanner() {
+    public ResponseEntity<String> getBanner() {
 
-        byte[] foto = empresaService.getBanner();
+        String foto = empresaService.getBanner();
 
-        return ResponseEntity.status(200).header("content-disposition",
-                "attachment; filename=\"banner-empresa.jpg\"").body(foto);
+        return ResponseEntity.status(200).body(foto);
     }
 
     @Hidden

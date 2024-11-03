@@ -28,7 +28,7 @@ public class Prestador {
     private String cpf;
     @JsonIgnore
     @Column(length = 50 * 1024 * 1024)
-    private byte[] foto;
+    private String foto;
     private String email;
     private String senha;
     @ManyToOne(cascade = CascadeType.PERSIST)

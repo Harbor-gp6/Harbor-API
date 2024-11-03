@@ -31,8 +31,8 @@ public interface PrestadorRepository extends JpaRepository<Prestador, Long> {
     @Modifying
     @Transactional
     @Query("update Prestador p set p.foto = ?2 where p.id = ?1")
-    void setFoto(Long id, byte[] foto);
+    void setFoto(Long id, String foto);
 
     @Query("select p.foto from Prestador p where p.id = ?1")
-    byte[] getFoto(Long id);
+    String getFoto(Long id);
 }

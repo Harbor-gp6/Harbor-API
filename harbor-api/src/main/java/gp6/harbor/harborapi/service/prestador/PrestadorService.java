@@ -61,7 +61,7 @@ public class PrestadorService {
         return prestadorRepository.save(prestador);
     }
 
-    
+
     public List<PrestadorFuncionarioCriacao> listar() {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         //se não achar o prestadorLogado crie uma excetion com uma mensagem de que precisa fazer o login
@@ -129,7 +129,7 @@ public class PrestadorService {
     public List<Prestador> buscarPorEmpresa(Empresa empresa) {
         return prestadorRepository.findByEmpresa(empresa);
     }
-     
+
     public boolean existePorId(Long id) {
         return prestadorRepository.existsById(id);
     }
@@ -139,11 +139,11 @@ public class PrestadorService {
         return pedidoRepository.findByPrestadorId(prestadorId);
     }
     @Transactional
-    public void setFoto(Long id, byte[] novaFoto) {
+    public void setFoto(Long id, String novaFoto) {
         prestadorRepository.setFoto(id, novaFoto);
     }
 
-    public byte[] getFoto(Long id) {
+    public String getFoto(Long id) {
         return prestadorRepository.getFoto(id);
     }
 

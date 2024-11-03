@@ -3,6 +3,7 @@ package gp6.harbor.harborapi.api.controller.pedido;
 import gp6.harbor.harborapi.domain.pedido.Pedido;
 import gp6.harbor.harborapi.domain.pedido.PedidoV2;
 import gp6.harbor.harborapi.domain.pedido.PedidoV2DTO;
+import gp6.harbor.harborapi.domain.pedido.repository.PedidoV2Repository;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoAtualizacaoProdutoDto;
 import gp6.harbor.harborapi.dto.pedido.dto.PedidoCriacaoDto;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,6 +36,7 @@ public class PedidoController {
     public static PedidoFilaEspera<Pedido> filaPedido = new PedidoFilaEspera<>(10);
     private final PedidoService pedidoService;
     private final PrestadorService prestadorService;
+    private final PedidoV2Repository pedidoV2Repository;
 
     @PostMapping("criarPedidoV2")
     public ResponseEntity<PedidoV2CriacaoDto> criarPedido(@RequestBody PedidoV2CriacaoDto pedido) {
@@ -190,6 +193,20 @@ public class PedidoController {
         PedidoV2 pedidoFinalizado = pedidoService.cancelarPedidoV2(codigoPedido);
 
         return ResponseEntity.ok(pedidoFinalizado);
+    }
+
+    @PatchMapping("/atualizarTotalPedidos")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<UUID>> atualizarPedidos() {
+        List<PedidoV2> pedidos = pedidoV2Repository.findAll();
+        List<UUID> codigosPedidos = new ArrayList<>();
+        for (PedidoV2 pedido : pedidos) {
+            pedido.calcularTotalProduto();
+            pedido.calcularTotalServico();
+            codigosPedidos.add(pedido.getCodigoPedido());
+        }
+        pedidoV2Repository.saveAll(pedidos);
+        return ResponseEntity.ok(codigosPedidos);
     }
 
 

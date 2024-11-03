@@ -12,4 +12,5 @@ public class PedidoPrestadorDTOV2 {
     private String descricaoServico;
     private LocalDateTime dataInicio;
     private LocalDateTime dataFim;
+    private Double valorServico;
 }

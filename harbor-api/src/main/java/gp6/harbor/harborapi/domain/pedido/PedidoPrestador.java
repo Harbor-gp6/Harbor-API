@@ -34,7 +34,6 @@ public class PedidoPrestador {
     private LocalDateTime dataInicio;
     private LocalDateTime dataFim;
 
-    // Método para configurar as datas
     public void calcularDataFim() {
         if (this.dataInicio != null && this.servico != null) {
             this.dataFim = this.dataInicio.plusMinutes(servico.getTempoMedioEmMinutos());

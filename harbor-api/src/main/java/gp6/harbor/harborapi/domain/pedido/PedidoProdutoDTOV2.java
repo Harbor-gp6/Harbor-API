@@ -8,4 +8,5 @@ import lombok.Setter;
 public class PedidoProdutoDTOV2 {
     private String nomeProduto;
     private Integer quantidade;
+    private Double valorProduto;
 }

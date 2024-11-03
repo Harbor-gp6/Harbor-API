@@ -168,10 +168,10 @@ public class PrestadorController {
     }
 
     @CrossOrigin("*")
-    @PatchMapping(value = "/foto/{id}", consumes = {"image/jpeg", "image/png"})
+    @PatchMapping(value = "/foto/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> atualizarFoto(@PathVariable Long id,
-                                          @RequestBody byte[] novaFoto) {
+                                          @RequestBody String novaFoto) {
         if (!prestadorService.existePorId(id)) {
             return ResponseEntity.status(404).build();
         }
@@ -182,15 +182,14 @@ public class PrestadorController {
     @Hidden
     @GetMapping(value = "/foto/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<byte[]> getFoto(@PathVariable Long id) {
+    public ResponseEntity<String> getFoto(@PathVariable Long id) {
         if (!prestadorService.existePorId(id)) {
             return ResponseEntity.status(404).build();
         }
 
-        byte[] foto = prestadorService.getFoto(id);
+        String foto = prestadorService.getFoto(id);
 
-        return ResponseEntity.status(200).header("content-disposition",
-                "attachment; filename=\"foto-prestador.jpg\"").body(foto);
+        return ResponseEntity.status(200).body(foto);
     }
 
     public boolean existePorCpf(String cpf){

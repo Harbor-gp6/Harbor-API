@@ -23,6 +23,7 @@ public interface PedidoV2MapperV2 {
     List<PedidoV2DTO> toDtoList(List<PedidoV2> pedidos);
 
     @Mapping(source = "prestador.nome", target = "nomePrestador")
+    @Mapping(source = "prestador.foto", target = "foto")
     @Mapping(source = "servico.descricaoServico", target = "descricaoServico")
     @Mapping(source = "servico.valorServico", target = "valorServico")
     PedidoPrestadorDTOV2 toDto(PedidoPrestador pedidoPrestador);

@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 public class PedidoPrestadorDTOV2 {
     private String nomePrestador;
+    private String foto;
     private String descricaoServico;
     private LocalDateTime dataInicio;
     private LocalDateTime dataFim;

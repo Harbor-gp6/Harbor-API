@@ -65,7 +65,7 @@ public class PedidoV2 {
     public void calcularTotalPedido() {
         this.totalPedido = 0.0;
         for (PedidoProdutoV2 pedidoProduto : pedidoProdutos) {
-            this.totalPedido += pedidoProduto.getProduto().getPrecoVenda();
+            this.totalPedido += pedidoProduto.getProduto().getPrecoVenda() * pedidoProduto.getQuantidade();
         }
         for (PedidoPrestador pedidoPrestador : pedidoPrestador) {
             this.totalPedido += pedidoPrestador.getServico().getValorServico();

@@ -203,6 +203,7 @@ public class PedidoController {
         for (PedidoV2 pedido : pedidos) {
             pedido.calcularTotalProduto();
             pedido.calcularTotalServico();
+            pedido.calcularTotalPedido();
             codigosPedidos.add(pedido.getCodigoPedido());
         }
         pedidoV2Repository.saveAll(pedidos);

@@ -140,7 +140,7 @@ public class PrestadorController {
         return ResponseEntity.status(200).body(dtos);
     }
 
-    @GetMapping("empresa/{empresaId}")
+    @GetMapping("/empresa/{empresaId}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PrestadorListagemDto>> prestadorPorEmpresaId(@PathVariable Integer empresaId){
         Empresa empresaBuscada = empresaService.buscarPorId(empresaId);

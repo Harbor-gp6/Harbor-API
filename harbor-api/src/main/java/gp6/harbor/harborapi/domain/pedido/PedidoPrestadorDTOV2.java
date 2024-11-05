@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class PedidoPrestadorDTOV2 {
+    private Integer idPrestador;
+    private Integer idServico;
     private String nomePrestador;
     private String foto;
     private String descricaoServico;

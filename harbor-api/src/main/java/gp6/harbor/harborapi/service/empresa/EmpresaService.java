@@ -169,26 +169,24 @@ public class EmpresaService {
         empresaRepository.setBanner(empresa.getId(), novaFoto);
     }
 
-    public String getBanner(Long id) {
+    public String getBanner(int id) {
 
-        Prestador prestadorLogado = prestadorRepository.findById(id).orElse(null);
+        Empresa empresa = empresaRepository.findById(id).orElse(null);
 
-        if (prestadorLogado == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O usuário não foi encontrado");
+        if (empresa == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "A empresa não foi encontrado");
         }
-        Empresa empresa = prestadorLogado.getEmpresa();
 
         return empresaRepository.getBanner(empresa.getId());
     }
 
-    public String getFoto(Long id) {
+    public String getFoto(int id) {
 
-        Prestador prestadorLogado = prestadorRepository.findById(id).orElse(null);
+        Empresa empresa = empresaRepository.findById(id).orElse(null);
 
-        if (prestadorLogado == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O usuário não foi encontrado");
+        if (empresa == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "A empresa não foi encontrado");
         }
-        Empresa empresa = prestadorLogado.getEmpresa();
 
         return empresaRepository.getFoto(empresa.getId());
     }

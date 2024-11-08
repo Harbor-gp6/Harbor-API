@@ -94,10 +94,10 @@ public class EmpresaController {
         return ResponseEntity.status(200).build();
     }
 
-    @GetMapping(value = "/obter-foto/{idPrestador}")
-    public ResponseEntity<String> getFoto(@PathVariable @Valid Long idPrestador) {
+    @GetMapping(value = "/obter-foto/{id}")
+    public ResponseEntity<String> getFoto(@PathVariable @Valid int id) {
 
-        String foto = empresaService.getFoto(idPrestador);
+        String foto = empresaService.getFoto(id);
 
         return ResponseEntity.status(200).body(foto);
     }
@@ -110,10 +110,10 @@ public class EmpresaController {
         return ResponseEntity.status(200).build();
     }
 
-    @GetMapping(value = "/obter-banner/{idPrestador}")
-    public ResponseEntity<String> getBanner(@PathVariable @Valid Long idPrestador) {
+    @GetMapping(value = "/obter-banner/{id}")
+    public ResponseEntity<String> getBanner(@PathVariable @Valid int id) {
 
-        String foto = empresaService.getBanner(idPrestador);
+        String foto = empresaService.getBanner(id);
 
         return ResponseEntity.status(200).body(foto);
     }

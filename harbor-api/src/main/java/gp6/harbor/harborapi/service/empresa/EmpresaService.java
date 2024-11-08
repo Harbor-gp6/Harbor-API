@@ -169,26 +169,24 @@ public class EmpresaService {
         empresaRepository.setBanner(empresa.getId(), novaFoto);
     }
 
-    public String getBanner() {
-        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+    public String getBanner(Long id) {
 
-        Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        Prestador prestadorLogado = prestadorRepository.findById(id).orElse(null);
 
         if (prestadorLogado == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O usuário precisa estar logado");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O usuário não foi encontrado");
         }
         Empresa empresa = prestadorLogado.getEmpresa();
 
         return empresaRepository.getBanner(empresa.getId());
     }
 
-    public String getFoto() {
-        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+    public String getFoto(Long id) {
 
-        Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        Prestador prestadorLogado = prestadorRepository.findById(id).orElse(null);
 
         if (prestadorLogado == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O usuário precisa estar logado");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O usuário não foi encontrado");
         }
         Empresa empresa = prestadorLogado.getEmpresa();
 

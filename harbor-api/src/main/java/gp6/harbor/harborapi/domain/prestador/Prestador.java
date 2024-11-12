@@ -31,12 +31,12 @@ public class Prestador {
     private String foto;
     private String email;
     private String senha;
+    private boolean ativo = true;
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_empresa")
     private Empresa empresa;
     @Enumerated(EnumType.STRING)
     private CargoEnum cargo;
-
     @OneToMany(mappedBy = "prestador", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<AvaliacaoPrestador> avaliacoes = new ArrayList<>();

@@ -166,6 +166,16 @@ public class PrestadorController {
 
         return ResponseEntity.status(200).body(prestadorSalvo);
     }
+    @PatchMapping("/{id}/inativar")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> inativarPrestador(@PathVariable Long id) {
+        if (!prestadorService.existePorId(id)) {
+            return ResponseEntity.status(404).build();
+        }
+
+        prestadorService.inativarPrestador(id);
+        return ResponseEntity.status(200).build();
+    }
 
     @CrossOrigin("*")
     @PatchMapping(value = "/foto/{id}")

@@ -108,6 +108,13 @@ public class PrestadorService {
         return funcionarios;
     }
 
+    public void inativarPrestador(Long id) {
+        Prestador prestador = buscarPorId(id);
+        prestador.setAtivo(false);
+        prestadorRepository.save(prestador);
+    }
+
+
     public Prestador buscarPorId(Long id) {
         return prestadorRepository.findById(id).orElseThrow(
                 () -> new NaoEncontradoException("Prestador")

@@ -192,6 +192,18 @@ public class PrestadorController {
         return ResponseEntity.status(200).body(foto);
     }
 
+    @PostMapping("/enviar-codigo-acesso")
+    public ResponseEntity<String> gerarCodigoAcesso(@RequestBody String email){
+        prestadorService.EnviarCodigoAcesso(email);
+        return ResponseEntity.status(200).body("Se o email existe, foi enviado o código de acesso");
+    }
+
+    @PostMapping("/atualizar-senha-prestador")
+    public ResponseEntity<Void> atualizarSenha(@RequestBody String email, String codigoAcesso, String novaSenha){
+        prestadorService.atualizarSenha(email, codigoAcesso, novaSenha);
+        return ResponseEntity.status(200).build();
+    }
+
     public boolean existePorCpf(String cpf){
         return prestadorService.existePorCpf(cpf);
     }

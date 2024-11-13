@@ -3,12 +3,25 @@ import gp6.harbor.harborapi.domain.pedido.PedidoPrestador;
 import gp6.harbor.harborapi.domain.pedido.PedidoProduto;
 import gp6.harbor.harborapi.domain.pedido.PedidoProdutoV2;
 import gp6.harbor.harborapi.domain.pedido.PedidoV2;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.client.RestTemplate;
+import java.util.Map;
+import java.util.HashMap;
+
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -17,10 +30,13 @@ import java.util.List;
     @RequiredArgsConstructor
     public class EmailService {
 
-        private final JavaMailSender mailSender;
+    private final RestTemplate restTemplate;
+    private final JavaMailSender mailSender;
+
+    private final String FLASK_API_URL = "http://127.0.0.1:5000/send-email";
 
         @Async
-        public void sendEmail(String to, String subject, String text) {
+        public void sendEmailV2(String to, String subject, String text) {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(to);
             message.setSubject(subject);
@@ -126,4 +142,27 @@ import java.util.List;
             return emailFormatado;
         }
 
+
+    public String sendEmail(String receiverEmail, String subject, String body) {
+        // Usar um Map para representar o corpo da requisição JSON
+        Map<String, String> jsonRequest = new HashMap<>();
+        jsonRequest.put("to", receiverEmail);
+        jsonRequest.put("subject", subject);
+        jsonRequest.put("body", body);
+
+        // Configurar os headers da requisição (Content-Type: application/json)
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // Criar a entidade com o corpo e headers
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(jsonRequest, headers);
+
+        // Enviar a requisição POST para o microserviço Flask
+        ResponseEntity<String> response = restTemplate.exchange(
+                FLASK_API_URL, HttpMethod.POST, entity, String.class);
+
+        // Retornar a resposta da API Flask
+        return response.getBody();
     }
+
+}

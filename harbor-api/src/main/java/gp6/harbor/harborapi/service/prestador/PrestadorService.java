@@ -17,6 +17,7 @@ import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.dto.prestador.dto.*;
 import gp6.harbor.harborapi.exception.ConflitoException;
 import gp6.harbor.harborapi.exception.NaoEncontradoException;
+import gp6.harbor.harborapi.service.email.EmailService;
 import gp6.harbor.harborapi.service.pedido.PedidoService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class PrestadorService {
     private final AvaliacaoRepository avaliacaoRepository;
     private final HorarioOcupadoMapper horarioOcupadoMapper;
     private final PedidoPrestadorRepository pedidoPrestadorRepository;
+    private final EmailService emailService;
 
 
     //buscarPedidosAtendidosPorPrestador(prestador)
@@ -201,6 +203,31 @@ public class PrestadorService {
         avaliacaoPrestador.setComentario(comentario);
         avaliacaoPrestador.setCnpjEmpresa(prestador.getEmpresa().getCnpj());
         return avaliacaoRepository.save(avaliacaoPrestador);
+    }
+
+    public void EnviarCodigoAcesso(String email) {
+        Prestador prestador = prestadorRepository.findByEmail(email).orElse(null);
+        if (prestador == null) {
+            return;
+        }
+        prestador.gerarCodigoAcesso();
+        emailService.sendEmail(email, "Código de Acesso", "Seu código de acesso é: " + prestador.getCodigoAcesso());
+        prestadorRepository.save(prestador);
+    }
+
+    public void atualizarSenha(String email, String codigoAcesso, String novaSenha) {
+        Prestador prestador = prestadorRepository.findByEmail(email).orElse(null);
+        if (prestador == null) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Prestador não encontrado");
+        }
+        if (!prestador.getCodigoAcesso().equals(codigoAcesso)) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Código de acesso inválido");
+        }
+        if(prestador.getDataCodigoAcesso().isBefore(LocalDateTime.now().minusMinutes(30))) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Código de acesso expirado");
+        }
+        prestador.setSenha(novaSenha);
+        prestadorRepository.save(prestador);
     }
 
     public Prestador ObterPrestadorLogado(String emailUsuario) {

@@ -5,12 +5,14 @@ import gp6.harbor.harborapi.domain.endereco.Endereco;
 import gp6.harbor.harborapi.dto.empresa.dto.EmpresaCriacaoDto;
 import gp6.harbor.harborapi.dto.empresa.dto.EmpresaListagemDto;
 import gp6.harbor.harborapi.dto.empresa.dto.EmpresaMapper;
+import gp6.harbor.harborapi.service.email.EmailService;
 import gp6.harbor.harborapi.service.empresa.EmpresaService;
 import gp6.harbor.harborapi.service.endereco.EnderecoService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +26,18 @@ public class EmpresaController {
 
     private final EmpresaService empresaService;
     private final EnderecoService enderecoService;
+    @Autowired
+    private EmailService emailService;
+
+    @PostMapping("/send")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> sendEmail(@RequestParam String to,
+                            @RequestParam String subject,
+                            @RequestParam String body) {
+
+            emailService.sendEmailV2(to, subject, body);
+        return ResponseEntity.status(200).build();
+    }
 
     @PostMapping
     public ResponseEntity<EmpresaListagemDto> cadastrar(@RequestBody @Valid EmpresaCriacaoDto novaEmpresaDto){

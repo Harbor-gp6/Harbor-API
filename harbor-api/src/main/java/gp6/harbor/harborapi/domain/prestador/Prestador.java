@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,9 @@ public class Prestador {
     private Empresa empresa;
     @Enumerated(EnumType.STRING)
     private CargoEnum cargo;
+    private String codigoAcesso;
+    private LocalDateTime dataCodigoAcesso;
+
 
     @OneToMany(mappedBy = "prestador", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
@@ -85,5 +89,10 @@ public class Prestador {
 
 
         prestador.setEstrelas(estrelasAvaliador);
+    }
+
+    public void gerarCodigoAcesso() {
+        this.codigoAcesso = String.valueOf((int) (Math.random() * 1000000));
+        this.dataCodigoAcesso = LocalDateTime.now();
     }
 }

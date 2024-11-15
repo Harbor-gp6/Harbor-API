@@ -80,8 +80,16 @@ public class PrestadorController {
         return ResponseEntity.ok(funcionarios);
     }
 
+    @PatchMapping("/{id}/inativar")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> inativarPrestador(@PathVariable Long id) {
+        if (!prestadorService.existePorId(id)) {
+            return ResponseEntity.status(404).build();
+        }
 
-
+        prestadorService.inativarPrestador(id);
+        return ResponseEntity.status(200).build();
+    }
 
     @PostMapping("/login")
     public ResponseEntity<UsuarioTokenDto> login(@RequestBody UsuarioLoginDto usuarioLoginDto) {

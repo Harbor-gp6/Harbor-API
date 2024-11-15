@@ -27,6 +27,7 @@ public class Prestador {
     private String sobrenome;
     private String telefone;
     private String cpf;
+    private boolean ativo = true;
     @JsonIgnore
     @Column(length = 50 * 1024 * 1024)
     private String foto;

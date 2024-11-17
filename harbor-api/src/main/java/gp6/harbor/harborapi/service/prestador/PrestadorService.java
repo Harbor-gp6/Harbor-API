@@ -214,7 +214,7 @@ public class PrestadorService {
             return;
         }
         prestador.gerarCodigoAcesso();
-        emailService.sendEmail(email, "Código de Acesso", "Seu código de acesso é: " + prestador.getCodigoAcesso());
+        emailService.mandarEmailCodigoAcesso(email, prestador.getCodigoAcesso(), prestador.getTelefone(), prestador.getEmpresa().getNomeFantasia());
         prestadorRepository.save(prestador);
     }
 

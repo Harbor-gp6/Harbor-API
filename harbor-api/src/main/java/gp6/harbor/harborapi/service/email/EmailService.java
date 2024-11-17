@@ -34,6 +34,7 @@ import java.util.List;
     private final JavaMailSender mailSender;
 
     private final String FLASK_API_URL = "http://127.0.0.1:5000/send-email";
+    private final String FLASK_API_URL_CODE = "http://127.0.0.1:5000/send-code-email";
 
         @Async
         public void sendEmailV2(String to, String subject, String text) {
@@ -164,5 +165,29 @@ import java.util.List;
         // Retornar a resposta da API Flask
         return response.getBody();
     }
+
+    public String mandarEmailCodigoAcesso(String receiverEmail,String codigoAcesso, String telefoneEmpresa, String nomeEmpresa) {
+        // Usar um Map para representar o corpo da requisição JSON com os novos parâmetros
+        Map<String, String> jsonRequest = new HashMap<>();
+        jsonRequest.put("to", receiverEmail);
+        jsonRequest.put("codigo_acesso", codigoAcesso); // Adiciona o código de acesso
+        jsonRequest.put("telefone_empresa", telefoneEmpresa); // Adiciona o telefone da empresa
+        jsonRequest.put("nome_empresa", nomeEmpresa); // Adiciona o nome da empresa
+
+        // Configurar os headers da requisição (Content-Type: application/json)
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // Criar a entidade com o corpo e headers
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(jsonRequest, headers);
+
+        // Enviar a requisição POST para o microserviço Flask
+        ResponseEntity<String> response = restTemplate.exchange(
+                FLASK_API_URL_CODE, HttpMethod.POST, entity, String.class);
+
+        // Retornar a resposta da API Flask
+        return response.getBody();
+    }
+
 
 }

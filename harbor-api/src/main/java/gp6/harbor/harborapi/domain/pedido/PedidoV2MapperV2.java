@@ -22,6 +22,8 @@ public interface PedidoV2MapperV2 {
 
     List<PedidoV2DTO> toDtoList(List<PedidoV2> pedidos);
 
+    @Mapping(source = "prestador.id", target = "idPrestador")
+    @Mapping(source = "servico.id", target = "idServico")
     @Mapping(source = "prestador.nome", target = "nomePrestador")
     @Mapping(source = "prestador.foto", target = "foto")
     @Mapping(source = "servico.descricaoServico", target = "descricaoServico")
@@ -30,6 +32,7 @@ public interface PedidoV2MapperV2 {
 
     List<PedidoPrestadorDTOV2> toDtoListPrestador(List<PedidoPrestador> pedidoPrestador);
 
+    @Mapping(source = "produto.id", target = "idProduto")
     @Mapping(source = "produto.nome", target = "nomeProduto")
     @Mapping(source = "produto.precoVenda", target = "valorProduto")
     PedidoProdutoDTOV2 toDto(PedidoProdutoV2 pedidoProduto);

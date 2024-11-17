@@ -21,8 +21,11 @@ import gp6.harbor.harborapi.service.email.EmailService;
 import gp6.harbor.harborapi.service.pedido.PedidoService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -41,7 +44,7 @@ public class PrestadorService {
     private final HorarioOcupadoMapper horarioOcupadoMapper;
     private final PedidoPrestadorRepository pedidoPrestadorRepository;
     private final EmailService emailService;
-
+    private final PasswordEncoder passwordEncoder;
 
     //buscarPedidosAtendidosPorPrestador(prestador)
     public List<PedidoPrestador> buscarPedidosAtendidosPorPrestador(Long idPrestador) {
@@ -226,7 +229,9 @@ public class PrestadorService {
         if(prestador.getDataCodigoAcesso().isBefore(LocalDateTime.now().minusMinutes(30))) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Código de acesso expirado");
         }
-        prestador.setSenha(novaSenha);
+        prestador.setSenha(passwordEncoder.encode(novaSenha));
+        prestador.setDataCodigoAcesso(LocalDateTime.now().minusMinutes(30));
+
         prestadorRepository.save(prestador);
     }
 

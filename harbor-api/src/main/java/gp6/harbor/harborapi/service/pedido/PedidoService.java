@@ -108,6 +108,9 @@ public class PedidoService {
             if (prestador == null) {
                 throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Prestador não encontrado.");
             }
+            if (!prestador.isAtivo()) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Prestador inativo.");
+            }
 
             //adiciona o serviço ao pedido
             PedidoPrestador pedidoPrestadorNovo = pedidoV2Mapper.toPedidoPrestadorEntity(pedidoPrestador);
@@ -466,7 +469,7 @@ public class PedidoService {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
         Empresa empresa = prestador.getEmpresa();
-        if (emailUsuario == null || prestador == null || empresa == null) {
+        if (emailUsuario == null || prestador == null || empresa == null || !prestador.isAtivo()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Você Precisa estar logado.");
         }
 
@@ -480,7 +483,7 @@ public class PedidoService {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
         Empresa empresa = prestador.getEmpresa();
-        if (emailUsuario == null || prestador == null || empresa == null) {
+        if (emailUsuario == null || prestador == null || empresa == null || !prestador.isAtivo()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Você Precisa estar logado.");
         }
 
@@ -494,7 +497,7 @@ public class PedidoService {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
         Empresa empresa = prestador.getEmpresa();
-        if (emailUsuario == null || prestador == null || empresa == null) {
+        if (emailUsuario == null || prestador == null || empresa == null || !prestador.isAtivo()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Você Precisa estar logado.");
         }
 
@@ -511,7 +514,7 @@ public class PedidoService {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario).orElse(null);
         Empresa empresa = prestador.getEmpresa();
-        if (emailUsuario == null || prestador == null || empresa == null) {
+        if (emailUsuario == null || prestador == null || empresa == null || !prestador.isAtivo()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Você Precisa estar logado.");
         }
 

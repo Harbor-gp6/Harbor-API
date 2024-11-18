@@ -74,6 +74,9 @@ public class PrestadorService {
         if (prestadorLogado == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "O usuário precisa estar logado");
         }
+        if (!prestadorLogado.isAtivo()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Prestador inativo");
+        }
 
         Empresa empresa = prestadorLogado.getEmpresa();
 
@@ -97,6 +100,9 @@ public class PrestadorService {
         Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);
         if (prestadorLogado == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "O usuário precisa estar logado");
+        }
+        if (!prestadorLogado.isAtivo()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Prestador inativo");
         }
 
         Empresa empresa = prestadorLogado.getEmpresa();
@@ -198,6 +204,9 @@ public class PrestadorService {
         if (pedido.getCliente().getId() != cliente.getId() || pedido.getStatusPedidoEnum() != StatusPedidoEnum.FINALIZADO || pedido.getPedidoPrestador().stream().noneMatch(p -> p.getPrestador().getId().equals(prestador.getId()))) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido não finalizado ou não pertence ao cliente ou prestador");
         }
+        if (!prestador.isAtivo()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Prestador inativo");
+        }
         AvaliacaoPrestador avaliacaoPrestador = new AvaliacaoPrestador();
         avaliacaoPrestador.setPrestador(prestador);
         avaliacaoPrestador.setCliente(cliente);
@@ -211,7 +220,10 @@ public class PrestadorService {
     public void EnviarCodigoAcesso(String email) {
         Prestador prestador = prestadorRepository.findByEmail(email).orElse(null);
         if (prestador == null) {
-            return;
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Prestador não encontrado");
+        }
+        if (!prestador.isAtivo()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Prestador inativo");
         }
         prestador.gerarCodigoAcesso();
         emailService.mandarEmailCodigoAcesso(email, prestador.getCodigoAcesso(), prestador.getTelefone(), prestador.getEmpresa().getNomeFantasia());
@@ -229,9 +241,11 @@ public class PrestadorService {
         if(prestador.getDataCodigoAcesso().isBefore(LocalDateTime.now().minusMinutes(30))) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Código de acesso expirado");
         }
-        prestador.setSenha(passwordEncoder.encode(novaSenha));
+        if(!prestador.isAtivo()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Prestador inativo");
+        }
+        prestador.setSenha(novaSenha);
         prestador.setDataCodigoAcesso(LocalDateTime.now().minusMinutes(30));
-
         prestadorRepository.save(prestador);
     }
 
@@ -240,8 +254,27 @@ public class PrestadorService {
         if (prestador == null) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Você Precisa estar logado.");
         }
+        if (!prestador.isAtivo()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Prestador inativo.");
+        }
         return prestador;
     }
 
+    public void inativarPrestador(Long id) {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
 
+        Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario).orElse(null);
+        if (prestadorLogado == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Você Precisa estar logado.");
+        }
+
+        Prestador prestador = buscarPorId(id);
+
+        if (!prestador.getEmpresa().equals(prestadorLogado.getEmpresa())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não autorizado a inativar este prestador");
+        }
+
+        prestador.setAtivo(false);
+        prestadorRepository.save(prestador);
+    }
 }

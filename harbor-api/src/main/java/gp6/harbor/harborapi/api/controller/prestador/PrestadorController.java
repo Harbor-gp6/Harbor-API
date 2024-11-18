@@ -201,13 +201,13 @@ public class PrestadorController {
     }
 
     @PostMapping("/enviar-codigo-acesso")
-    public ResponseEntity<String> gerarCodigoAcesso(@RequestBody String email){
+    public ResponseEntity<String> gerarCodigoAcesso(@RequestParam String email){
         prestadorService.EnviarCodigoAcesso(email);
         return ResponseEntity.status(200).body("Se o email existe, foi enviado o código de acesso");
     }
 
     @PostMapping("/atualizar-senha-prestador")
-    public ResponseEntity<Void> atualizarSenha(@RequestBody String email, String codigoAcesso, String novaSenha){
+    public ResponseEntity<Void> atualizarSenha(@RequestParam String email, String codigoAcesso, String novaSenha){
         prestadorService.atualizarSenha(email, codigoAcesso, novaSenha);
         return ResponseEntity.status(200).build();
     }

@@ -37,6 +37,7 @@ jobs:
       # Etapa 4: Construir e testar a aplicação
       - name: Build and Test
         run: mvn -B package -DskipTests
+        working-directory: ./harbor-api
 
       # Etapa 5: Relatório de cobertura de código (opcional)
       - name: Publish Test Results

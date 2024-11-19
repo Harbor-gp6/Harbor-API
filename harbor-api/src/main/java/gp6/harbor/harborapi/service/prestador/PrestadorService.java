@@ -269,6 +269,7 @@ public class PrestadorService {
         }
 
         Prestador prestador = buscarPorId(id);
+        prestadorLogado.validar();
 
         if (!prestador.getEmpresa().equals(prestadorLogado.getEmpresa())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não autorizado a inativar este prestador");

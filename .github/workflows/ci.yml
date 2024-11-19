@@ -39,15 +39,3 @@ jobs:
         run: mvn -B package -DskipTests
         working-directory: ./harbor-api
 
-      # Etapa 5: Relatório de cobertura de código (opcional)
-      - name: Publish Test Results
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-results
-          path: target/surefire-reports/ # Diretório de relatórios do Maven
-
-      # Etapa 6: Verificar qualidade do código com cobertura (opcional)
-      - name: Generate Coverage Report
-        run: mvn jacoco:report
-        # Adicione plugins como SonarQube, se necessário, para análise adicional.

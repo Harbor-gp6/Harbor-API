@@ -142,6 +142,7 @@ public class UsuarioService {
 
     public UsuarioTokenDto autenticar(UsuarioLoginDto usuarioLoginDto) {
 
+
         final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(
                 usuarioLoginDto.getEmail(), usuarioLoginDto.getSenha());
 
@@ -152,6 +153,8 @@ public class UsuarioService {
                         .orElseThrow(
                                 () -> new ResponseStatusException(404, "Email do usuário não cadastrado", null)
                         );
+
+        usuarioAutenticado.validar();
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

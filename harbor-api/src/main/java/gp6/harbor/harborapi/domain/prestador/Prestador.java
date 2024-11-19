@@ -96,4 +96,10 @@ public class Prestador {
         this.codigoAcesso = String.valueOf((int) (Math.random() * 1000000));
         this.dataCodigoAcesso = LocalDateTime.now();
     }
+
+    public void validar(){
+        if (this.ativo == false) {
+            throw new RuntimeException("Prestador inativo");
+        }
+    }
 }

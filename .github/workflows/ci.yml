@@ -34,8 +34,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # Etapa 4: Construir e testar a aplicação
-      - name: Build and Test
+      # Etapa 4: Construir a aplicação
+      - name: Build Application
         run: mvn -B package -DskipTests
+        working-directory: ./harbor-api
+
+      # Etapa 5: Executar testes
+      - name: Run Tests
+        run: mvn test
         working-directory: ./harbor-api
 

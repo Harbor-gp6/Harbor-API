@@ -66,11 +66,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: List all files
+      - name: Find Dockerfile anywhere on the system
         run: |
-          echo "Listing all files in workspace:"
-          find ${{ github.workspace }}
-
+          echo "Searching for Dockerfile in the entire system..."
+          sudo find / -name "Dockerfile" 2>/dev/null || echo "Dockerfile not found"
 
       - name: Build and push
         uses: docker/build-push-action@v5

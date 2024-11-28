@@ -16,8 +16,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Debug: List repository files
-        run: |
+      - name: List repository files
+        run:
           echo "Listing root files:"
           ls -la
           echo "Listing harbor-api directory:"

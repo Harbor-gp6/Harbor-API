@@ -13,16 +13,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Etapa 1: Checkout do código
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: List repository files
-        run:
-          echo "Listing root files:"
-          ls -la
-          echo "Listing harbor-api directory:"
-          ls -la ./harbor-api || echo "harbor-api not found"
+      # Etapa 2: Verificar diretórios
+      - name: List files for debug
+        run: ls -R
+        shell: bash
 
+      # Etapa 3: Configurar Java
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -30,10 +30,21 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      # Etapa 4: Configurar cache do Maven
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # Etapa 5: Construir a aplicação
       - name: Build Application
         run: mvn -B package -DskipTests
         working-directory: ./harbor-api
 
+      # Etapa 6: Executar testes
       - name: Run Tests
         run: mvn test
         working-directory: ./harbor-api
@@ -55,18 +66,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Check Dockerfile
-        run: |
-          if [ ! -f ./harbor-api/Dockerfile ]; then
-            echo "Dockerfile not found in ./harbor-api"
-            exit 1
-          else
-            echo "Dockerfile found in ./harbor-api"
-          fi
-
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ./harbor-api
+          context: ${{ github.workspace }}/harbor-api
           push: true
           tags: henriquejm98/harbor-backend:latest
+

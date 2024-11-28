@@ -55,7 +55,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Debug: Check Dockerfile
+      - name: Check Dockerfile
         run: |
           if [ ! -f ./harbor-api/Dockerfile ]; then
             echo "Dockerfile not found in ./harbor-api"

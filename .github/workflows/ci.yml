@@ -66,8 +66,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: List workspace files
-        run: ls -la ${{ github.workspace }}
+      - name: List all files
+        run: |
+          echo "Listing all files in workspace:"
+          find ${{ github.workspace }}
+
 
       - name: Build and push
         uses: docker/build-push-action@v5

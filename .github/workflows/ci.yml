@@ -69,7 +69,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: harbor-api # Caminho corrigido, sem o "./"
-          dockerfile: harbor-api/Dockerfile # Caminho corrigido
+          context: ./harbor-api # Caminho corrigido, sem o "./"
+          dockerfile: ./harbor-api/Dockerfile # Caminho corrigido
           push: true
           tags: henriquejm98/harbor-backend:latest

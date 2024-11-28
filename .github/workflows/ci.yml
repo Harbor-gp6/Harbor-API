@@ -62,7 +62,7 @@ jobs:
 
       - name: Build and push
         uses: docker/build-push-action@v5
+        working-directory: ./harbor-api
         with:
-          context: ./harbor-api
           push: true
           tags: henriquejm98/harbor-backend:latest

@@ -84,7 +84,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ${{ github.workspace }}
+          context: ./harbor-api           # Caminho do contexto onde está o Dockerfile
+          file: ./harbor-api/Dockerfile   # Caminho do Dockerfile
           push: true
           tags: henriquejm98/harbor-backend:latest
 

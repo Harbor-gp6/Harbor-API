@@ -167,7 +167,7 @@ public class PrestadorController {
         return ResponseEntity.status(200).body(prestadorSalvo);
     }
 
-    @PutMapping("/{cpf}")
+    @PutMapping("/perfil/{cpf}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<PrestadorFuncionarioCriacao> atualizarPrestadorSemSenha(@RequestBody @Valid PrestadorEdicaoDTO prestadorDto, @PathVariable String cpf){
 

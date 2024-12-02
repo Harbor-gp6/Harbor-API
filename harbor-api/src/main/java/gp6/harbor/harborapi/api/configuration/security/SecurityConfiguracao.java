@@ -68,6 +68,7 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/pedidos/criarPedidoV2"),
             new AntPathRequestMatcher("/pedidos/{codigoPedido}"),
             new AntPathRequestMatcher("/relatorios/download"),
+            new AntPathRequestMatcher("/relatorios/**"),
             new AntPathRequestMatcher("/avaliacoes/avaliar"),
             new AntPathRequestMatcher("/api/**")
     };

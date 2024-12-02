@@ -10,7 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/avaliacoes")
+@RequestMapping("/api/avaliacoes")
 @RequiredArgsConstructor
 public class AvaliacaoController {
     private final AvaliacaoPrestadorService avaliacaoPrestadorService;

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
     @RestController
-    @RequestMapping("/email")
+    @RequestMapping("/api/email")
     @RequiredArgsConstructor
     public class EmailController {
 

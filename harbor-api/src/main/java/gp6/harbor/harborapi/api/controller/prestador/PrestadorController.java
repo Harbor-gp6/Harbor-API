@@ -175,6 +175,19 @@ public class PrestadorController {
         return ResponseEntity.status(200).body(prestadorSalvo);
     }
 
+    @PutMapping("/perfil/{cpf}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<PrestadorFuncionarioCriacao> atualizarPrestadorSemSenha(@RequestBody @Valid PrestadorEdicaoDTO prestadorDto, @PathVariable String cpf){
+
+        if (!prestadorService.existePorCpf(cpf)){
+            return ResponseEntity.status(404).build();
+        }
+
+        PrestadorFuncionarioCriacao prestadorSalvo = usuarioService.atualizarFuncionarioSemSenha(prestadorDto, cpf);
+
+        return ResponseEntity.status(200).body(prestadorSalvo);
+    }
+
     @CrossOrigin("*")
     @PatchMapping(value = "/foto/{id}")
     @SecurityRequirement(name = "Bearer")

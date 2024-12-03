@@ -63,11 +63,14 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/servicos/**"),
             new AntPathRequestMatcher("/produtos/**"),
             new AntPathRequestMatcher("/pedidos/**"),
+            new AntPathRequestMatcher("/health"),
             new AntPathRequestMatcher("/clientes", HttpMethod.POST.toString()),
             new AntPathRequestMatcher("/pedidos/criarPedidoV2"),
             new AntPathRequestMatcher("/pedidos/{codigoPedido}"),
             new AntPathRequestMatcher("/relatorios/download"),
-            new AntPathRequestMatcher("/avaliacoes/avaliar")
+            new AntPathRequestMatcher("/relatorios/**"),
+            new AntPathRequestMatcher("/avaliacoes/avaliar"),
+            new AntPathRequestMatcher("/api/**")
     };
 
     @Bean

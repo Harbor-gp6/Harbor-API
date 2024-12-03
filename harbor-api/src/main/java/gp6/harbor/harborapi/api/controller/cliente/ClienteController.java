@@ -17,7 +17,7 @@ import java.util.*;
 
 
 @RestController
-@RequestMapping("/clientes")
+@RequestMapping("/api/clientes")
 @RequiredArgsConstructor
 public class ClienteController {
 

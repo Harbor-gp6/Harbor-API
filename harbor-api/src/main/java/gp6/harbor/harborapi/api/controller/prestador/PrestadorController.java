@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/api/usuarios")
 @RequiredArgsConstructor
 public class PrestadorController {
 
@@ -171,6 +171,19 @@ public class PrestadorController {
         }
 
         PrestadorFuncionarioCriacao prestadorSalvo = usuarioService.atualizarFuncionario(prestadorDto, cpf);
+
+        return ResponseEntity.status(200).body(prestadorSalvo);
+    }
+
+    @PutMapping("/perfil/{cpf}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<PrestadorFuncionarioCriacao> atualizarPrestadorSemSenha(@RequestBody @Valid PrestadorEdicaoDTO prestadorDto, @PathVariable String cpf){
+
+        if (!prestadorService.existePorCpf(cpf)){
+            return ResponseEntity.status(404).build();
+        }
+
+        PrestadorFuncionarioCriacao prestadorSalvo = usuarioService.atualizarFuncionarioSemSenha(prestadorDto, cpf);
 
         return ResponseEntity.status(200).body(prestadorSalvo);
     }

@@ -301,7 +301,7 @@ public class PedidoService {
         if (!validarPedidoV2(pedidoEncontrado)) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido inválido.");
         }
-        
+
         pedidoEncontrado.calcularTotalProduto();
         pedidoEncontrado.calcularTotalServico();
         pedidoEncontrado.calcularTotalPedido();
@@ -333,7 +333,13 @@ public class PedidoService {
         pedidoEncontrado.setStatusPedidoEnum(StatusPedidoEnum.FINALIZADO);
 
         String emailFormatado = emailService.formatarEmailPedidoFinalizado(pedidoEncontrado);
-        emailService.sendEmail(pedidoEncontrado.getCliente().getEmail(), "Agendamento finalizado", emailFormatado);
+
+        try {
+            emailService.sendEmail(pedidoEncontrado.getCliente().getEmail(), "Agendamento finalizado", emailFormatado);
+        } catch (Exception e) {
+            // Registrar o erro sem lançar exceção para não interromper o fluxo
+            log.error("Erro ao enviar e-mail para {}: {}", pedidoEncontrado.getCliente().getEmail(), e.getMessage());
+        }
 
         AtividadePedido atividadePedido = atividadePedidoService.criarAtividadePedido(pedidoEncontrado);
 
@@ -366,7 +372,12 @@ public class PedidoService {
 
         String emailFormatado = "Pedido cancelado :(";
 
-        emailService.sendEmail(pedidoEncontrado.getCliente().getEmail(), "Pedido Cancelado", emailFormatado);
+        try {
+            emailService.sendEmail(pedidoEncontrado.getCliente().getEmail(), "Pedido Cancelado", emailFormatado);
+        } catch (Exception e) {
+            // Registrar o erro sem lançar exceção para não interromper o fluxo
+            log.error("Erro ao enviar e-mail para {}: {}", pedidoEncontrado.getCliente().getEmail(), e.getMessage());
+        }
 
         AtividadePedido atividadePedido = atividadePedidoService.criarAtividadePedido(pedidoEncontrado);
 
@@ -417,7 +428,12 @@ public class PedidoService {
                 + " às " + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com "
                 + pedidoSalvo.getPrestador().getNome() + " " + pedidoSalvo.getPrestador().getSobrenome();
 
-        emailService.sendEmail(pedidoSalvo.getCliente().getEmail(), subject, message);
+        try {
+            emailService.sendEmail(pedidoSalvo.getCliente().getEmail(), subject, message);
+        } catch (Exception e) {
+            // Registrar o erro sem lançar exceção para não interromper o fluxo
+            log.error("Erro ao enviar e-mail para {}: {}", pedido.getCliente().getEmail(), e.getMessage());
+        }
 
         subject = "VOCÊ TEM UM NOVO SERVIÇO AGENDADO";
         message = "Voce tem um serviço agendado para dia "
@@ -425,7 +441,12 @@ public class PedidoService {
                 + pedidoSalvo.getDataAgendamento().format(DateTimeFormatter.ofPattern("HH:mm")) + " com cliente "
                 + pedidoSalvo.getCliente().getNome() + " " + pedidoSalvo.getCliente().getSobrenome();
 
-        emailService.sendEmail(pedidoSalvo.getPrestador().getEmail(), subject, message);
+        try {
+            emailService.sendEmail(pedidoSalvo.getPrestador().getEmail(), subject, message);
+        } catch (Exception e) {
+            // Registrar o erro sem lançar exceção para não interromper o fluxo
+            log.error("Erro ao enviar e-mail para {}: {}", pedido.getCliente().getEmail(), e.getMessage());
+        }
 
         PedidoController.filaPedido.adicionarPedido(pedidoSalvo);
 

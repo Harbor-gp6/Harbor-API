@@ -197,8 +197,11 @@ public class PedidoService {
                 .orElseThrow(() -> new NaoEncontradoException("Pedido"));
 
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+
+
         Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Prestador não encontrado."));
+
 
         if (pedidoEncontrado.getStatusPedidoEnum() == StatusPedidoEnum.FINALIZADO) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Pedido já finalizado.");

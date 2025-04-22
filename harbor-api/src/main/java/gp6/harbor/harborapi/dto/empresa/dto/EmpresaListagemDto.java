@@ -12,6 +12,7 @@ public class EmpresaListagemDto {
     private String foto;
     private String razaoSocial;
     private String nomeFantasia;
+    private String slug;
     private String cnpj;
     private EnderecoListagemDto endereco;
 }

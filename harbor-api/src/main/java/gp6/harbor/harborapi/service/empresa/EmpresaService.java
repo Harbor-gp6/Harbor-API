@@ -63,8 +63,16 @@ public class EmpresaService {
 
     public List<Empresa> listar() { return empresaRepository.findAll(); }
 
+    public List<Empresa> buscarPorRazaoSocial(String razaoSocial) {
+        return empresaRepository.findByRazaoSocialContainingIgnoreCase(razaoSocial);
+    }
+
     public Empresa buscarPorId(int id) {
         return empresaRepository.findById(id).orElseThrow(() -> new NaoEncontradoException("Empresa"));
+    }
+
+    public Empresa buscarPorSlug(String slug) {
+        return empresaRepository.findBySlug(slug).orElseThrow(() -> new NaoEncontradoException("Empresa"));
     }
 
     public Empresa buscarPorCnpj(String cnpj) {

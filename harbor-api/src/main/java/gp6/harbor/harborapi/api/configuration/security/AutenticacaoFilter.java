@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 import gp6.harbor.harborapi.api.configuration.security.jwt.GerenciadorTokenJwt;
-import gp6.harbor.harborapi.dto.usuario.autenticacao.AutenticacaoService;
+import gp6.harbor.harborapi.dto.usuarioPrestador.autenticacao.AutenticacaoService;
 
 import java.io.IOException;
 import java.util.Objects;

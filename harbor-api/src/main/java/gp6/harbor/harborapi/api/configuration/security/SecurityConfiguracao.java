@@ -23,8 +23,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import gp6.harbor.harborapi.api.configuration.security.jwt.GerenciadorTokenJwt;
-import gp6.harbor.harborapi.dto.usuario.autenticacao.AutenticacaoService;
-
+import gp6.harbor.harborapi.dto.usuarioPrestador.autenticacao.AutenticacaoService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -52,6 +51,7 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/webjars/**"),
             new AntPathRequestMatcher("/v3/api-docs/**"),
             new AntPathRequestMatcher("/actuator/*"),
+            new AntPathRequestMatcher("/usuarioPrestador/**"),
             new AntPathRequestMatcher("/usuarios/**"),
             new AntPathRequestMatcher("/h2-console/**"),
             new AntPathRequestMatcher("/h2-console/**/**"),

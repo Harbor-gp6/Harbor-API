@@ -1,10 +1,13 @@
-package gp6.harbor.harborapi.dto.usuario;
+package gp6.harbor.harborapi.dto.usuarioPrestador;
 
 import gp6.harbor.harborapi.api.enums.CargoEnum;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
 import gp6.harbor.harborapi.dto.prestador.dto.*;
+import gp6.harbor.harborapi.dto.usuarioPrestador.autenticacao.dto.UsuarioPrestadorLoginDto;
+import gp6.harbor.harborapi.dto.usuarioPrestador.autenticacao.dto.UsuarioPrestadorTokenDto;
+import gp6.harbor.harborapi.dto.usuarioPrestador.dto.UsuarioPrestadorMapper;
 import gp6.harbor.harborapi.exception.ConflitoException;
 import gp6.harbor.harborapi.service.empresa.EmpresaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,22 +21,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import gp6.harbor.harborapi.api.configuration.security.jwt.GerenciadorTokenJwt;
-import gp6.harbor.harborapi.dto.usuario.autenticacao.dto.UsuarioLoginDto;
-import gp6.harbor.harborapi.dto.usuario.autenticacao.dto.UsuarioTokenDto;
-import gp6.harbor.harborapi.dto.usuario.dto.UsuarioMapper;
-
 
 @Service
-public class UsuarioService {
+public class UsuarioPrestadorService {
 
     @Autowired
     private EmpresaService empresaService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private PrestadorRepository usuarioRepository;
 
     @Autowired
     private GerenciadorTokenJwt gerenciadorTokenJwt;
@@ -47,22 +43,21 @@ public class UsuarioService {
     @Autowired
     private PrestadorMapperStruct prestadorMapperStruct;
 
-
-    public void criar(PrestadorCriacaoDto usuarioCriacaoDto) {
-        final Prestador novoUsuario = PrestadorMapper.toEntity(usuarioCriacaoDto);
+    public void criar(PrestadorCriacaoDto usuarioPrestadorCriacaoDto) {
+        final Prestador novoUsuario = PrestadorMapper.toEntity(usuarioPrestadorCriacaoDto);
         novoUsuario.setCargo(CargoEnum.valueOf("ADMIN"));
 
-        if (usuarioCriacaoDto.getEmpresaId() != null) {
-            Empresa empresa = empresaService.buscarPorId(usuarioCriacaoDto.getEmpresaId());
+        if (usuarioPrestadorCriacaoDto.getEmpresaId() != null) {
+            Empresa empresa = empresaService.buscarPorId(usuarioPrestadorCriacaoDto.getEmpresaId());
             if (empresa == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
             }
             novoUsuario.setEmpresa(empresa);
-        }else {
-            if (empresaService.existePorCnpj(usuarioCriacaoDto.getEmpresa().getCnpj())) {
-                novoUsuario.setEmpresa(empresaService.buscarPorCnpj(usuarioCriacaoDto.getEmpresa().getCnpj()));
-            }else{
-                Empresa empresa = empresaService.cadastrar(usuarioCriacaoDto.getEmpresa());
+        } else {
+            if (empresaService.existePorCnpj(usuarioPrestadorCriacaoDto.getEmpresa().getCnpj())) {
+                novoUsuario.setEmpresa(empresaService.buscarPorCnpj(usuarioPrestadorCriacaoDto.getEmpresa().getCnpj()));
+            } else {
+                Empresa empresa = empresaService.cadastrar(usuarioPrestadorCriacaoDto.getEmpresa());
                 novoUsuario.setEmpresa(empresa);
             }
         }
@@ -70,11 +65,11 @@ public class UsuarioService {
         String senhaCriptografada = passwordEncoder.encode(novoUsuario.getSenha());
         novoUsuario.setSenha(senhaCriptografada);
 
-        if(validar(novoUsuario)){
+        if (validar(novoUsuario)) {
             this.prestadorRepository.save(novoUsuario);
-        }
-        else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dados inválidos, verifique os campos e tente novamente.");
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Dados inválidos, verifique os campos e tente novamente.");
         }
     }
 
@@ -88,8 +83,10 @@ public class UsuarioService {
 
         Prestador prestador = prestadorRepository.findByCpf(cpf);
 
-        if (!prestador.getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()) && !"ADMIN".equals(prestador.getCargo())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não tem permissão para atualizar funcionários");
+        if (!prestador.getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())
+                && !"ADMIN".equals(prestador.getCargo())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Usuário não tem permissão para atualizar funcionários");
         }
 
         prestador.setNome(prestadorDto.getNome());
@@ -100,11 +97,11 @@ public class UsuarioService {
         prestador.setSenha(passwordEncoder.encode(prestadorDto.getSenha()));
         prestador.setCargo(prestadorDto.getCargo());
 
-        if(validar(prestador)){
+        if (validar(prestador)) {
             prestadorRepository.save(prestador);
-        }
-        else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dados inválidos, verifique os campos e tente novamente.");
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Dados inválidos, verifique os campos e tente novamente.");
         }
 
         return prestadorMapperStruct.toDto(prestador);
@@ -121,8 +118,10 @@ public class UsuarioService {
 
         Prestador prestador = prestadorRepository.findByCpf(cpf);
 
-        if (!prestador.getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()) && !"ADMIN".equals(prestador.getCargo())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não tem permissão para atualizar funcionários");
+        if (!prestador.getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())
+                && !"ADMIN".equals(prestador.getCargo())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Usuário não tem permissão para atualizar funcionários");
         }
 
         prestador.setNome(prestadorDto.getNome());
@@ -130,14 +129,14 @@ public class UsuarioService {
         prestador.setTelefone(prestadorDto.getTelefone());
         prestador.setCpf(prestadorDto.getCpf());
         prestador.setEmail(prestadorDto.getEmail());
-        //prestador.setSenha(passwordEncoder.encode(prestadorDto.getSenha()));
-        //prestador.setCargo(prestadorDto.getCargo());
+        // prestador.setSenha(passwordEncoder.encode(prestadorDto.getSenha()));
+        // prestador.setCargo(prestadorDto.getCargo());
 
-        if(validar(prestador)){
+        if (validar(prestador)) {
             prestadorRepository.save(prestador);
-        }
-        else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dados inválidos, verifique os campos e tente novamente.");
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Dados inválidos, verifique os campos e tente novamente.");
         }
 
         return prestadorMapperStruct.toDto(prestador);
@@ -147,10 +146,12 @@ public class UsuarioService {
     public void criarFuncionario(PrestadorFuncionarioCriacao novoPrestadorDto) {
         String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Prestador prestador = prestadorRepository.findByEmail(emailUsuario)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Você precisa estar logado para criar funcionários"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Você precisa estar logado para criar funcionários"));
 
         if (prestador.getCargo().name() != "ADMIN") {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não tem permissão para criar funcionários");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Usuário não tem permissão para criar funcionários");
         }
 
         Empresa empresa = prestador.getEmpresa();
@@ -162,38 +163,37 @@ public class UsuarioService {
         novoPrestador.setEmpresa(empresa);
         novoPrestador.setSenha(passwordEncoder.encode(novoPrestador.getSenha()));
 
-        if(validar(novoPrestador)){
+        if (validar(novoPrestador)) {
             prestadorRepository.save(novoPrestador);
-        }
-        else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dados inválidos, verifique os campos e tente novamente.");
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Dados inválidos, verifique os campos e tente novamente.");
         }
     }
 
-    public UsuarioTokenDto autenticar(UsuarioLoginDto usuarioLoginDto) {
-
+    public UsuarioPrestadorTokenDto autenticar(UsuarioPrestadorLoginDto usuarioPrestadorLoginDto) {
 
         final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(
-                usuarioLoginDto.getEmail(), usuarioLoginDto.getSenha());
+                usuarioPrestadorLoginDto.getEmail(), usuarioPrestadorLoginDto.getSenha());
 
         final Authentication authentication = this.authenticationManager.authenticate(credentials);
 
-        Prestador usuarioAutenticado =
-                usuarioRepository.findByEmail(usuarioLoginDto.getEmail())
-                        .orElseThrow(
-                                () -> new ResponseStatusException(404, "Email do usuário não cadastrado", null)
-                        );
+        Prestador usuarioPrestadorAutenticado = prestadorRepository.findByEmail(usuarioPrestadorLoginDto.getEmail())
+                .orElseThrow(
+                        () -> new ResponseStatusException(404, "Email do usuário não cadastrado", null));
 
-        usuarioAutenticado.validar();
+        usuarioPrestadorAutenticado.validar();
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         final String token = gerenciadorTokenJwt.generateToken(authentication);
 
-        return UsuarioMapper.of(usuarioAutenticado, token);
+        return UsuarioPrestadorMapper.of(usuarioPrestadorAutenticado, token);
     }
 
     public boolean validar(Prestador prestador) {
-        return prestador != null && prestador.getNome() != null && prestador.getSobrenome() != null && prestador.getTelefone() != null && prestador.getCpf() != null && prestador.getEmail() != null && prestador.getSenha() != null && prestador.getCargo() != null;
+        return prestador != null && prestador.getNome() != null && prestador.getSobrenome() != null
+                && prestador.getTelefone() != null && prestador.getCpf() != null && prestador.getEmail() != null
+                && prestador.getSenha() != null && prestador.getCargo() != null;
     }
 }

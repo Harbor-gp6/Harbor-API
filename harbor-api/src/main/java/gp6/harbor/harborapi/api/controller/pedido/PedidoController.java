@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/pedidos")
+@RequestMapping("/api/pedidos")
 @RequiredArgsConstructor
 public class PedidoController {
 
@@ -45,6 +45,7 @@ public class PedidoController {
     }
 
     @PatchMapping("/atualizarPedidoV2")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<PedidoV2CriacaoDto> atualizarPedidoV2(@RequestBody PedidoV2CriacaoDto pedido, @RequestParam Integer idPedido) {
         pedidoService.atualizarPedidoV2(idPedido, pedido);
         return ResponseEntity.ok(pedido);

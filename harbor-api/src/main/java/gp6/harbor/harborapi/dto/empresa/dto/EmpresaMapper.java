@@ -7,6 +7,7 @@ import java.util.List;
 import gp6.harbor.harborapi.domain.empresa.Empresa;
 import gp6.harbor.harborapi.domain.endereco.Endereco;
 import gp6.harbor.harborapi.dto.endereco.dto.EnderecoMapper;
+import gp6.harbor.harborapi.util.SlugUtils;
 import jakarta.validation.Valid;
 
 public class EmpresaMapper {
@@ -16,9 +17,12 @@ public class EmpresaMapper {
             return null;
         }
 
+        String slug = SlugUtils.createSlug(dto.getRazaoSocial());
+
         Empresa empresa = new Empresa();
         empresa.setRazaoSocial(dto.getRazaoSocial());
         empresa.setNomeFantasia(dto.getNomeFantasia());
+        empresa.setSlug(slug);
         empresa.setCnpj(dto.getCnpj());
         empresa.setDataCriacao(LocalDate.now());
         empresa.setHorarioAbertura(dto.getHorarioAbertura());
@@ -38,6 +42,7 @@ public class EmpresaMapper {
         listagemDto.setFoto(entity.getFoto());
         listagemDto.setRazaoSocial(entity.getRazaoSocial());
         listagemDto.setNomeFantasia(entity.getNomeFantasia());
+        listagemDto.setSlug(entity.getSlug());
         listagemDto.setEndereco(EnderecoMapper.toDto(entity.getEndereco()));
         listagemDto.setCnpj(entity.getCnpj());
         return listagemDto;

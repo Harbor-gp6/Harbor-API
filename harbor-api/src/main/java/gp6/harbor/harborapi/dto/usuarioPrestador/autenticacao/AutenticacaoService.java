@@ -1,6 +1,8 @@
-package gp6.harbor.harborapi.dto.usuario.autenticacao;
+package gp6.harbor.harborapi.dto.usuarioPrestador.autenticacao;
 
 import gp6.harbor.harborapi.domain.prestador.repository.PrestadorRepository;
+import gp6.harbor.harborapi.dto.usuarioPrestador.autenticacao.dto.UsuarioPrestadorDetalhesDto;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -8,7 +10,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import gp6.harbor.harborapi.domain.prestador.Prestador;
-import gp6.harbor.harborapi.dto.usuario.autenticacao.dto.UsuarioDetalhesDto;
 
 import java.util.Optional;
 
@@ -16,19 +17,19 @@ import java.util.Optional;
 public class AutenticacaoService implements UserDetailsService {
 
     @Autowired
-    private PrestadorRepository usuarioRepository;
+    private PrestadorRepository prestadorRepository;
 
     // Método da interface implementada
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Optional<Prestador> usuarioOpt = usuarioRepository.findByEmail(username);
+        Optional<Prestador> usuarioOpt = prestadorRepository.findByEmail(username);
 
         if (usuarioOpt.isEmpty()) {
 
             throw new UsernameNotFoundException(String.format("usuario: %s nao encontrado", username));
         }
 
-        return new UsuarioDetalhesDto(usuarioOpt.get());
+        return new UsuarioPrestadorDetalhesDto(usuarioOpt.get());
     }
 }

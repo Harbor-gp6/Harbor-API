@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/empresas")
+@RequestMapping("/api/empresas")
 @RequiredArgsConstructor
 public class EmpresaController {
 
@@ -76,6 +76,28 @@ public class EmpresaController {
 
         List<EmpresaListagemDto> listaAuxiliar = EmpresaMapper.toDto(empresas);
         return ResponseEntity.status(200).body(listaAuxiliar);
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<EmpresaListagemDto>> buscarPorRazaoSocial(@RequestBody String razaoSocial){
+        List<Empresa> empresas = empresaService.buscarPorRazaoSocial(razaoSocial);
+        if (empresas.isEmpty()) {
+            return ResponseEntity.status(204).build();
+        }
+
+        List<EmpresaListagemDto> empresasEncontradas = EmpresaMapper.toDto(empresas);
+        return ResponseEntity.status(200).body(empresasEncontradas);
+    }
+
+    @GetMapping("/{slug}")
+    public ResponseEntity<EmpresaListagemDto> buscarPorSlug(@PathVariable String slug) {
+        Empresa empresa = empresaService.buscarPorSlug(slug);
+        if (empresa == null) {
+            return ResponseEntity.status(404).build();
+        }
+
+        EmpresaListagemDto empresaEncontrada = EmpresaMapper.toDto(empresa);
+        return ResponseEntity.status(200).body(empresaEncontrada);
     }
 
     @GetMapping("/{id}")

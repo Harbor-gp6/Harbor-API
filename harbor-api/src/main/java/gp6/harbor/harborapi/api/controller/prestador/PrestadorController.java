@@ -5,9 +5,9 @@ import gp6.harbor.harborapi.domain.pedido.HorarioOcupadoDTO;
 import gp6.harbor.harborapi.domain.pedido.repository.HorarioOcupado;
 import gp6.harbor.harborapi.domain.prestador.Prestador;
 import gp6.harbor.harborapi.dto.prestador.dto.*;
-import gp6.harbor.harborapi.dto.usuario.UsuarioService;
-import gp6.harbor.harborapi.dto.usuario.autenticacao.dto.UsuarioLoginDto;
-import gp6.harbor.harborapi.dto.usuario.autenticacao.dto.UsuarioTokenDto;
+import gp6.harbor.harborapi.dto.usuarioPrestador.UsuarioPrestadorService;
+import gp6.harbor.harborapi.dto.usuarioPrestador.autenticacao.dto.UsuarioPrestadorLoginDto;
+import gp6.harbor.harborapi.dto.usuarioPrestador.autenticacao.dto.UsuarioPrestadorTokenDto;
 import gp6.harbor.harborapi.service.empresa.EmpresaService;
 import gp6.harbor.harborapi.service.prestador.AvaliacaoPrestadorService;
 import gp6.harbor.harborapi.service.prestador.PrestadorService;
@@ -24,12 +24,12 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/api/prestador")
 @RequiredArgsConstructor
 public class PrestadorController {
 
     private final EmpresaService empresaService;
-    private final UsuarioService usuarioService;
+    private final UsuarioPrestadorService usuarioPrestadorService;
     private final PrestadorService prestadorService;
     private final AvaliacaoPrestadorService avaliacaoPrestadorService;
 
@@ -45,16 +45,15 @@ public class PrestadorController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> criar(@RequestBody @Valid PrestadorCriacaoDto usuarioCriacaoDto) {
-        if (existePorCpf(usuarioCriacaoDto.getCpf())) {
+    public ResponseEntity<Void> criar(@RequestBody @Valid PrestadorCriacaoDto usuarioPrestadorCriacaoDto) {
+        if (existePorCpf(usuarioPrestadorCriacaoDto.getCpf())) {
             return ResponseEntity.status(409).build();
         }
 
-        this.usuarioService.criar(usuarioCriacaoDto);
+        this.usuarioPrestadorService.criar(usuarioPrestadorCriacaoDto);
 
         return ResponseEntity.status(201).build();
     }
-
 
     @PostMapping("criar-funcionario")
     @SecurityRequirement(name = "Bearer")
@@ -63,14 +62,14 @@ public class PrestadorController {
             return ResponseEntity.status(409).build();
         }
 
-        usuarioService.criarFuncionario(novoPrestadorDto);
+        usuarioPrestadorService.criarFuncionario(novoPrestadorDto);
 
         return ResponseEntity.status(201).build();
     }
 
     @GetMapping("obter-funcionarios")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<FuncionarioListagemDto>> listarFuncionarios(){
+    public ResponseEntity<List<FuncionarioListagemDto>> listarFuncionarios() {
         List<FuncionarioListagemDto> funcionarios = prestadorService.listarFuncionarios();
 
         if (funcionarios.isEmpty()) {
@@ -92,15 +91,15 @@ public class PrestadorController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UsuarioTokenDto> login(@RequestBody UsuarioLoginDto usuarioLoginDto) {
-        UsuarioTokenDto usuarioTokenDto = this.usuarioService.autenticar(usuarioLoginDto);
+    public ResponseEntity<UsuarioPrestadorTokenDto> login(@RequestBody UsuarioPrestadorLoginDto usuarioPrestadorLoginDto) {
+        UsuarioPrestadorTokenDto usuarioPrestadorTokenDto = this.usuarioPrestadorService.autenticar(usuarioPrestadorLoginDto);
 
-        return ResponseEntity.status(200).body(usuarioTokenDto);
+        return ResponseEntity.status(200).body(usuarioPrestadorTokenDto);
     }
 
     @GetMapping
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<PrestadorFuncionarioCriacao>> listar(){
+    public ResponseEntity<List<PrestadorFuncionarioCriacao>> listar() {
         List<PrestadorFuncionarioCriacao> prestadores = prestadorService.listar();
 
         if (prestadores.isEmpty()) {
@@ -112,7 +111,7 @@ public class PrestadorController {
 
     @GetMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<PrestadorListagemDto> buscarPorId(@PathVariable long id){
+    public ResponseEntity<PrestadorListagemDto> buscarPorId(@PathVariable long id) {
         Prestador prestador = prestadorService.buscarPorId(id);
 
         PrestadorListagemDto dto = PrestadorMapper.toDto(prestador);
@@ -122,10 +121,10 @@ public class PrestadorController {
 
     @GetMapping("/cpf")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<PrestadorListagemDto>> buscarPeloCpf(@RequestParam String cpf){
+    public ResponseEntity<List<PrestadorListagemDto>> buscarPeloCpf(@RequestParam String cpf) {
         List<Prestador> prestadores = prestadorService.buscarPeloCpf(cpf);
 
-        if (prestadores.isEmpty()){
+        if (prestadores.isEmpty()) {
             return ResponseEntity.status(204).build();
         }
 
@@ -136,10 +135,10 @@ public class PrestadorController {
 
     @GetMapping("/nome")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<PrestadorListagemDto>> buscarPeloNome(@RequestParam String nome){
+    public ResponseEntity<List<PrestadorListagemDto>> buscarPeloNome(@RequestParam String nome) {
         List<Prestador> prestadores = prestadorService.buscarPeloNome(nome);
 
-        if (prestadores.isEmpty()){
+        if (prestadores.isEmpty()) {
             return ResponseEntity.status(204).build();
         }
 
@@ -150,7 +149,7 @@ public class PrestadorController {
 
     @GetMapping("/empresa/{empresaId}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<PrestadorListagemDto>> prestadorPorEmpresaId(@PathVariable Integer empresaId){
+    public ResponseEntity<List<PrestadorListagemDto>> prestadorPorEmpresaId(@PathVariable Integer empresaId) {
         Empresa empresaBuscada = empresaService.buscarPorId(empresaId);
 
         List<Prestador> prestadores = prestadorService.buscarPorEmpresa(empresaBuscada);
@@ -164,13 +163,28 @@ public class PrestadorController {
 
     @PutMapping("/{cpf}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<PrestadorFuncionarioCriacao> atualizarPrestador(@RequestBody @Valid PrestadorFuncionarioCriacao prestadorDto, @PathVariable String cpf){
+    public ResponseEntity<PrestadorFuncionarioCriacao> atualizarPrestador(
+            @RequestBody @Valid PrestadorFuncionarioCriacao prestadorDto, @PathVariable String cpf) {
 
-        if (!prestadorService.existePorCpf(cpf)){
+        if (!prestadorService.existePorCpf(cpf)) {
             return ResponseEntity.status(404).build();
         }
 
-        PrestadorFuncionarioCriacao prestadorSalvo = usuarioService.atualizarFuncionario(prestadorDto, cpf);
+        PrestadorFuncionarioCriacao prestadorSalvo = usuarioPrestadorService.atualizarFuncionario(prestadorDto, cpf);
+
+        return ResponseEntity.status(200).body(prestadorSalvo);
+    }
+
+    @PutMapping("/perfil/{cpf}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<PrestadorFuncionarioCriacao> atualizarPrestadorSemSenha(
+            @RequestBody @Valid PrestadorEdicaoDTO prestadorDto, @PathVariable String cpf) {
+
+        if (!prestadorService.existePorCpf(cpf)) {
+            return ResponseEntity.status(404).build();
+        }
+
+        PrestadorFuncionarioCriacao prestadorSalvo = usuarioPrestadorService.atualizarFuncionarioSemSenha(prestadorDto, cpf);
 
         return ResponseEntity.status(200).body(prestadorSalvo);
     }
@@ -179,7 +193,7 @@ public class PrestadorController {
     @PatchMapping(value = "/foto/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> atualizarFoto(@PathVariable Long id,
-                                          @RequestBody String novaFoto) {
+            @RequestBody String novaFoto) {
         if (!prestadorService.existePorId(id)) {
             return ResponseEntity.status(404).build();
         }
@@ -187,6 +201,7 @@ public class PrestadorController {
         prestadorService.setFoto(id, novaFoto);
         return ResponseEntity.status(200).build();
     }
+
     @Hidden
     @GetMapping(value = "/foto/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
     @SecurityRequirement(name = "Bearer")
@@ -201,18 +216,18 @@ public class PrestadorController {
     }
 
     @PostMapping("/enviar-codigo-acesso")
-    public ResponseEntity<String> gerarCodigoAcesso(@RequestParam String email){
+    public ResponseEntity<String> gerarCodigoAcesso(@RequestParam String email) {
         prestadorService.EnviarCodigoAcesso(email);
         return ResponseEntity.status(200).body("Se o email existe, foi enviado o código de acesso");
     }
 
     @PostMapping("/atualizar-senha-prestador")
-    public ResponseEntity<Void> atualizarSenha(@RequestParam String email, String codigoAcesso, String novaSenha){
+    public ResponseEntity<Void> atualizarSenha(@RequestParam String email, String codigoAcesso, String novaSenha) {
         prestadorService.atualizarSenha(email, codigoAcesso, novaSenha);
         return ResponseEntity.status(200).build();
     }
 
-    public boolean existePorCpf(String cpf){
+    public boolean existePorCpf(String cpf) {
         return prestadorService.existePorCpf(cpf);
     }
 }

@@ -1,4 +1,4 @@
-package gp6.harbor.harborapi.dto.usuario.autenticacao.dto;
+package gp6.harbor.harborapi.dto.usuarioPrestador.autenticacao.dto;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,7 +7,7 @@ import gp6.harbor.harborapi.domain.prestador.Prestador;
 
 import java.util.Collection;
 
-public class UsuarioDetalhesDto implements UserDetails {
+public class UsuarioPrestadorDetalhesDto implements UserDetails {
 
     private final String nome;
 
@@ -15,10 +15,10 @@ public class UsuarioDetalhesDto implements UserDetails {
 
     private final String senha;
 
-    public UsuarioDetalhesDto(Prestador usuario) {
-        this.nome = usuario.getNome();
-        this.email = usuario.getEmail();
-        this.senha = usuario.getSenha();
+    public UsuarioPrestadorDetalhesDto(Prestador usuarioPrestador) {
+        this.nome = usuarioPrestador.getNome();
+        this.email = usuarioPrestador.getEmail();
+        this.senha = usuarioPrestador.getSenha();
     }
 
     public String getNome() {

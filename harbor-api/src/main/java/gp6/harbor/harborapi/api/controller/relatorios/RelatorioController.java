@@ -24,7 +24,7 @@ import java.io.ByteArrayOutputStream;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
-@RequestMapping("/relatorios")
+@RequestMapping("/api/relatorios")
 @RequiredArgsConstructor
 public class RelatorioController {
 

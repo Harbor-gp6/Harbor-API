@@ -31,6 +31,7 @@ public class Empresa {
     private String banner;
     private String razaoSocial;
     private String nomeFantasia;
+    private String slug;
     private String cnpj;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_endereco")

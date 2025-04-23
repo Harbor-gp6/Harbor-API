@@ -1,6 +1,6 @@
-package gp6.harbor.harborapi.dto.usuario.autenticacao.dto;
+package gp6.harbor.harborapi.dto.usuarioPrestador.autenticacao.dto;
 
-public class UsuarioTokenDto {
+public class UsuarioPrestadorTokenDto {
 
     private Long userId;
     private String nome;

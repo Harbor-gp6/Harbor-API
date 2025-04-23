@@ -1,4 +1,4 @@
-package gp6.harbor.harborapi.dto.usuario.dto;
+package gp6.harbor.harborapi.dto.usuarioPrestador.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UsuarioCriacaoDto {
+public class UsuarioPrestadorCriacaoDto {
 
     @Size(min = 3, max = 10)
     @Schema(description = "Nome do usuário", example = "Reis")
